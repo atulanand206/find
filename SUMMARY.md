@@ -8,5 +8,6 @@
 
 * [NPH.cards](background/nph.cards.md)
 * [Black](background/black.md)
-* [Puzzles](background/puzzles.md)
+* [Puzzles](background/puzzles/README.md)
+  * [Fibo](background/puzzles/fibo.md)
 
