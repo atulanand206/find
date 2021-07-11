@@ -11,3 +11,7 @@
 * [Puzzles](background/puzzles/README.md)
   * [Fibo](background/puzzles/fibo.md)
 
+## TECHNOLOGY
+
+* [Tools required](technology/tools-required.md)
+
