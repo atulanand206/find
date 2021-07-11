@@ -9,7 +9,8 @@
 * [NPH.cards](background/nph.cards.md)
 * [Black](background/black.md)
 * [Puzzles](background/puzzles/README.md)
-  * [Fibo](background/puzzles/fibo.md)
+  * [Basis](background/puzzles/fibo.md)
+  * [Designs](background/puzzles/designs.md)
 
 ## TECHNOLOGY
 

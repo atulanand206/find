@@ -1,4 +1,4 @@
-# Fibo
+# Basis
 
 These refs are for 3x3. Can be extended for 4x4 to have all the digits in the mix. 
 
