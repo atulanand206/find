@@ -1,3 +1,7 @@
+---
+description: Project Overview
+---
+
 # Blind
 
 ### What is Blind?
