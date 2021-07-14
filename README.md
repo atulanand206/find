@@ -1,5 +1,9 @@
 # Find
 
+### What it means
+
+
+
 ### Where to start
 
 The ideas for the project is curated in our [Gitbook](https://app.gitbook.com/@blind-1/s/blind/). Checkout to see what's the first hand cooking of the ideas behind the internals.
