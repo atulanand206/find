@@ -2,7 +2,7 @@
 description: Project Overview
 ---
 
-# Home
+# Blind
 
 ### What is Blind?
 
