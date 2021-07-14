@@ -1,6 +1,6 @@
 # Table of contents
 
-* [Home screen](README.md)
+* [Find](README.md)
 
 ## Background
 
