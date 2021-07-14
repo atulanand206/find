@@ -1,0 +1,13 @@
+apply plugin: "kotlin"
+apply plugin: "java-library"
+
+sourceSets.main.java.srcDirs = [ "src/" ]
+project.ext.mainClassName = "com.mega.games.think.desktop.DesktopLauncher"
+
+dependencies {
+    api project(":core")
+    api "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
+    api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+    api "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
+    api "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+}

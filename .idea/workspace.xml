@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AndroidLayouts">
+    <shared>
+      <config />
+    </shared>
+  </component>
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="NONE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="a617ce7e-85db-498d-b9ed-286b99642641" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/app/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/.run/DesktopLauncher.run.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/android/AndroidManifest.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/android/build.gradle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/android/ic_launcher-web.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/android/proguard-rules.pro" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/android/project.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/android/res/drawable-anydpi-v26/ic_launcher.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/android/res/drawable-anydpi-v26/ic_launcher_foreground.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/android/res/drawable-hdpi/ic_launcher.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/android/res/drawable-mdpi/ic_launcher.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/android/res/drawable-xhdpi/ic_launcher.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/android/res/drawable-xxhdpi/ic_launcher.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/android/res/drawable-xxxhdpi/ic_launcher.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/android/res/values/color.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/android/res/values/strings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/android/res/values/styles.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/android/src/com/creations/games/think/AndroidLauncher.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/core/build.gradle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/core/src/com/creations/games/think/Play.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/core/src/com/creations/games/think/asset/Assets.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/core/src/com/creations/games/think/asset/FileNames.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/core/src/com/creations/games/think/asset/FontSize.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/core/src/com/creations/games/think/scenes/game/Scene1.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/core/src/com/creations/games/think/scenes/game/gameObjects/Ball.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/core/src/com/creations/games/think/scenes/game/gameObjects/Ground.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/core/src/com/creations/games/think/utils/DIExtensions.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/core/src/main/resources/fonts/GothamRounded-Medium.ttf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/core/src/main/resources/scene1/circle.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/core/src/main/resources/scene1/square.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/core/src/main/resources/scene2/galaxy1.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/core/src/main/resources/scene2/galaxy2.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/core/src/main/resources/scene2/galaxy3.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/core/src/main/resources/scene2/nebula.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/core/src/main/resources/scene2/rocket.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/core/src/main/resources/scene2/rocketFiring.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/core/src/main/resources/scene2/star1.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/core/src/main/resources/scene2/star2.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/core/src/main/resources/scene3/flag.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/core/src/main/resources/scene3/mine.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/core/src/main/resources/scene4/squareMargin.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/desktop/build.gradle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/desktop/src/com/creations/games/think/desktop/DesktopLauncher.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/engine/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/engine/build.gradle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/engine/src/main/java/com/creations/games/engine/EngineGame.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/engine/src/main/java/com/creations/games/engine/asset/AssetLoadListener.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/engine/src/main/java/com/creations/games/engine/asset/AssetLoadParam.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/engine/src/main/java/com/creations/games/engine/asset/GameAssetManager.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/engine/src/main/java/com/creations/games/engine/asset/TtfFontLoadParam.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/engine/src/main/java/com/creations/games/engine/dependency/DI.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/engine/src/main/java/com/creations/games/engine/dependency/DiExtensions.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/engine/src/main/java/com/creations/games/engine/dependency/InfraDependencies.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/engine/src/main/java/com/creations/games/engine/gameObject/GameObject.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/engine/src/main/java/com/creations/games/engine/gameObject/GameObjectExtension.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/engine/src/main/java/com/creations/games/engine/scenes/Scene.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/engine/src/main/java/com/creations/games/engine/utils/AspectRatioCalculator.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/engine/src/main/java/com/creations/games/engine/utils/FileHandleResolverWrapper.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/engine/src/main/java/com/creations/games/engine/utils/Resizable.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/engine/src/main/java/com/creations/games/engine/utils/logger/Log.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/engine/src/main/java/com/creations/games/engine/utils/logger/LogLevel.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/engine/src/main/java/com/creations/games/engine/utils/logger/LogWriter.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/engine/src/main/java/com/creations/games/engine/utils/logger/LoggerDelegate.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/engine/src/main/java/com/creations/games/engine/utils/logger/Loggers.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/engine/src/main/java/com/creations/games/engine/values/Values.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/engine/src/main/java/com/creations/games/engine/view/RenderManager.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/engine/src/main/java/com/creations/games/engine/widgets/TextLabel.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/gradle.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/gradle/wrapper/gradle-wrapper.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/settings.gradle" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[VirtualDevicePath@/Users/creations/.android/avd/Nexus_5X_API_26.avd]" />
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$/app">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <projects_view>
+          <tree_state>
+            <expand />
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1vJl39v973BCWwC4iLeAMbJpUXU" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="android.sdk.path" value="$USER_HOME$/Library/Android/sdk" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="project.structure.last.edited" value="SDK Location" />
+    <property name="project.structure.proportion" value="0.17" />
+    <property name="project.structure.side.proportion" value="0.0" />
+    <property name="settings.editor.selected.configurable" value="android.sdk-updates" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Application.DesktopLauncher">
+    <configuration name="&lt;template&gt;" type="Applet" default="true" selected="false">
+      <option name="MAIN_CLASS_NAME" />
+      <option name="HTML_FILE_NAME" />
+      <option name="HTML_USED" value="false" />
+      <option name="WIDTH" value="400" />
+      <option name="HEIGHT" value="300" />
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <option name="VM_PARAMETERS" />
+    </configuration>
+    <configuration default="true" type="JUnit" factoryName="JUnit">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <module name="" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="METHOD_NAME" />
+      <option name="TEST_OBJECT" value="class" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <envs />
+      <patterns />
+      <method />
+    </configuration>
+    <configuration name="&lt;template&gt;" type="#org.jetbrains.idea.devkit.run.PluginConfigurationType" default="true" selected="false">
+      <option name="VM_PARAMETERS" value="-Xmx512m -Xms256m -XX:MaxPermSize=250m -ea" />
+    </configuration>
+    <configuration default="true" type="AndroidJUnit" factoryName="Android JUnit">
+      <option name="TEST_OBJECT" value="class" />
+      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="app.android" type="AndroidRunConfigurationType" factoryName="Android App">
+      <module name="app.android" />
+      <option name="DEPLOY" value="true" />
+      <option name="DEPLOY_APK_FROM_BUNDLE" value="false" />
+      <option name="DEPLOY_AS_INSTANT" value="false" />
+      <option name="ARTIFACT_NAME" value="" />
+      <option name="PM_INSTALL_OPTIONS" value="" />
+      <option name="ALL_USERS" value="false" />
+      <option name="ALWAYS_INSTALL_WITH_PM" value="false" />
+      <option name="DYNAMIC_FEATURES_DISABLED_LIST" value="" />
+      <option name="ACTIVITY_EXTRA_FLAGS" value="" />
+      <option name="MODE" value="default_activity" />
+      <option name="CLEAR_LOGCAT" value="false" />
+      <option name="SHOW_LOGCAT_AUTOMATICALLY" value="false" />
+      <option name="SKIP_NOOP_APK_INSTALLATIONS" value="true" />
+      <option name="FORCE_STOP_RUNNING_APP" value="true" />
+      <option name="TARGET_SELECTION_MODE" value="DEVICE_AND_SNAPSHOT_COMBO_BOX" />
+      <option name="SELECTED_CLOUD_MATRIX_CONFIGURATION_ID" value="-1" />
+      <option name="SELECTED_CLOUD_MATRIX_PROJECT_ID" value="" />
+      <option name="DEBUGGER_TYPE" value="Auto" />
+      <Auto>
+        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
+        <option name="SHOW_STATIC_VARS" value="true" />
+        <option name="WORKING_DIR" value="" />
+        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
+        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
+      </Auto>
+      <Hybrid>
+        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
+        <option name="SHOW_STATIC_VARS" value="true" />
+        <option name="WORKING_DIR" value="" />
+        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
+        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
+      </Hybrid>
+      <Java />
+      <Native>
+        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
+        <option name="SHOW_STATIC_VARS" value="true" />
+        <option name="WORKING_DIR" value="" />
+        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
+        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
+      </Native>
+      <Profilers>
+        <option name="ADVANCED_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_CPU_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_CPU_PROFILING_CONFIGURATION_NAME" value="Sample Java Methods" />
+        <option name="STARTUP_NATIVE_MEMORY_PROFILING_ENABLED" value="false" />
+        <option name="NATIVE_MEMORY_SAMPLE_RATE_BYTES" value="2048" />
+      </Profilers>
+      <option name="DEEP_LINK" value="" />
+      <option name="ACTIVITY_CLASS" value="" />
+      <option name="SEARCH_ACTIVITY_IN_GLOBAL_SCOPE" value="false" />
+      <option name="SKIP_ACTIVITY_VALIDATION" value="false" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="Application" factoryName="Application">
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="TestNG">
+      <option name="TEST_OBJECT" value="CLASS" />
+      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+      <properties />
+      <listeners />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="a617ce7e-85db-498d-b9ed-286b99642641" name="Default Changelist" comment="" />
+      <created>1626287871304</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1626287871304</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="723" y="110" key="CommitChangelistDialog2" timestamp="1626288184690">
+      <screen x="0" y="25" width="1680" height="1025" />
+    </state>
+    <state x="723" y="110" key="CommitChangelistDialog2/0.25.1680.1025@0.25.1680.1025" timestamp="1626288184690" />
+    <state x="336" y="113" key="DiffContextDialog" timestamp="1626288170430">
+      <screen x="0" y="25" width="1680" height="1025" />
+    </state>
+    <state x="336" y="113" key="DiffContextDialog/0.25.1680.1025@0.25.1680.1025" timestamp="1626288170430" />
+    <state x="803" y="262" width="670" height="676" key="search.everywhere.popup" timestamp="1626288319286">
+      <screen x="0" y="25" width="1680" height="1025" />
+    </state>
+    <state x="803" y="262" width="670" height="676" key="search.everywhere.popup/0.25.1680.1025@0.25.1680.1025" timestamp="1626288319286" />
+  </component>
+</project>
