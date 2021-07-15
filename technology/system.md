@@ -1,6 +1,6 @@
 # System
 
-**Color**
+**Color - stores the color information code**
 
 | Field | Type | Information |
 | :--- | :--- | ---: |
@@ -9,7 +9,7 @@
 | hex | String | Color information as hex code |
 | transparent | boolean | Hide the asset when true |
 
-**ViewSpecs**
+**ViewSpecs - visibility specifications of asset**
 
 | Field | Type | Information |
 | :--- | :--- | ---: |
@@ -19,7 +19,14 @@
 | height | number | view height of the asset |
 | width | number | view width of the asset |
 
-**Item**
+**Component extends ViewSpecs - Preset stored for replicating asset properties**
+
+| Field | Type | Information |
+| :--- | :--- | ---: |
+| key | String | key to reference the preset |
+| name | String | title of the asset |
+
+**Item - Base class for all the puzzle components.**
 
 | Field | Type | Information |
 | :--- | :--- | ---: |
@@ -29,13 +36,13 @@
 | specs | ViewSpecs | visibility configuration |
 | img | String | reference to location of image |
 
-**Clue extends Item**
+**Clue extends Item - contains clue's specifications**
 
 | Field | Type | Information |
 | :--- | :--- | ---: |
 | rating | number | rating of clue for assigning priority |
 
-**Puzzle extends Item**
+**Puzzle extends Item - contains puzzle's specifications**
 
 | Field | Type | Information |
 | :--- | :--- | ---: |
@@ -43,20 +50,16 @@
 | solution | String | answer of the puzzle |
 | clues | Clue\[\] | clues in the puzzle |
 
-**Stage extends Item**
+**Stage extends Item - contains stage's specifications**
 
-| Field |  | Information |
+| Field | Type | Information |
 | :--- | :--- | ---: |
 | puzzles | Puzzle\[\] | puzzles in the stage |
 
-**Theme extends Item**
+**Theme extends Item - contains theme's specifications**
 
-| Field | Information |
-| :--- | ---: |
-| id | unique identifier |
-| solution | keyword to complete the scene  |
-
-| Field | Information |
-| :--- | ---: |
-| id | unique identifier |
+| Field | Type | Information |
+| :--- | :--- | ---: |
+| stages | Stage\[\] | stages in the theme |
+| solution |  | keyword to complete the scene  |
 
