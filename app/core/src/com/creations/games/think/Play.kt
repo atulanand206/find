@@ -7,7 +7,6 @@ import com.creations.games.engine.dependency.assetManager
 import com.creations.games.engine.scenes.Scene
 import com.creations.games.engine.values.Values
 import com.creations.games.think.asset.Assets
-import com.creations.games.think.scenes.Background
 import com.creations.games.think.scenes.launcher.SceneLauncher
 import com.creations.games.think.scenes.main.MainLauncher
 import java.util.*

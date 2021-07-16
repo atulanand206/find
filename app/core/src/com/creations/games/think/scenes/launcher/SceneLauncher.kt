@@ -8,7 +8,7 @@ import com.creations.games.think.asset.FontSize
 import com.creations.games.think.asset.Strings
 import com.creations.games.think.utils.assets
 
-class SceneLauncher(private val di:DI) : Scene(di) {
+class SceneLauncher(private val di: DI) : Scene(di) {
 
 	init {
 		addTitle()

@@ -1,68 +1,64 @@
 package com.creations.games.think.scenes.main
 
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.utils.Align
 import com.creations.games.engine.dependency.DI
-import com.creations.games.engine.scenes.Scene
+import com.creations.games.engine.gameObject.GameObject
 import com.creations.games.engine.values.Values
 import com.creations.games.think.asset.FontSize
+import com.creations.games.think.data.Puzzle
+import com.creations.games.think.data.Theme
+import com.creations.games.think.data.xTheme
 import com.creations.games.think.scenes.Background
-import com.creations.games.think.scenes.game.gameObjects.Ball
-import com.creations.games.think.scenes.game.gameObjects.Ground
+import com.creations.games.think.scenes.GameScene
 import com.creations.games.think.utils.assets
 
-class MainLauncher(private val di: DI) : Scene(di){
+class MainLauncher(private val di: DI) : GameScene(di) {
 	private val assets = di.assets
 
-	private val groundHeight = 20f;
-	private val ballRadius = 20f;
+	private val themes = arrayListOf(xTheme)
+	private val level = 0
 
-	//gameObjects
-	private lateinit var ball: Ball
-	private lateinit var ground: Ground
-
-	//init is the constructor
 	init {
-		background(Background(di))
-		addBall()
-		addGround()
-		addTitle()
+		addObjToScene(Background(di))
+		addObjToScene(addTitle(xTheme))
+		addPuzzle(xTheme.puzzles[level])
+		addLevel(xTheme.puzzles[level])
 	}
 
-	private fun addBall() {
-		//create a new ball instance
-		ball = Ball(di)
-		ball.setRadius(ballRadius)
-		ball.setPosition(screenCenter.x, screenCenter.y, Align.center)
-
-		//todo.note - uncomment below line to see ball's drawing bounds. You can use (ctrl + /) on a line to toggle comment
-//        ball.debug = true
-
-		addObjToScene(ball)
-		addObjToScene(ball.counter)
+	private fun addPuzzle(puzzle: Puzzle) {
+		addObjToScene(addPuzzleName(puzzle))
+		addObjToScene(addPuzzleText(puzzle))
 	}
 
-	private fun addGround() {
-		ground = Ground(di)
-		ground.setPosition(0f,0f)
-		ground.setSize(Values.VIRTUAL_WIDTH, groundHeight)
-
-		//todo.note - A gameObject will only be drawn if it is added to the scene
-		addObjToScene(ground)
+	private fun addLevel(puzzle: Puzzle) {
+		addObjToScene(addLevelNo(puzzle))
+		addObjToScene(addLeftSwipeButton(puzzle))
+		addObjToScene(addRightSwipeButton(puzzle))
 	}
 
-	private fun addTitle() {
-		//todo.note - you can add text using labels like below
-		val title = assets.createLabel("Jumping Ball", size = FontSize.F14, color = Color.BLACK)
+	private fun addTitle(theme: Theme): GameObject = assets.addLabel(
+			theme.name, FontSize.F20, viewColor(theme.specs),
+			Values.VIRTUAL_WIDTH / 2f, Values.VIRTUAL_HEIGHT * 0.98f, Align.top)
 
-		//place label at top center of screen
-		title.setPosition(Values.VIRTUAL_WIDTH/2f, Values.VIRTUAL_HEIGHT, Align.top)
+	private fun addPuzzleName(puzzle: Puzzle): GameObject = assets.addLabel(
+			puzzle.name, FontSize.F36, viewColor(puzzle.specs),
+			Values.VIRTUAL_WIDTH / 2f, Values.VIRTUAL_HEIGHT * 0.85f, Align.top)
 
-//        label.debug = true
+	private fun addPuzzleText(puzzle: Puzzle): GameObject = assets.addLabel(
+			puzzle.text, FontSize.F18, viewColor(puzzle.specs),
+			Values.VIRTUAL_WIDTH / 2f, Values.VIRTUAL_HEIGHT * 0.78f, Align.top)
 
+	private fun addLevelNo(puzzle: Puzzle): GameObject = assets.addLabel(
+			(level + 1).toString(), FontSize.F100, viewColor(puzzle.specs),
+			Values.VIRTUAL_WIDTH / 2f, Values.VIRTUAL_HEIGHT * 0.60f, Align.center)
 
-		addObjToScene(title)
-	}
+	private fun addLeftSwipeButton(puzzle: Puzzle): GameObject = assets.addLabel(
+			"{", FontSize.F36, viewColor(puzzle.specs),
+			Values.VIRTUAL_WIDTH * 0.05f, Values.VIRTUAL_HEIGHT * 0.60f, Align.center)
+
+	private fun addRightSwipeButton(puzzle: Puzzle): GameObject = assets.addLabel(
+			"}", FontSize.F36, viewColor(puzzle.specs),
+			Values.VIRTUAL_WIDTH * 0.95f, Values.VIRTUAL_HEIGHT * 0.60f, Align.center)
 
 	/**
 	 * Act is called at start of every frame.
@@ -72,18 +68,6 @@ class MainLauncher(private val di: DI) : Scene(di){
 	 * dt - delta time. The time elapsed since last frame
 	 */
 	override fun act(dt: Float) {
-		//check ball's collision with floor in a simple way
-		if(ball.y < ground.y + groundHeight){
-			ball.y = ground.y + groundHeight
-			ball.bounce(false)
-		}
-		if (ball.x < 0f) {
-			ball.x = 0f
-			ball.bounce(true)
-		}
-		if (ball.x > Values.VIRTUAL_WIDTH) {
-			ball.x = Values.VIRTUAL_WIDTH
-			ball.bounce(true)
-		}
+
 	}
 }

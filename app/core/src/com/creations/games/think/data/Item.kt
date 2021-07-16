@@ -1,5 +1,6 @@
 package com.creations.games.think.data
 
+import com.badlogic.gdx.graphics.Color
 import java.util.*
 
 abstract class Item {
@@ -73,7 +74,7 @@ data class Theme(
 		override val text: String,
 		override val specs: ViewSpecs,
 		override val img: ImageSpecs,
-		val puzzles: Array<Puzzle>): Item() {
+		val puzzles: Array<Puzzle>) : Item() {
 	override fun equals(other: Any?): Boolean {
 		if (this === other) return true
 		if (javaClass != other?.javaClass) return false
@@ -100,3 +101,30 @@ data class Theme(
 		return result
 	}
 }
+
+val xClueLight = Appearance(Color.valueOf("#EA9999"), false)
+val xClueDark = Appearance(Color.valueOf("#985555"), false)
+val xPuzzleLight = Appearance(Color.valueOf("#E26C6C"), false)
+val xPuzzleDark = Appearance(Color.valueOf("#580808"), false)
+val xThemeLight = Appearance(Color.valueOf("#887979"), false)
+val xThemeDark = Appearance(Color.valueOf("#3A2E2E"), false)
+
+val xClueViewSpecs = ViewSpecs(UUID.randomUUID(), xClueLight, xClueDark, 10f, 10f, "clue")
+val xPuzzleViewSpecs = ViewSpecs(UUID.randomUUID(), xPuzzleLight, xPuzzleDark, 100f, 100f, "puzzle")
+val xThemeViewSpecs = ViewSpecs(UUID.randomUUID(), xThemeLight, xThemeDark, 100f, 100f, "theme")
+
+val xPuzzleImageId: UUID = UUID.randomUUID()
+val xClueImageSpecs = ImageSpecs(UUID.randomUUID(), "clue-image-ref")
+val xPuzzleImageSpecs = ImageSpecs(xPuzzleImageId, "puzzle-image-ref")
+val xThemeImageSpecs = ImageSpecs(UUID.randomUUID(), "theme-image-ref")
+
+val xClue = Clue(UUID.randomUUID(), "clue-name", "clue-text",
+		xClueViewSpecs, xClueImageSpecs, 100f, xPuzzleImageId, 100f, 100f)
+val xClues = arrayOf(xClue)
+
+val xPuzzle = Puzzle(UUID.randomUUID(), "puzzle-name", "puzzle-text",
+		xPuzzleViewSpecs, xPuzzleImageSpecs, "puzzle-note", "puzzle-solution", xClues)
+val xPuzzles = arrayOf(xPuzzle)
+
+val xTheme = Theme(UUID.randomUUID(), "theme-name", "theme-text",
+		xThemeViewSpecs, xThemeImageSpecs, xPuzzles)

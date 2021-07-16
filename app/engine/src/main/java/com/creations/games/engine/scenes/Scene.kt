@@ -11,14 +11,9 @@ abstract class Scene(private val di: DI) {
     protected val stage get() = di.renderManager.stage
     protected val screenCenter = Vector2(Values.VIRTUAL_WIDTH/2f, Values.VIRTUAL_HEIGHT/2f)
 
-    fun background(gameObject: GameObject) {
-        addObjToScene(gameObject)
-    }
-
     fun addObjToScene(gameObject: GameObject) {
         di.renderManager.stage.addActor(gameObject)
     }
 
     abstract fun act(dt:Float)
 }
-
