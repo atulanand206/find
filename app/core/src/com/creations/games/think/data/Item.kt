@@ -122,9 +122,9 @@ val xClue = Clue(UUID.randomUUID(), "clue-name", "clue-text",
 		xClueViewSpecs, xClueImageSpecs, 100f, xPuzzleImageId, 100f, 100f)
 val xClues = arrayOf(xClue)
 
-val xPuzzle = Puzzle(UUID.randomUUID(), "puzzle-name", "puzzle-text",
+val xPuzzle = Puzzle(UUID.randomUUID(), "Converging", "The good old series \nis around for centuries \nand has stirred many minds.",
 		xPuzzleViewSpecs, xPuzzleImageSpecs, "puzzle-note", "puzzle-solution", xClues)
 val xPuzzles = arrayOf(xPuzzle)
 
-val xTheme = Theme(UUID.randomUUID(), "theme-name", "theme-text",
+val xTheme = Theme(UUID.randomUUID(), "THE FIBONACCI", "theme-text",
 		xThemeViewSpecs, xThemeImageSpecs, xPuzzles)

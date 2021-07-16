@@ -22,4 +22,11 @@ object FileNames {
     const val flagPath = "scene3/flag.png"
 
     const val marginPath = "scene4/squareMargin.png"
+
+    const val iconBackPath = "game/back.png"
+    const val iconPlayPath = "game/play.png"
+    const val iconFramePath = "game/frame.png"
+    const val iconLightPath = "game/light.png"
+    const val iconDarkPath = "game/dark.png"
+    const val iconSettingsPath = "game/settings.png"
 }

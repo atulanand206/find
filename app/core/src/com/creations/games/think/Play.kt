@@ -30,11 +30,11 @@ class Play(
 
     //At this point assets are loaded. You should create your game here
     override fun onLoaded() {
-        setScene(SceneLauncher(di))
+//        setScene(SceneLauncher(di))
 
-        Timer().schedule(2000) {
+//        Timer().schedule(2000) {
             setScene(MainLauncher(di))
-        }
+//        }
     }
 
     // adds a scene to the injector
