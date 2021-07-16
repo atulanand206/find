@@ -7,11 +7,15 @@ import com.creations.games.engine.dependency.assetManager
 import com.creations.games.engine.scenes.Scene
 import com.creations.games.engine.values.Values
 import com.creations.games.think.asset.Assets
-import com.creations.games.think.scenes.game.Scene1
+import com.creations.games.think.scenes.Background
+import com.creations.games.think.scenes.launcher.SceneLauncher
+import com.creations.games.think.scenes.main.MainLauncher
+import java.util.*
+import kotlin.concurrent.schedule
 
 class Play(
     resolver: FileHandleResolver
-) : EngineGame(resolver, defaultAspectRatio = Pair(16f, 16f)) {
+) : EngineGame(resolver, defaultAspectRatio = Pair(9f, 16f)) {
     private lateinit var scene:Scene
 
     init{
@@ -27,10 +31,17 @@ class Play(
 
     //At this point assets are loaded. You should create your game here
     override fun onLoaded() {
-        //todo.note - Change the scene below
-        scene = Scene1(di)
-        //add scene to DI
-        di.add(Scene::class.java,scene)
+        setScene(SceneLauncher(di))
+
+        Timer().schedule(2000) {
+            setScene(MainLauncher(di))
+        }
+    }
+
+    // adds a scene to the injector
+    private fun setScene(scene: Scene) {
+        this.scene = scene
+        di.add(Scene::class.java, scene)
     }
 
     //update is called once every frame

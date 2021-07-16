@@ -14,7 +14,6 @@ import com.creations.games.think.utils.assets
 class Scene1(private val di: DI) : Scene(di){
     //todo.note - Scene follows a 2D cartesian coordinate system with origin at lower left
     //Vector2 is a pair of floats
-    private val screenCenter = Vector2(Values.VIRTUAL_WIDTH/2f, Values.VIRTUAL_HEIGHT/2f)
 
     private val assets = di.assets
 
