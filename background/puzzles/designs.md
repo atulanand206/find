@@ -10,3 +10,5 @@ One properly set-up scene can have multiple clues available and a subset of thos
 
 The importance of hints plays a role in randomising their order. If they are of equal importance, showing them by picking randomly for every user is acceptable. But, if they are of different importance, give them a rating and don't show any hint with lower rating when a higher rating hint has been opened. It should also be ensured that all the necessary hints of lower rating are opened before opening a higher rating hint. If the user finds the clue by themselves, there is no impact on the hints mechanism. Different users will not see different hints and that could be turned into something interesting.
 
+Clue is not an independent object. It is linked to the puzzle image. It will need a reference to the point on the image from where the clue will be opened.
+
