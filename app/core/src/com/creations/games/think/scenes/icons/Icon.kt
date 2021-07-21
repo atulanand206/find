@@ -49,18 +49,6 @@ class FrameIcon(private val di: DI) : Icon(di, di.assets.frame) {
 	}
 }
 
-class LightIcon(private val di: DI) : Icon(di, di.assets.light) {
-	override fun onClick() {
-		Log.i("play clicked")
-	}
-}
-
-class DarkIcon(private val di: DI) : Icon(di, di.assets.dark) {
-	override fun onClick() {
-		Log.i("play clicked")
-	}
-}
-
 class SettingsIcon(private val di: DI) : Icon(di, di.assets.settings) {
 	override fun onClick() {
 		Log.i("play clicked")

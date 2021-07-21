@@ -3,14 +3,10 @@ package com.creations.games.think.asset
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.scenes.scene2d.ui.Label
-import com.badlogic.gdx.utils.Align
 import com.creations.games.engine.asset.GameAssetManager
-import com.creations.games.engine.dependency.DI
 import com.creations.games.engine.gameObject.GameObject
 import com.creations.games.engine.widgets.TextLabel
 import com.creations.games.think.scenes.icons.Icon
-import com.creations.games.think.scenes.icons.PlayIcon
-import com.creations.games.think.utils.assets
 
 class Assets(private val gam: GameAssetManager) {
 	lateinit var circle: Texture

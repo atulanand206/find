@@ -48,4 +48,13 @@ object Values {
 
     val ACTUAL_WIDTH get() = actualAspectRatio.x * screenFactor
     val ACTUAL_HEIGHT get() = actualAspectRatio.y * screenFactor
+
+    /**
+     * Signifies if dark mode is enabled. Mode will only be changed if required.
+     */
+    var isDark = true
+        set(value) {
+            require(value != field)
+            field = value
+        }
 }

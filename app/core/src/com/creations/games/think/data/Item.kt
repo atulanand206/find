@@ -1,6 +1,7 @@
 package com.creations.games.think.data
 
 import com.badlogic.gdx.graphics.Color
+import com.creations.games.engine.values.Values
 import java.util.*
 
 abstract class Item {
@@ -102,12 +103,16 @@ data class Theme(
 	}
 }
 
-val xClueLight = Appearance(Color.valueOf("#EA9999"), false)
-val xClueDark = Appearance(Color.valueOf("#985555"), false)
-val xPuzzleLight = Appearance(Color.valueOf("#E26C6C"), false)
-val xPuzzleDark = Appearance(Color.valueOf("#580808"), false)
-val xThemeLight = Appearance(Color.valueOf("#887979"), false)
-val xThemeDark = Appearance(Color.valueOf("#3A2E2E"), false)
+val xClueDark = Appearance(Color.valueOf("#EA9999"), false)
+val xClueLight = Appearance(Color.valueOf("#985555"), false)
+val xPuzzleDark = Appearance(Color.valueOf("#E26C6C"), false)
+val xPuzzleLight = Appearance(Color.valueOf("#580808"), false)
+val xThemeDark = Appearance(Color.valueOf("#fcfcfc"), false)
+val xThemeLight = Appearance(Color.valueOf("#3A2E2E"), false)
+val xBackgroundDark = Color.valueOf("#fcfcfc")
+val xBackgroundLight = Color.valueOf("#152259")
+
+private fun backgroundColor(): Color = if (Values.isDark) xBackgroundDark else xBackgroundLight
 
 val xClueViewSpecs = ViewSpecs(UUID.randomUUID(), xClueLight, xClueDark, 10f, 10f, "clue")
 val xPuzzleViewSpecs = ViewSpecs(UUID.randomUUID(), xPuzzleLight, xPuzzleDark, 100f, 100f, "puzzle")

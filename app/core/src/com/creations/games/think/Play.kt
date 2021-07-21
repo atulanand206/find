@@ -14,7 +14,7 @@ import kotlin.concurrent.schedule
 
 class Play(
     resolver: FileHandleResolver
-) : EngineGame(resolver, defaultAspectRatio = Pair(9f, 16f)) {
+) : EngineGame(resolver, defaultAspectRatio = Pair(9f, 18f)) {
     private lateinit var scene:Scene
 
     init{
