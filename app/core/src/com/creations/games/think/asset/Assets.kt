@@ -7,6 +7,7 @@ import com.creations.games.engine.asset.GameAssetManager
 import com.creations.games.engine.gameObject.GameObject
 import com.creations.games.engine.widgets.TextLabel
 import com.creations.games.think.scenes.icons.Icon
+import org.w3c.dom.Text
 
 class Assets(private val gam: GameAssetManager) {
 	lateinit var circle: Texture
@@ -17,6 +18,9 @@ class Assets(private val gam: GameAssetManager) {
 	lateinit var light: Texture
 	lateinit var dark: Texture
 	lateinit var settings: Texture
+	lateinit var imgLauncher: Texture
+	lateinit var imgMain: Texture
+	lateinit var imgGray: Texture
 
 	init {
 		//load assets
@@ -28,6 +32,9 @@ class Assets(private val gam: GameAssetManager) {
 		gam.addAssetsToLoad(FileNames.iconLightPath, Texture::class.java)
 		gam.addAssetsToLoad(FileNames.iconDarkPath, Texture::class.java)
 		gam.addAssetsToLoad(FileNames.iconSettingsPath, Texture::class.java)
+		gam.addAssetsToLoad(FileNames.imageLauncherPath, Texture::class.java)
+		gam.addAssetsToLoad(FileNames.imageMainPath, Texture::class.java)
+		gam.addAssetsToLoad(FileNames.imageGrayPath, Texture::class.java)
 
 		//load fonts
 		FontSize.values().forEach { gam.addFontToLoad(FileNames.fontPath, it.value) }
@@ -42,6 +49,9 @@ class Assets(private val gam: GameAssetManager) {
 			light = gam.get(FileNames.iconLightPath, Texture::class.java)
 			dark = gam.get(FileNames.iconDarkPath, Texture::class.java)
 			settings = gam.get(FileNames.iconSettingsPath, Texture::class.java)
+			imgLauncher = gam.get(FileNames.imageLauncherPath, Texture::class.java)
+			imgMain = gam.get(FileNames.imageMainPath, Texture::class.java)
+			imgGray = gam.get(FileNames.imageGrayPath, Texture::class.java)
 		}
 	}
 

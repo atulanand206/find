@@ -32,6 +32,7 @@ class MainLauncher(private val di: DI) : GameScene(di) {
 	}
 
 	override fun load() {
+		addBackground(di.assets.imgMain)
 		header = Header(di, xTheme)
 		header.color = viewColor(xTheme.specs)
 		header.setPosition(0f, Values.VIRTUAL_HEIGHT * 0.95f)
@@ -40,7 +41,7 @@ class MainLauncher(private val di: DI) : GameScene(di) {
 		puzzle.setPosition(0f, 0f)
 
 		switch = ThemeSwitch(di)
-		switch.setPosition(Values.VIRTUAL_WIDTH * 0.10f, Values.VIRTUAL_HEIGHT * 0.10f)
+		switch.setPosition(Values.VIRTUAL_WIDTH * 0.10f, Values.VIRTUAL_HEIGHT * 0.08f)
 
 		playIcon = addPlayIcon()
 		frameIcon = addFrameIcon()
@@ -59,6 +60,7 @@ class MainLauncher(private val di: DI) : GameScene(di) {
 	}
 
 	override fun unload() {
+		background.remove()
 		header.remove()
 		puzzle.remove()
 		frameIcon.remove()

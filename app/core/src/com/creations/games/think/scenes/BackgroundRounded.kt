@@ -12,7 +12,7 @@ class BackgroundRounded(private val di: DI) : GameObject() {
 
 	override fun draw(batch: Batch, parentAlpha: Float) {
 		batch.color = color
-		batch.draw(di.assets.rect, x, y, Values.VIRTUAL_WIDTH, Values.VIRTUAL_HEIGHT)
+		batch.draw(di.assets.imgGray, x, y, width, height)
 
 		batch.color = Color.WHITE
 		super.draw(batch, parentAlpha)

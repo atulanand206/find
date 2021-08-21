@@ -15,15 +15,9 @@ import com.creations.games.think.utils.assets
 class SceneLauncher(private val di: DI) : GameScene(di) {
 
 	private lateinit var title: GameObject
-	private lateinit var background: GameObject
 
 	init {
 		load()
-	}
-
-	private fun addBackground() {
-		background = Background(di)
-		background.color = viewColorInvert(xTheme.specs)
 	}
 
 	private fun addTitle() {
@@ -33,7 +27,7 @@ class SceneLauncher(private val di: DI) : GameScene(di) {
 
 	override fun load() {
 		addTitle()
-		addBackground()
+		addBackground(di.assets.imgLauncher)
 		addObjToScene(title)
 		addObjToScene(background)
 	}

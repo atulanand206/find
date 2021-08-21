@@ -1,6 +1,7 @@
 package com.creations.games.think.scenes.main.objects
 
 import com.badlogic.gdx.Input
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.utils.Align
 import com.creations.games.engine.dependency.DI
 import com.creations.games.engine.gameObject.GameObject
@@ -23,6 +24,14 @@ class LevelSwiper(private val di: DI, private val level: Int): GameObject(), Dar
 	init {
 		this.addInputListener()
 		addLevel(xTheme.puzzles[level])
+	}
+
+	fun rightColor(color: Color) {
+		rightSwipe.color = color
+	}
+
+	fun leftColor(color: Color) {
+		leftSwipe.color = color
 	}
 
 	override fun keyDown(keycode: Int): Boolean {
@@ -62,6 +71,5 @@ class LevelSwiper(private val di: DI, private val level: Int): GameObject(), Dar
 			"}", FontSize.F36, viewColor(puzzle.specs), x + Values.VIRTUAL_WIDTH*0.93f, y, Align.center)
 
 	override fun act(delta: Float) {
-		if (isMoving) this.moveBy(10f, 0f);
 	}
 }
