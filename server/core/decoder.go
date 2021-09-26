@@ -2,32 +2,38 @@ package core
 
 import (
 	"context"
+	"encoding/json"
+	"net/http"
 
 	mg "go.mongodb.org/mongo-driver/mongo"
 )
 
-func DecodeIndex(document *mg.SingleResult) (v IndexWrapper, err error) {
-	var index IndexWrapper
+func DecodeIndex(document *mg.SingleResult) (index Index, err error) {
 	if err = document.Decode(&index); err != nil {
-		return index, err
+		return
 	}
-	return index, err
+	return
 }
 
-func DecodeMatch(document *mg.SingleResult) (v Game, err error) {
-	var game Game
+func DecodeMatch(document *mg.SingleResult) (game Game, err error) {
 	if err = document.Decode(&game); err != nil {
-		return game, err
+		return
 	}
-	return game, err
+	return
 }
 
-func DecodePlayer(document *mg.SingleResult) (v Player, err error) {
-	var player Player
+func DecodePlayer(document *mg.SingleResult) (player Player, err error) {
 	if err = document.Decode(&player); err != nil {
-		return player, err
+		return
 	}
-	return player, err
+	return
+}
+
+func DecodeAnswer(document *mg.SingleResult) (answer Answer, err error) {
+	if err = document.Decode(&answer); err != nil {
+		return
+	}
+	return
 }
 
 func DecodeIndexes(cursor *mg.Cursor) (indexes []Index, err error) {
@@ -42,10 +48,44 @@ func DecodeIndexes(cursor *mg.Cursor) (indexes []Index, err error) {
 	return
 }
 
-func DecodeAnswer(document *mg.SingleResult) (v Answer, err error) {
-	var answer Answer
-	if err = document.Decode(&answer); err != nil {
-		return answer, err
+func DecodeQuestions(cursor *mg.Cursor) (questions []Question, err error) {
+	for cursor.Next(context.Background()) {
+		var question Question
+		err = cursor.Decode(&question)
+		if err != nil {
+			return
+		}
+		questions = append(questions, question)
 	}
-	return answer, err
+	return
+}
+
+func DecodeAddQuestionRequest(r *http.Request) (request AddQuestionRequest, err error) {
+	decoder := json.NewDecoder(r.Body)
+	err = decoder.Decode(&request)
+	return
+}
+
+func DecodeNextQuestionRequest(r *http.Request) (request NextQuestionRequest, err error) {
+	decoder := json.NewDecoder(r.Body)
+	err = decoder.Decode(&request)
+	return
+}
+
+func DecodeFindAnswerRequest(r *http.Request) (request FindAnswerRequest, err error) {
+	decoder := json.NewDecoder(r.Body)
+	err = decoder.Decode(&request)
+	return
+}
+
+func DecodeEnterGameRequest(r *http.Request) (request EnterGameRequest, err error) {
+	decoder := json.NewDecoder(r.Body)
+	err = decoder.Decode(&request)
+	return
+}
+
+func DecodeStartGameRequest(r *http.Request) (request StartGameRequest, err error) {
+	decoder := json.NewDecoder(r.Body)
+	err = decoder.Decode(&request)
+	return
 }

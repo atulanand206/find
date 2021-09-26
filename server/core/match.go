@@ -3,13 +3,7 @@ package core
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
-
-	"github.com/atulanand206/go-mongo"
-	"github.com/google/uuid"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 const (
@@ -46,136 +40,112 @@ type (
 )
 
 func HandlerBeginGame(w http.ResponseWriter, r *http.Request) {
-	decoder := json.NewDecoder(r.Body)
-	var requestBody EnterGameRequest
-	err := decoder.Decode(&requestBody)
+	requestBody, err := DecodeEnterGameRequest(r)
 	if err != nil {
 		http.Error(w, Err_RequestNotDecoded, http.StatusInternalServerError)
 		return
 	}
-	player, err := CreateOrFindPlayer(w, requestBody.Person)
-	if err != nil {
-		return
-	}
-	match, err := CreateOrUpdateMatch(w, requestBody.MatchId, player)
-	if err != nil {
-		return
-	}
-	json.NewEncoder(w).Encode(match)
-}
 
-func HandlerEnterGame(w http.ResponseWriter, r *http.Request) {
-	decoder := json.NewDecoder(r.Body)
-	var requestBody EnterGameRequest
-	err := decoder.Decode(&requestBody)
-	if err != nil {
-		http.Error(w, Err_RequestNotDecoded, http.StatusInternalServerError)
-		return
-	}
-	player, err := CreateOrFindPlayer(w, requestBody.Person)
-	if err != nil {
-		return
-	}
-	match, err := CreateOrUpdateMatch(w, requestBody.MatchId, player)
-	if err != nil {
-		return
-	}
-	json.NewEncoder(w).Encode(match)
-}
+	player, err := FindPlayer(requestBody.Person.Email)
 
-func CreateOrFindPlayer(w http.ResponseWriter, playerRequest Player) (player Player, err error) {
-	dto := mongo.FindOne(Database, PlayerCollection, bson.M{"email": playerRequest.Email})
-	err = dto.Err()
-	if err == nil {
-		player, err = DecodePlayer(dto)
-		return
-	}
-	player = playerRequest
-	player.Id = uuid.New().String()
-	requestDto, _ := mongo.Document(player)
 	if err != nil {
-		_, err = mongo.Write(Database, PlayerCollection, *requestDto)
-		if err != nil {
+		player = InitNewPlayer(requestBody.Person)
+		if err = CreatePlayer(player); err != nil {
 			http.Error(w, Err_PlayerNotCreated, http.StatusInternalServerError)
 			return
 		}
 	}
-	dto = mongo.FindOne(Database, PlayerCollection, bson.M{"email": player.Email})
-	if err != nil {
-		http.Error(w, Err_PlayerNotPresent, http.StatusInternalServerError)
+
+	match, err := FindMatch(requestBody.MatchId)
+	for _, v := range match.Players {
+		if v.Id == player.Id {
+			return
+		}
+	}
+
+	match = InitNewMatch(requestBody.Person)
+	if err = CreateMatch(match); err != nil {
+		http.Error(w, Err_MatchNotCreated, http.StatusInternalServerError)
 		return
 	}
-	player, err = DecodePlayer(dto)
-	return
+
+	json.NewEncoder(w).Encode(match)
 }
 
-func CreateOrUpdateMatch(w http.ResponseWriter, matchId string, person Player) (match Game, err error) {
-	dto := mongo.FindOne(Database, MatchCollection, bson.M{"_id": matchId})
-	err = dto.Err()
-	if err == nil {
-		match, err = DecodeMatch(dto)
-	}
-	for _, v := range match.Players {
-		if v.Id == person.Id {
-			return
-		}
-	}
-	if err != nil {
-		match.Id = uuid.New().String()
-		match.Players = make([]Player, 0)
-		match.QuizMaster = person
-		requestDto, _ := mongo.Document(match)
-		insertMatchResult, er := mongo.Write(Database, MatchCollection, *requestDto)
-		err = nil
-		if er != nil {
-			http.Error(w, Err_MatchNotCreated, http.StatusInternalServerError)
-			return
-		}
-		matchId = fmt.Sprint(insertMatchResult.InsertedID)
-	} else {
-		if match.QuizMaster.Id == person.Id {
-			err = errors.New(Err_QuizmasterCantPlay)
-			http.Error(w, Err_QuizmasterCantPlay, http.StatusInternalServerError)
-			return
-		}
-		match.Players = append(match.Players, person)
-		requestDto, _ := mongo.Document(match)
-		_, err = mongo.Update(Database, MatchCollection, bson.M{"_id": matchId}, bson.D{primitive.E{Key: "$set", Value: *requestDto}})
-		if err != nil {
-			http.Error(w, Err_MatchNotUpdated, http.StatusInternalServerError)
-			return
-		}
-	}
-	match, err = FindMatch(matchId)
-	return
-}
-
-func HandlerStartGame(w http.ResponseWriter, r *http.Request) {
-	decoder := json.NewDecoder(r.Body)
-	var requestBody StartGameRequest
-	err := decoder.Decode(&requestBody)
+func HandlerEnterGame(w http.ResponseWriter, r *http.Request) {
+	requestBody, err := DecodeEnterGameRequest(r)
 	if err != nil {
 		http.Error(w, Err_RequestNotDecoded, http.StatusInternalServerError)
 		return
 	}
-	dto := mongo.FindOne(Database, MatchCollection, bson.M{"_id": requestBody.MatchId})
-	err = dto.Err()
+
+	player, err := FindPlayer(requestBody.Person.Email)
+
+	if err != nil {
+		player = InitNewPlayer(requestBody.Person)
+		if err = CreatePlayer(player); err != nil {
+			http.Error(w, Err_PlayerNotCreated, http.StatusInternalServerError)
+			return
+		}
+	}
+
+	match, err := FindMatch(requestBody.MatchId)
+	for _, v := range match.Players {
+		if v.Id == player.Id {
+			return
+		}
+	}
+
+	if match.QuizMaster.Id == requestBody.Person.Id {
+		err = errors.New(Err_QuizmasterCantPlay)
+		http.Error(w, Err_QuizmasterCantPlay, http.StatusInternalServerError)
+		return
+	}
+
+	if err = UpdateMatchPlayer(match, requestBody.Person); err != nil {
+		http.Error(w, Err_MatchNotUpdated, http.StatusInternalServerError)
+		return
+	}
+
+	json.NewEncoder(w).Encode(match)
+}
+
+func HandlerStartGame(w http.ResponseWriter, r *http.Request) {
+	requestBody, err := DecodeStartGameRequest(r)
+	if err != nil {
+		http.Error(w, Err_RequestNotDecoded, http.StatusInternalServerError)
+		return
+	}
+
+	match, err := FindMatch(requestBody.MatchId)
 	if err != nil {
 		http.Error(w, Err_MatchNotPresent, http.StatusInternalServerError)
 		return
 	}
-	match, err := DecodeMatch(dto)
+
 	if len(match.Players) != PlayersCount {
 		http.Error(w, Err_WaitingForPlayers, http.StatusInternalServerError)
 		return
 	}
-	questions, err := FindQuestions(1, map[string]bool{}, 1)
+
+	index, err := FindIndex()
 	if err != nil {
+		http.Error(w, Err_IndexNotPresent, http.StatusInternalServerError)
 		return
 	}
-	UpdateMatch(match, questions)
-	var response StartGameResponse
-	response.Match = match
-	response.Prompt = questions
+
+	indexes := FilterIndex(index, MapSansTags(match.Tags), 1)
+
+	questions, err := FindQuestionsFromIndexes(indexes, int64(1))
+	if err != nil {
+		http.Error(w, Err_QuestionNotPresent, http.StatusInternalServerError)
+		return
+	}
+
+	if err = UpdateMatchQuestions(match, questions); err != nil {
+		http.Error(w, Err_MatchNotUpdated, http.StatusInternalServerError)
+	}
+
+	response := InitStartGameResponse(match, questions)
 	json.NewEncoder(w).Encode(response)
 }

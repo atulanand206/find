@@ -18,6 +18,7 @@ const (
 	Err_QuestionsNotSeeded = "Questions can't be seeded."
 	Err_AnswersNotSeeded   = "Answers can't be seeded."
 
+	Err_IndexNotPresent    = "Index does not exist."
 	Err_MatchNotPresent    = "Match with the given info does not exist."
 	Err_PlayerNotPresent   = "Player with the given info does not exist."
 	Err_QuestionNotPresent = "Question does not exist."

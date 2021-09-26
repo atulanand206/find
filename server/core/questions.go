@@ -2,12 +2,8 @@ package core
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"os"
-
-	"github.com/atulanand206/go-mongo"
-	"github.com/google/uuid"
 )
 
 type (
@@ -39,9 +35,20 @@ type (
 		Tag        string   `json:"-" bson:"tag"`
 	}
 
+	AddQuestionRequest struct {
+		Question NewQuestion `json:"question"`
+		Tag      string      `json:"tag"`
+	}
+
 	AddQuestionResponse struct {
 		QuestionId string `json:"question_id"`
 		AnswerId   string `json:"answer_id"`
+	}
+
+	NextQuestionRequest struct {
+		MatchId string `json:"match_id"`
+		Limit   int    `json:"limit"`
+		Types   int    `json:"types"`
 	}
 )
 
@@ -51,49 +58,44 @@ var (
 )
 
 func HandlerAddQuestion(w http.ResponseWriter, r *http.Request) {
-	decoder := json.NewDecoder(r.Body)
-	var requestBody NewQuestion
-	err := decoder.Decode(&requestBody)
+	requestBody, err := DecodeAddQuestionRequest(r)
 	if err != nil {
 		http.Error(w, Err_RequestNotDecoded, http.StatusInternalServerError)
 		return
 	}
-	var question Question
-	question.Id = uuid.New().String()
-	question.Statements = requestBody.Statements
-	requestDto, _ := mongo.Document(question)
-	insertedQuestionId, err := mongo.Write(Database, QuestionCollection, *requestDto)
+
+	index, err := FindIndexForTag(requestBody.Tag)
 	if err != nil {
+		http.Error(w, Err_IndexNotPresent, http.StatusInternalServerError)
+		return
+	}
+
+	question := InitNewQuestion(index, requestBody.Question)
+	if err = CreateQuestion(question); err != nil {
 		http.Error(w, Err_QuestionNotCreated, http.StatusInternalServerError)
 		return
 	}
-	var answer Answer
-	answer.Id = uuid.New().String()
-	answer.QuestionId = fmt.Sprint(insertedQuestionId.InsertedID)
-	answer.Answer = requestBody.Answer
-	requestDto, _ = mongo.Document(answer)
-	insertedAnswerId, err := mongo.Write(Database, AnswerCollection, *requestDto)
-	if err != nil {
+
+	answer := InitNewAnswer(question, requestBody.Question)
+	if err = CreateAnswer(answer); err != nil {
 		http.Error(w, Err_AnswerNotCreated, http.StatusInternalServerError)
 		return
 	}
-	var response AddQuestionResponse
-	response.QuestionId = fmt.Sprint(insertedQuestionId.InsertedID)
-	response.AnswerId = fmt.Sprint(insertedAnswerId.InsertedID)
+
+	response := InitAddQuestionResponse(question, answer)
 	json.NewEncoder(w).Encode(response)
 }
 
 func HandlerSeedQuestions(w http.ResponseWriter, r *http.Request) {
 	filePath = os.Getenv("SEED_FILES_PATH")
 
-	err := DropQuestionsCollections()
-	if err != nil {
+	var err error
+	if err = DropQuestionsCollections(); err != nil {
 		http.Error(w, Err_CollectionsNotDropped, http.StatusInternalServerError)
 		return
 	}
 
-	err = CreateQuestionsCollections()
-	if err != nil {
+	if err = CreateQuestionsCollections(); err != nil {
 		http.Error(w, Err_CollectionsNotCreated, http.StatusInternalServerError)
 		return
 	}
@@ -104,21 +106,53 @@ func HandlerSeedQuestions(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = SeedIndexes(indexes)
-	if err != nil {
+	if err = SeedIndexes(indexes); err != nil {
 		http.Error(w, Err_IndexNotSeeded, http.StatusInternalServerError)
 		return
 	}
 
-	err = SeedQuestions(questions)
-	if err != nil {
+	if err = SeedQuestions(questions); err != nil {
 		http.Error(w, Err_QuestionsNotSeeded, http.StatusInternalServerError)
 		return
 	}
 
-	err = SeedAnswers(answers)
-	if err != nil {
+	if err = SeedAnswers(answers); err != nil {
 		http.Error(w, Err_AnswersNotSeeded, http.StatusInternalServerError)
 		return
 	}
+}
+
+func HandlerNextQuestion(w http.ResponseWriter, r *http.Request) {
+	requestBody, err := DecodeNextQuestionRequest(r)
+	if err != nil {
+		http.Error(w, Err_RequestNotDecoded, http.StatusInternalServerError)
+		return
+	}
+
+	match, err := FindMatch(requestBody.MatchId)
+	if err != nil {
+		http.Error(w, Err_MatchNotPresent, http.StatusInternalServerError)
+		return
+	}
+
+	index, err := FindIndex()
+	if err != nil {
+		http.Error(w, Err_IndexNotPresent, http.StatusInternalServerError)
+		return
+	}
+
+	indexes := FilterIndex(index, MapSansTags(match.Tags), requestBody.Types)
+
+	questions, err := FindQuestionsFromIndexes(indexes, int64(requestBody.Limit))
+	if err != nil {
+		http.Error(w, Err_QuestionNotPresent, http.StatusInternalServerError)
+		return
+	}
+
+	if err = UpdateMatchQuestions(match, questions); err != nil {
+		http.Error(w, Err_MatchNotUpdated, http.StatusInternalServerError)
+		return
+	}
+
+	json.NewEncoder(w).Encode(questions)
 }

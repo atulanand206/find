@@ -3,9 +3,6 @@ package core
 import (
 	"encoding/json"
 	"net/http"
-
-	"github.com/atulanand206/go-mongo"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 type (
@@ -26,22 +23,18 @@ type (
 )
 
 func HandlerFindAnswer(w http.ResponseWriter, r *http.Request) {
-	decoder := json.NewDecoder(r.Body)
-	var requestBody FindAnswerRequest
-	err := decoder.Decode(&requestBody)
+	request, err := DecodeFindAnswerRequest(r)
 	if err != nil {
 		http.Error(w, Err_RequestNotDecoded, http.StatusInternalServerError)
 		return
 	}
-	dto := mongo.FindOne(Database, AnswerCollection, bson.M{"question_id": requestBody.QuestionId})
-	err = dto.Err()
+
+	answer, err := FindAnswer(request.QuestionId)
 	if err != nil {
 		http.Error(w, Err_AnswerNotPresent, http.StatusInternalServerError)
 		return
 	}
-	answer, err := DecodeAnswer(dto)
-	var response FindAnswerResponse
-	response.QuestionId = requestBody.QuestionId
-	response.Answer = answer.Answer
+
+	response := InitFindAnswerResponse(request.QuestionId, answer)
 	json.NewEncoder(w).Encode(response)
 }
