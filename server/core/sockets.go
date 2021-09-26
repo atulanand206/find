@@ -8,6 +8,12 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+type (
+	WebsocketMessage struct {
+		Person Player `json:"person"`
+	}
+)
+
 var clients = make(map[*websocket.Conn]bool)
 var broadcaster = make(chan WebsocketMessage)
 var upgrader = websocket.Upgrader{

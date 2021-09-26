@@ -6,7 +6,6 @@ import (
 	mg "go.mongodb.org/mongo-driver/mongo"
 )
 
-// Decodes a mongo db single result into an user object.
 func DecodeIndex(document *mg.SingleResult) (v IndexWrapper, err error) {
 	var index IndexWrapper
 	if err = document.Decode(&index); err != nil {
@@ -15,7 +14,6 @@ func DecodeIndex(document *mg.SingleResult) (v IndexWrapper, err error) {
 	return index, err
 }
 
-// Decodes a mongo db single result into an user object.
 func DecodeMatch(document *mg.SingleResult) (v Game, err error) {
 	var game Game
 	if err = document.Decode(&game); err != nil {
@@ -24,7 +22,6 @@ func DecodeMatch(document *mg.SingleResult) (v Game, err error) {
 	return game, err
 }
 
-// Decodes a mongo db single result into an user object.
 func DecodePlayer(document *mg.SingleResult) (v Player, err error) {
 	var player Player
 	if err = document.Decode(&player); err != nil {
@@ -43,4 +40,12 @@ func DecodeIndexes(cursor *mg.Cursor) (indexes []Index, err error) {
 		indexes = append(indexes, index)
 	}
 	return
+}
+
+func DecodeAnswer(document *mg.SingleResult) (v Answer, err error) {
+	var answer Answer
+	if err = document.Decode(&answer); err != nil {
+		return answer, err
+	}
+	return answer, err
 }
