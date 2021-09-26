@@ -18,6 +18,15 @@ func main() {
 
 	// Register the endpoints exposed from the service.
 	routes := core.Routes()
+
+	// Register the websocket connection hub.
+	hub := core.NewHub()
+	go hub.Run()
+	routes.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
+		core.ServeWebsocket(hub, w, r)
+	})
+
+	// Serve the routes.
 	handler := http.HandlerFunc(routes.ServeHTTP)
 	http.ListenAndServe(":5000", handler)
 }

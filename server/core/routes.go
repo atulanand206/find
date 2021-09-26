@@ -54,8 +54,5 @@ func Routes() *http.ServeMux {
 
 	router.HandleFunc("/questions/seed", putChain.Handler(HandlerSeedQuestions))
 
-	router.HandleFunc("/ws", chain.Handler(HandlerWebSockets))
-	go handleMessages()
-
 	return router
 }
