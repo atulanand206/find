@@ -37,8 +37,8 @@ func Routes() *http.ServeMux {
 		// net.AuthenticationInterceptor(),
 	}
 
-	// Interceptor chain with only GET method.
-	getChain := chain.Add(net.CorsInterceptor(http.MethodGet))
+	// Interceptor chain with only PUT method.
+	putChain := chain.Add(net.CorsInterceptor(http.MethodPut))
 	// Interceptor chain with only POST method.
 	postChain := chain.Add(net.CorsInterceptor(http.MethodPost))
 
@@ -52,7 +52,7 @@ func Routes() *http.ServeMux {
 	router.HandleFunc("/question/next", postChain.Handler(HandlerNextQuestion))
 	router.HandleFunc("/question/answer", postChain.Handler(HandlerFindAnswer))
 
-	router.HandleFunc("/questions/seed", getChain.Handler(HandlerSeedQuestions))
+	router.HandleFunc("/questions/seed", putChain.Handler(HandlerSeedQuestions))
 
 	router.HandleFunc("/ws", chain.Handler(HandlerWebSockets))
 	go handleMessages()
