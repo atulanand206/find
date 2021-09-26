@@ -43,14 +43,19 @@ func Routes() *http.ServeMux {
 	postChain := chain.Add(net.CorsInterceptor(http.MethodPost))
 
 	router := http.NewServeMux()
+
 	router.HandleFunc("/match/begin", postChain.Handler(HandlerBeginGame))
 	router.HandleFunc("/match/enter", postChain.Handler(HandlerEnterGame))
 	router.HandleFunc("/match/start", postChain.Handler(HandlerStartGame))
+
 	router.HandleFunc("/question/add", postChain.Handler(HandlerAddQuestion))
 	router.HandleFunc("/question/next", postChain.Handler(HandlerNextQuestion))
-	router.HandleFunc("/question/verify", postChain.Handler(HandlerFindAnswer))
+	router.HandleFunc("/question/answer", postChain.Handler(HandlerFindAnswer))
+
 	router.HandleFunc("/questions/seed", getChain.Handler(HandlerSeedQuestions))
+
 	router.HandleFunc("/ws", chain.Handler(HandlerWebSockets))
 	go handleMessages()
+
 	return router
 }
