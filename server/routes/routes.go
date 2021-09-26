@@ -19,6 +19,8 @@ import (
 const (
 	PlayersCount = 2
 
+	Err_QuestionsNotSeeded     = "Questions can't be seeded."
+	Err_AnswersNotSeeded       = "Answers can't be seeded."
 	Err_RequestNotDecoded      = "Request can't be decoded."
 	Err_MatchNotPresent        = "Match with the given info does not exist."
 	Err_MatchNotDecoded        = "Match information can't be decoded."
@@ -66,22 +68,13 @@ type (
 	Question struct {
 		Id         string   `json:"id" bson:"_id"`
 		Statements []string `json:"statements" bson:"statements"`
+		Tag        string   `bson:"tag"`
 	}
 
 	Answer struct {
 		Id         string `json:"id" bson:"_id"`
 		QuestionId string `json:"question_id" bson:"question_id"`
 		Answer     string `json:"answer" bson:"answer"`
-	}
-
-	AddQuestionRequest struct {
-		Statements []string `json:"statements"`
-		Answer     string   `json:"answer"`
-	}
-
-	AddQuestionResponse struct {
-		QuestionId string `json:"question_id"`
-		AnswerId   string `json:"answer_id"`
 	}
 
 	FindAnswerRequest struct {
@@ -91,6 +84,10 @@ type (
 	FindAnswerResponse struct {
 		QuestionId string `json:"question_id"`
 		Answer     string `json:"answer"`
+	}
+
+	WebsocketMessage struct {
+		Person Player `json:"person"`
 	}
 )
 
@@ -138,8 +135,10 @@ func Routes() *http.ServeMux {
 	router.HandleFunc("/enter", postChain.Handler(HandlerEnterGame))
 	router.HandleFunc("/start", postChain.Handler(HandlerStart))
 	router.HandleFunc("/question/add", postChain.Handler(HandlerAddQuestion))
-	router.HandleFunc("/question/next", getChain.Handler(HandlerNextQuestion))
+	router.HandleFunc("/questions/seed", getChain.Handler(HandlerSeedQuestions))
 	router.HandleFunc("/question/verify", getChain.Handler(HandlerFindAnswer))
+	router.HandleFunc("/ws", chain.Handler(HandlerWebSockets))
+	go handleMessages()
 	return router
 }
 
@@ -288,13 +287,12 @@ func QuestionsCount() (int, error) {
 }
 
 func FindQuestion(w http.ResponseWriter) (question Question, err error) {
-
 	return
 }
 
 func HandlerAddQuestion(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
-	var requestBody AddQuestionRequest
+	var requestBody NewQuestion
 	err := decoder.Decode(&requestBody)
 	if err != nil {
 		http.Error(w, Err_RequestNotDecoded, http.StatusInternalServerError)
@@ -323,9 +321,6 @@ func HandlerAddQuestion(w http.ResponseWriter, r *http.Request) {
 	response.QuestionId = fmt.Sprint(insertedQuestionId.InsertedID)
 	response.AnswerId = fmt.Sprint(insertedAnswerId.InsertedID)
 	json.NewEncoder(w).Encode(response)
-}
-
-func HandlerNextQuestion(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandlerFindAnswer(w http.ResponseWriter, r *http.Request) {
