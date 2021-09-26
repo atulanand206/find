@@ -1,4 +1,4 @@
-package routes
+package core
 
 import (
 	"encoding/json"
@@ -13,12 +13,16 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	mg "go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 const (
 	PlayersCount = 2
 
+	Err_IndexNotDecoded        = "Index can't be decoded."
+	Err_CollectionsNotDropped  = "Collections can't be dropped."
+	Err_CollectionsNotCreated  = "Collections can't be created."
+	Err_DeckDtosNotCreated     = "Deck dtos can't be created."
+	Err_IndexNotSeeded         = "Index can't be seeded."
 	Err_QuestionsNotSeeded     = "Questions can't be seeded."
 	Err_AnswersNotSeeded       = "Answers can't be seeded."
 	Err_RequestNotDecoded      = "Request can't be decoded."
@@ -34,6 +38,7 @@ const (
 	Err_WaitingForPlayers      = "Waiting for more players to join."
 	Err_QuestionsRequestFailed = "Questions count request failed."
 	Err_QuestionNotCreated     = "Question can't be created."
+	Err_QuestionNotPresent     = "Question does not exist."
 	Err_AnswerNotCreated       = "Answer can't be created."
 	Err_AnswerNotPresent       = "Answer does not exist."
 )
@@ -49,6 +54,7 @@ type (
 		Id         string   `json:"id" bson:"_id"`
 		Players    []Player `json:"players" bson:"players"`
 		QuizMaster Player   `json:"quizmaster" bson:"quizmaster"`
+		Tags       []string `bson:"tags"`
 	}
 
 	EnterGameRequest struct {
@@ -61,14 +67,14 @@ type (
 	}
 
 	StartGameResponse struct {
-		Match  Game     `json:"game"`
-		Prompt Question `json:"prompt"`
+		Match  Game       `json:"game"`
+		Prompt []Question `json:"prompt"`
 	}
 
 	Question struct {
 		Id         string   `json:"id" bson:"_id"`
 		Statements []string `json:"statements" bson:"statements"`
-		Tag        string   `bson:"tag"`
+		Tag        string   `json:"-" bson:"tag"`
 	}
 
 	Answer struct {
@@ -96,6 +102,8 @@ var (
 	Database string
 	// Instance variable to store the DB Match Collection name.
 	MatchCollection string
+	// Instance variable to store the DB Index Collection name.
+	IndexCollection string
 	// Instance variable to store the DB Question Collection name.
 	QuestionCollection string
 	// Instance variable to store the DB Answer Collection name.
@@ -119,6 +127,7 @@ func Routes() *http.ServeMux {
 	QuestionCollection = os.Getenv("QUESTION_COLLECTION")
 	AnswerCollection = os.Getenv("ANSWER_COLLECTION")
 	PlayerCollection = os.Getenv("PLAYER_COLLECTION")
+	IndexCollection = os.Getenv("INDEX_COLLECTION")
 
 	// Interceptor chain for attaching to the requests.
 	chain := net.MiddlewareChain{
@@ -135,8 +144,9 @@ func Routes() *http.ServeMux {
 	router.HandleFunc("/enter", postChain.Handler(HandlerEnterGame))
 	router.HandleFunc("/start", postChain.Handler(HandlerStart))
 	router.HandleFunc("/question/add", postChain.Handler(HandlerAddQuestion))
+	router.HandleFunc("/question/next", postChain.Handler(HandlerNextQuestion))
 	router.HandleFunc("/questions/seed", getChain.Handler(HandlerSeedQuestions))
-	router.HandleFunc("/question/verify", getChain.Handler(HandlerFindAnswer))
+	router.HandleFunc("/question/verify", postChain.Handler(HandlerFindAnswer))
 	router.HandleFunc("/ws", chain.Handler(HandlerWebSockets))
 	go handleMessages()
 	return router
@@ -187,15 +197,6 @@ func CreateOrFindPlayer(w http.ResponseWriter, playerRequest Player) (player Pla
 	return
 }
 
-// Decodes a mongo db single result into an user object.
-func DecodePlayer(document *mg.SingleResult) (v Player, err error) {
-	var player Player
-	if err = document.Decode(&player); err != nil {
-		return player, err
-	}
-	return player, err
-}
-
 func CreateOrUpdateMatch(w http.ResponseWriter, matchId string, person Player) (match Game, err error) {
 	dto := mongo.FindOne(Database, MatchCollection, bson.M{"_id": matchId})
 	err = dto.Err()
@@ -238,15 +239,6 @@ func CreateOrUpdateMatch(w http.ResponseWriter, matchId string, person Player) (
 	return
 }
 
-// Decodes a mongo db single result into an user object.
-func DecodeMatch(document *mg.SingleResult) (v Game, err error) {
-	var game Game
-	if err = document.Decode(&game); err != nil {
-		return game, err
-	}
-	return game, err
-}
-
 func HandlerStart(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	var requestBody StartGameRequest
@@ -266,60 +258,14 @@ func HandlerStart(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, Err_WaitingForPlayers, http.StatusInternalServerError)
 		return
 	}
-	question, err := FindQuestion(w)
+	questions, err := FindQuestions(1, map[string]bool{}, 1)
 	if err != nil {
 		return
 	}
+	UpdateMatch(match, questions)
 	var response StartGameResponse
 	response.Match = match
-	response.Prompt = question
-	json.NewEncoder(w).Encode(response)
-}
-
-func QuestionsCount() (int, error) {
-	cursor, err := mongo.Find(Database, QuestionCollection, bson.M{}, &options.FindOptions{})
-	if err != nil {
-		return 0, err
-	}
-	elements, _ := cursor.Current.Elements()
-	size := len(elements)
-	return size, nil
-}
-
-func FindQuestion(w http.ResponseWriter) (question Question, err error) {
-	return
-}
-
-func HandlerAddQuestion(w http.ResponseWriter, r *http.Request) {
-	decoder := json.NewDecoder(r.Body)
-	var requestBody NewQuestion
-	err := decoder.Decode(&requestBody)
-	if err != nil {
-		http.Error(w, Err_RequestNotDecoded, http.StatusInternalServerError)
-		return
-	}
-	var question Question
-	question.Id = uuid.New().String()
-	question.Statements = requestBody.Statements
-	requestDto, _ := mongo.Document(question)
-	insertedQuestionId, err := mongo.Write(Database, QuestionCollection, *requestDto)
-	if err != nil {
-		http.Error(w, Err_QuestionNotCreated, http.StatusInternalServerError)
-		return
-	}
-	var answer Answer
-	answer.Id = uuid.New().String()
-	answer.QuestionId = fmt.Sprint(insertedQuestionId.InsertedID)
-	answer.Answer = requestBody.Answer
-	requestDto, _ = mongo.Document(answer)
-	insertedAnswerId, err := mongo.Write(Database, AnswerCollection, *requestDto)
-	if err != nil {
-		http.Error(w, Err_AnswerNotCreated, http.StatusInternalServerError)
-		return
-	}
-	var response AddQuestionResponse
-	response.QuestionId = fmt.Sprint(insertedQuestionId.InsertedID)
-	response.AnswerId = fmt.Sprint(insertedAnswerId.InsertedID)
+	response.Prompt = questions
 	json.NewEncoder(w).Encode(response)
 }
 
