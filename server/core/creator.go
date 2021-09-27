@@ -1,6 +1,10 @@
 package core
 
-import "github.com/google/uuid"
+import (
+	"fmt"
+
+	"github.com/google/uuid"
+)
 
 func InitNewIndex(tag string) (index Index) {
 	index.Tag = tag
@@ -23,9 +27,23 @@ func InitNewAnswer(question Question, newQuestion NewQuestion) (answer Answer) {
 }
 
 func InitNewMatch(quizmaster Player) (match Game) {
-	match.Players = make([]Player, 0)
+	match.Teams = make([]Team, 0)
+	for idx := 0; idx < TeamsInAMatch; idx++ {
+		match.Teams = append(match.Teams, InitNewTeam(NewTeamName(idx)))
+	}
 	match.QuizMaster = quizmaster
 	match.Id = id(match)
+	return
+}
+
+func NewTeamName(idx int) (name string) {
+	return fmt.Sprintf("Team %d", idx)
+}
+
+func InitNewTeam(name string) (team Team) {
+	team.Players = make([]Player, 0)
+	team.Name = name
+	team.Id = id(team)
 	return
 }
 

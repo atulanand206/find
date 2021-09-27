@@ -6,52 +6,6 @@ import (
 	"os"
 )
 
-type (
-	Index struct {
-		Id  string `json:"id" bson:"_id"`
-		Tag string `json:"tag" bson:"tag"`
-	}
-
-	IndexWrapper struct {
-		Indexes []Index `json:"indexes" bson:"indexes"`
-	}
-
-	IndexStore struct {
-		Indexes []string `json:"indexes" bson:"indexes"`
-	}
-
-	QuestionBank struct {
-		Questions []NewQuestion `json:"questions" bson:"questions"`
-	}
-
-	NewQuestion struct {
-		Statements []string `json:"statements"`
-		Answer     string   `json:"answer"`
-	}
-
-	Question struct {
-		Id         string   `json:"id" bson:"_id"`
-		Statements []string `json:"statements" bson:"statements"`
-		Tag        string   `json:"-" bson:"tag"`
-	}
-
-	AddQuestionRequest struct {
-		Question NewQuestion `json:"question"`
-		Tag      string      `json:"tag"`
-	}
-
-	AddQuestionResponse struct {
-		QuestionId string `json:"question_id"`
-		AnswerId   string `json:"answer_id"`
-	}
-
-	NextQuestionRequest struct {
-		MatchId string `json:"match_id"`
-		Limit   int    `json:"limit"`
-		Types   int    `json:"types"`
-	}
-)
-
 var (
 	filePath  = "G:\\binge\\binge-questions\\%s.json"
 	indexFile = "index"
@@ -120,39 +74,4 @@ func HandlerSeedQuestions(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, Err_AnswersNotSeeded, http.StatusInternalServerError)
 		return
 	}
-}
-
-func HandlerNextQuestion(w http.ResponseWriter, r *http.Request) {
-	requestBody, err := DecodeNextQuestionRequest(r)
-	if err != nil {
-		http.Error(w, Err_RequestNotDecoded, http.StatusInternalServerError)
-		return
-	}
-
-	match, err := FindMatch(requestBody.MatchId)
-	if err != nil {
-		http.Error(w, Err_MatchNotPresent, http.StatusInternalServerError)
-		return
-	}
-
-	index, err := FindIndex()
-	if err != nil {
-		http.Error(w, Err_IndexNotPresent, http.StatusInternalServerError)
-		return
-	}
-
-	indexes := FilterIndex(index, MapSansTags(match.Tags), requestBody.Types)
-
-	questions, err := FindQuestionsFromIndexes(indexes, int64(requestBody.Limit))
-	if err != nil {
-		http.Error(w, Err_QuestionNotPresent, http.StatusInternalServerError)
-		return
-	}
-
-	if err = UpdateMatchQuestions(match, questions); err != nil {
-		http.Error(w, Err_MatchNotUpdated, http.StatusInternalServerError)
-		return
-	}
-
-	json.NewEncoder(w).Encode(questions)
 }

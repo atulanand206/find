@@ -52,12 +52,14 @@ const (
 	Begin Action = iota
 	Join
 	Start
+	Reveal
 	Attempt
 	Score
 	Next
 	Over
 	Extend
 	S_Game
+	S_Start
 	S_Player
 	S_Question
 	S_Answer

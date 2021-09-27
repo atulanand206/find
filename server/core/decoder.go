@@ -73,27 +73,31 @@ func DecodeAddQuestionRequest(r *http.Request) (request AddQuestionRequest, err 
 	return
 }
 
-func DecodeNextQuestionRequest(r *http.Request) (request NextQuestionRequest, err error) {
-	decoder := json.NewDecoder(r.Body)
-	err = decoder.Decode(&request)
+func DecodeNextQuestionRequestJsonString(content string) (request NextQuestionRequest, err error) {
+	if err = json.Unmarshal([]byte(content), &request); err != nil {
+		return
+	}
 	return
 }
 
-func DecodeFindAnswerRequest(r *http.Request) (request FindAnswerRequest, err error) {
-	decoder := json.NewDecoder(r.Body)
-	err = decoder.Decode(&request)
+func DecodeFindAnswerRequestJsonString(content string) (request FindAnswerRequest, err error) {
+	if err = json.Unmarshal([]byte(content), &request); err != nil {
+		return
+	}
 	return
 }
 
-func DecodeEnterGameRequest(r *http.Request) (request EnterGameRequest, err error) {
-	decoder := json.NewDecoder(r.Body)
-	err = decoder.Decode(&request)
+func DecodeEnterGameRequestJsonString(content string) (request EnterGameRequest, err error) {
+	if err = json.Unmarshal([]byte(content), &request); err != nil {
+		return
+	}
 	return
 }
 
-func DecodeStartGameRequest(r *http.Request) (request StartGameRequest, err error) {
-	decoder := json.NewDecoder(r.Body)
-	err = decoder.Decode(&request)
+func DecodeStartGameRequestJsonString(content string) (request StartGameRequest, err error) {
+	if err = json.Unmarshal([]byte(content), &request); err != nil {
+		return
+	}
 	return
 }
 

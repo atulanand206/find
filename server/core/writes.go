@@ -83,8 +83,10 @@ func CreateMatch(match Game) (err error) {
 	return
 }
 
-func UpdateMatchPlayer(match Game, player Player) (err error) {
-	match.Players = append(match.Players, player)
+func UpdateMatchPlayer(match Game, player Player, teamId string) (err error) {
+	for _, team := range match.Teams {
+		team.Players = append(team.Players, player)
+	}
 	err = UpdateMatch(match)
 	return
 }

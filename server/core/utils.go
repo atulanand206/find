@@ -43,8 +43,7 @@ func MapSansTags(tags []string) (tagsMap map[string]bool) {
 }
 
 func FilterIndex(input []Index, sans map[string]bool, limit int) (indexes []Index) {
-	indexes = randomFilteredIndicesList(randomFilteredIndicesMap(filteredIndices(input, sans), limit))
-	return indexes
+	return randomFilteredIndicesList(randomFilteredIndicesMap(filteredIndices(input, sans), limit))
 }
 
 func filteredIndices(input []Index, sans map[string]bool) (indxs []Index) {
@@ -76,4 +75,48 @@ func randomFilteredIndicesList(mp map[Index]bool) (indexes []Index) {
 		indexes = append(indexes, key)
 	}
 	return
+}
+
+func IsQuizMasterInMatch(match Game, person Player) (result bool) {
+	return match.QuizMaster.Id == person.Id
+}
+
+func IsPlayerInMatch(match Game, person Player) (result bool) {
+	for _, team := range match.Teams {
+		for _, player := range team.Players {
+			if player.Id == person.Id {
+				result = true
+				return
+			}
+		}
+	}
+	return
+}
+
+func NewTeam(team Team) (result bool) {
+	return team.Id == ""
+}
+
+func TeamCanBeAdded(match Game) (result bool) {
+	return len(match.Teams) < TeamsInAMatch
+}
+
+func PlayerCanBeAdded(team Team) (result bool) {
+	return len(team.Players) < PlayersInATeam
+}
+
+func QuestionCanBeAdded(match Game) (result bool) {
+	return len(match.Tags) < QuestionsInAMatch
+}
+
+func CanStart(match Game) (result bool) {
+	if TeamCanBeAdded(match) {
+		return false
+	}
+	for _, team := range match.Teams {
+		if PlayerCanBeAdded(team) {
+			return false
+		}
+	}
+	return true
 }
