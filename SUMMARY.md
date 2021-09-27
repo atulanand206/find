@@ -15,4 +15,5 @@
 
 * [Tools required](technology/tools-required.md)
 * [System](technology/system.md)
+* [Communication](technology/communication.md)
 

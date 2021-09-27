@@ -64,7 +64,7 @@
 | Field | Type | Information |
 | :--- | :--- | ---: |
 | puzzles | Puzzle\[\] | puzzles in the theme |
-| solution |  | keyword to complete the scene  |
+| solution |  | keyword to complete the scene |
 |  |  |  |
 |  |  |  |
 
