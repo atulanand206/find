@@ -57,3 +57,14 @@ func InitStartGameResponse(match Game, questions []Question) (response StartGame
 	response.Prompt = questions
 	return
 }
+
+func InitWebSocketMessageFailure() (response WebsocketMessage) {
+	response = InitWebSocketMessage(Failure, Err_SocketRequestFailed)
+	return
+}
+
+func InitWebSocketMessage(action Action, content string) (response WebsocketMessage) {
+	response.Action = action
+	response.Content = content
+	return
+}

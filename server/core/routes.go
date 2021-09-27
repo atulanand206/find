@@ -20,6 +20,8 @@ var (
 	AnswerCollection string
 	// Instance variable to store the DB Match Collection name.
 	PlayerCollection string
+
+	hub *Hub
 )
 
 // Add handlers and interceptors to the endpoints.
@@ -54,5 +56,11 @@ func Routes() *http.ServeMux {
 
 	router.HandleFunc("/questions/seed", putChain.Handler(HandlerSeedQuestions))
 
+	// Register the websocket connection hub.
+	hub = NewHub()
+	go hub.Run()
+	router.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
+		ServeWebsocket(hub, w, r)
+	})
 	return router
 }

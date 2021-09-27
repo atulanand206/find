@@ -2,7 +2,7 @@ package core
 
 import (
 	"bytes"
-	"fmt"
+	"encoding/json"
 	"log"
 	"net/http"
 	"time"
@@ -12,7 +12,8 @@ import (
 
 type (
 	WebsocketMessage struct {
-		Person Player `json:"person"`
+		Action  Action `json:"action"`
+		Content string `json:"content"`
 	}
 )
 
@@ -43,6 +44,25 @@ const (
 
 	// Maximum message size allowed from peer.
 	maxMessageSize = 512
+)
+
+type Action int
+
+const (
+	Begin Action = iota
+	Join
+	Start
+	Attempt
+	Score
+	Next
+	Over
+	Extend
+	S_Game
+	S_Player
+	S_Question
+	S_Answer
+	S_Over
+	Failure
 )
 
 // Client is a middleman between the websocket connection and the hub.
@@ -77,9 +97,29 @@ func (c *Client) ReadPump() {
 			}
 			break
 		}
+		message, err = HandleMessages(message)
+		if err != nil {
+			log.Printf("error: %v", err)
+		}
 		message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
 		c.hub.broadcast <- message
 	}
+}
+
+func HandleMessages(input []byte) (output []byte, err error) {
+	request, err := DecodeWebSocketRequest(input)
+	if err != nil {
+		return
+	}
+	response, err := HandleWSMessage(request)
+	if err != nil {
+		return
+	}
+	output, err = json.Marshal(response)
+	if err != nil {
+		return
+	}
+	return
 }
 
 // writePump pumps messages from the hub to the websocket connection.
@@ -130,7 +170,6 @@ func (c *Client) WritePump() {
 
 // serveWs handles websocket requests from the peer.
 func ServeWebsocket(hub *Hub, w http.ResponseWriter, r *http.Request) {
-	fmt.Println(hub)
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(err)

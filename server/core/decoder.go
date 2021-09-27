@@ -29,6 +29,13 @@ func DecodePlayer(document *mg.SingleResult) (player Player, err error) {
 	return
 }
 
+func DecodePlayerJsonString(content string) (player Player, err error) {
+	if err = json.Unmarshal([]byte(content), &player); err != nil {
+		return
+	}
+	return
+}
+
 func DecodeAnswer(document *mg.SingleResult) (answer Answer, err error) {
 	if err = document.Decode(&answer); err != nil {
 		return
@@ -87,5 +94,10 @@ func DecodeEnterGameRequest(r *http.Request) (request EnterGameRequest, err erro
 func DecodeStartGameRequest(r *http.Request) (request StartGameRequest, err error) {
 	decoder := json.NewDecoder(r.Body)
 	err = decoder.Decode(&request)
+	return
+}
+
+func DecodeWebSocketRequest(input []byte) (request WebsocketMessage, err error) {
+	err = json.Unmarshal(input, &request)
 	return
 }

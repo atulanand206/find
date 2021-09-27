@@ -30,4 +30,6 @@ const (
 
 	Err_QuizmasterCantPlay = "Quizmaster can't join the match as a player."
 	Err_WaitingForPlayers  = "Waiting for more players to join."
+
+	Err_SocketRequestFailed = "Sockets request failed by the server."
 )
