@@ -94,6 +94,13 @@ func DecodeEnterGameRequestJsonString(content string) (request EnterGameRequest,
 	return
 }
 
+func DecodeCreateGameRequestJsonString(content string) (request CreateGameRequest, err error) {
+	if err = json.Unmarshal([]byte(content), &request); err != nil {
+		return
+	}
+	return
+}
+
 func DecodeStartGameRequestJsonString(content string) (request StartGameRequest, err error) {
 	if err = json.Unmarshal([]byte(content), &request); err != nil {
 		return

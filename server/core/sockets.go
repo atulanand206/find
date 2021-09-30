@@ -12,7 +12,7 @@ import (
 
 type (
 	WebsocketMessage struct {
-		Action  Action `json:"action"`
+		Action  string `json:"action"`
 		Content string `json:"content"`
 	}
 )
@@ -44,27 +44,6 @@ const (
 
 	// Maximum message size allowed from peer.
 	maxMessageSize = 512
-)
-
-type Action int
-
-const (
-	Begin Action = iota
-	Join
-	Start
-	Reveal
-	Attempt
-	Score
-	Next
-	Over
-	Extend
-	S_Game
-	S_Start
-	S_Player
-	S_Question
-	S_Answer
-	S_Over
-	Failure
 )
 
 // Client is a middleman between the websocket connection and the hub.

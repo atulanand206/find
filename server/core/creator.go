@@ -26,12 +26,13 @@ func InitNewAnswer(question Question, newQuestion NewQuestion) (answer Answer) {
 	return
 }
 
-func InitNewMatch(quizmaster Player) (match Game) {
+func InitNewMatch(quizmaster Player, specs Specs) (match Game) {
 	match.Teams = make([]Team, 0)
-	for idx := 0; idx < TeamsInAMatch; idx++ {
-		match.Teams = append(match.Teams, InitNewTeam(NewTeamName(idx)))
+	for idx := 0; idx < specs.Teams; idx++ {
+		match.Teams = append(match.Teams, InitNewTeam(NewTeamName(idx), specs.Players))
 	}
 	match.QuizMaster = quizmaster
+	match.Specs = specs
 	match.Id = id(match)
 	return
 }
@@ -40,8 +41,8 @@ func NewTeamName(idx int) (name string) {
 	return fmt.Sprintf("Team %d", idx)
 }
 
-func InitNewTeam(name string) (team Team) {
-	team.Players = make([]Player, 0)
+func InitNewTeam(name string, players int) (team Team) {
+	team.Players = make([]Player, players)
 	team.Name = name
 	team.Id = id(team)
 	return
@@ -82,7 +83,7 @@ func InitWebSocketMessageFailure() (response WebsocketMessage) {
 }
 
 func InitWebSocketMessage(action Action, content string) (response WebsocketMessage) {
-	response.Action = action
+	response.Action = action.String()
 	response.Content = content
 	return
 }

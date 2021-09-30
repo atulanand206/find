@@ -12,6 +12,13 @@ type (
 		Teams      []Team   `json:"teams" bson:"teams"`
 		QuizMaster Player   `json:"quizmaster" bson:"quizmaster"`
 		Tags       []string `bson:"tags"`
+		Specs      Specs    `json:"specs" bson:"specs"`
+	}
+
+	Specs struct {
+		Teams     int `json:"teams"`
+		Players   int `json:"players"`
+		Questions int `json:"questions"`
 	}
 
 	Team struct {
@@ -71,13 +78,18 @@ type (
 	}
 
 	EnterGameRequest struct {
-		Person  Player `json:"person"`
-		TeamId  string `json:"team_id"`
-		MatchId string `json:"match_id"`
+		Person Player `json:"person"`
+		QuizId string `json:"quiz_id"`
+		TeamId string `json:"team_id"`
+	}
+
+	CreateGameRequest struct {
+		Quizmaster Player `json:"quizmaster"`
+		Specs      Specs  `json:"specs"`
 	}
 
 	StartGameRequest struct {
-		MatchId string `json:"match_id"`
+		QuizId string `json:"quiz_id"`
 	}
 
 	StartGameResponse struct {
@@ -86,9 +98,9 @@ type (
 	}
 
 	NextQuestionRequest struct {
-		MatchId string `json:"match_id"`
-		Limit   int    `json:"limit"`
-		Types   int    `json:"types"`
+		QuizId string `json:"quiz_id"`
+		Limit  int    `json:"limit"`
+		Types  int    `json:"types"`
 	}
 
 	FindAnswerRequest struct {

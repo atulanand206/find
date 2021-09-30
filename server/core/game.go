@@ -2,23 +2,32 @@ package core
 
 import "errors"
 
-func GenerateBeginGameResponse(quizmaster Player) (match Game, err error) {
-	player, err := FindOrCreatePlayer(quizmaster.Email)
+func GenerateBeginGameResponse(player Player) (res Player, err error) {
+	player, err = FindOrCreatePlayer(player.Email)
 	if err != nil {
 		err = errors.New(err.Error())
-		return
-	}
-
-	match = InitNewMatch(player)
-	if err = CreateMatch(match); err != nil {
-		err = errors.New(Err_MatchNotCreated)
 		return
 	}
 	return
 }
 
+func GenerateCreateGameResponse(request CreateGameRequest) (quiz Game, err error) {
+	player := request.Quizmaster
+	player, err = FindOrCreatePlayer(player.Email)
+	if err != nil {
+		err = errors.New(err.Error())
+		return
+	}
+
+	quiz = InitNewMatch(player, request.Specs)
+	if err = CreateMatch(quiz); err != nil {
+		err = errors.New(Err_MatchNotCreated)
+	}
+	return
+}
+
 func GenerateEnterGameResponse(enterGameRequest EnterGameRequest) (match Game, err error) {
-	match, err = FindMatch(enterGameRequest.MatchId)
+	match, err = FindMatch(enterGameRequest.QuizId)
 	if err != nil {
 		err = errors.New(Err_MatchNotPresent)
 		return
@@ -40,12 +49,12 @@ func GenerateEnterGameResponse(enterGameRequest EnterGameRequest) (match Game, e
 		return
 	}
 
-	if !PlayerCanBeAdded(team) {
+	if !PlayerCanBeAdded(team, match.Specs.Players) {
 		err = errors.New(Err_PlayersFullInTeam)
 		return
 	}
 
-	player, err = FindOrCreatePlayer(player.Email)
+	player, err = FindPlayer(player.Email)
 	if err != nil {
 		err = errors.New(err.Error())
 		return
@@ -56,7 +65,7 @@ func GenerateEnterGameResponse(enterGameRequest EnterGameRequest) (match Game, e
 		return
 	}
 
-	match, err = FindMatch(enterGameRequest.MatchId)
+	match, err = FindMatch(enterGameRequest.QuizId)
 	if err != nil {
 		err = errors.New(Err_MatchNotPresent)
 		return
@@ -87,8 +96,17 @@ func FindOrCreatePlayer(email string) (player Player, err error) {
 	return
 }
 
+func GenerateWatchGameResponse(enterGameRequest EnterGameRequest) (match Game, err error) {
+	match, err = FindMatch(enterGameRequest.QuizId)
+	if err != nil {
+		err = errors.New(Err_MatchNotPresent)
+		return
+	}
+	return
+}
+
 func GenerateStartGameResponse(startGameRequest StartGameRequest) (response StartGameResponse, err error) {
-	match, err := FindMatch(startGameRequest.MatchId)
+	match, err := FindMatch(startGameRequest.QuizId)
 	if err != nil {
 		err = errors.New(Err_MatchNotPresent)
 		return
@@ -114,7 +132,7 @@ func GenerateStartGameResponse(startGameRequest StartGameRequest) (response Star
 }
 
 func GenerateNextQuestionResponse(nextQuestionRequest NextQuestionRequest) (question Question, err error) {
-	match, err := FindMatch(nextQuestionRequest.MatchId)
+	match, err := FindMatch(nextQuestionRequest.QuizId)
 	if err != nil {
 		err = errors.New(Err_MatchNotPresent)
 		return

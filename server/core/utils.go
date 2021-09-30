@@ -98,15 +98,15 @@ func NewTeam(team Team) (result bool) {
 }
 
 func TeamCanBeAdded(match Game) (result bool) {
-	return len(match.Teams) < TeamsInAMatch
+	return len(match.Teams) < match.Specs.Teams
 }
 
-func PlayerCanBeAdded(team Team) (result bool) {
-	return len(team.Players) < PlayersInATeam
+func PlayerCanBeAdded(team Team, players int) (result bool) {
+	return len(team.Players) < players
 }
 
 func QuestionCanBeAdded(match Game) (result bool) {
-	return len(match.Tags) < QuestionsInAMatch
+	return len(match.Tags) < match.Specs.Questions
 }
 
 func CanStart(match Game) (result bool) {
@@ -114,7 +114,7 @@ func CanStart(match Game) (result bool) {
 		return false
 	}
 	for _, team := range match.Teams {
-		if PlayerCanBeAdded(team) {
+		if PlayerCanBeAdded(team, match.Specs.Players) {
 			return false
 		}
 	}
