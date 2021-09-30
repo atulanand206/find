@@ -84,9 +84,11 @@ func CreateMatch(match Game) (err error) {
 }
 
 func UpdateMatchPlayer(match Game, player Player, teamId string) (err error) {
-	for _, team := range match.Teams {
+	for i := 0; i < len(match.Teams); i++ {
+		team := match.Teams[i]
 		if team.Id == teamId {
 			team.Players = append(team.Players, player)
+			match.Teams[i] = team
 		}
 	}
 	err = UpdateMatch(match)

@@ -43,7 +43,7 @@ func NewTeamName(idx int) (name string) {
 }
 
 func InitNewTeam(name string, players int) (team Team) {
-	team.Players = make([]Player, players)
+	team.Players = make([]Player, 0)
 	team.Name = name
 	team.Id = id(team)
 	return

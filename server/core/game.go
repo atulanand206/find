@@ -7,12 +7,10 @@ import (
 
 func GenerateBeginGameResponse(player Player) (res Player, err error) {
 	res, err = FindOrCreatePlayer(player)
-	fmt.Println(res)
 	if err != nil {
 		err = errors.New(err.Error())
 		return
 	}
-	fmt.Println("  x  ", res)
 	return
 }
 
@@ -54,7 +52,9 @@ func GenerateEnterGameResponse(enterGameRequest EnterGameRequest) (match Game, e
 		return
 	}
 
-	if !PlayerCanBeAdded(team, match.Specs.Players) {
+	fmt.Println(match)
+	team, result := PlayerCanBeAdded(match)
+	if !result {
 		err = errors.New(Err_PlayersFullInTeam)
 		return
 	}
@@ -91,15 +91,12 @@ func FindTeamInMatch(match Game, teamId string) (team Team, err error) {
 
 func FindOrCreatePlayer(request Player) (player Player, err error) {
 	player, err = FindPlayer(request.Email)
-	fmt.Println(player, err)
 	if err != nil {
 		player = InitNewPlayer(request)
-		fmt.Println(player)
 		if err = CreatePlayer(player); err != nil {
 			err = errors.New(Err_PlayerNotCreated)
 			return
 		}
-		fmt.Println(player)
 	}
 	return
 }
@@ -120,7 +117,7 @@ func GenerateStartGameResponse(startGameRequest StartGameRequest) (response Star
 		return
 	}
 
-	if !CanStart(match) {
+	if _, result := PlayerCanBeAdded(match); result {
 		err = errors.New(Err_WaitingForPlayers)
 		return
 	}

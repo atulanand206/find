@@ -97,26 +97,17 @@ func NewTeam(team Team) (result bool) {
 	return team.Id == ""
 }
 
-func TeamCanBeAdded(match Game) (result bool) {
-	return len(match.Teams) < match.Specs.Teams
-}
-
-func PlayerCanBeAdded(team Team, players int) (result bool) {
-	return len(team.Players) < players
+func PlayerCanBeAdded(match Game) (team Team, result bool) {
+	for _, tem := range match.Teams {
+		if len(tem.Players) < match.Specs.Players {
+			team = tem
+			result = true
+			return
+		}
+	}
+	return
 }
 
 func QuestionCanBeAdded(match Game) (result bool) {
 	return len(match.Tags) < match.Specs.Questions
-}
-
-func CanStart(match Game) (result bool) {
-	if TeamCanBeAdded(match) {
-		return false
-	}
-	for _, team := range match.Teams {
-		if PlayerCanBeAdded(team, match.Specs.Players) {
-			return false
-		}
-	}
-	return true
 }

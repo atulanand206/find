@@ -3,7 +3,6 @@ package core
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -32,7 +31,6 @@ func DecodePlayer(document *mg.SingleResult) (player Player, err error) {
 }
 
 func DecodePlayerJsonString(content string) (player Player, err error) {
-	fmt.Println(content)
 	if err = json.Unmarshal([]byte(content), &player); err != nil {
 		return
 	}

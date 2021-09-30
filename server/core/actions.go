@@ -21,11 +21,11 @@ func HandleWSMessage(msg WebsocketMessage) (res WebsocketMessage, err error) {
 	}
 
 	fmt.Println(res)
+	fmt.Println()
 	return
 }
 
 func OnBegin(content string) (res WebsocketMessage, err error) {
-	fmt.Println(`{"firstName":"John","lastName":"Dow"}`)
 	request, err := DecodePlayerJsonString(content)
 	if err != nil {
 		res = InitWebSocketMessageFailure()
@@ -38,14 +38,11 @@ func OnBegin(content string) (res WebsocketMessage, err error) {
 		return
 	}
 
-	fmt.Println(response)
 	resBytes, err := json.Marshal(response)
 	if err != nil {
 		res = InitWebSocketMessageFailure()
 		return
 	}
-	fmt.Println(resBytes)
-	fmt.Println(string(resBytes))
 	res = InitWebSocketMessage(S_PLAYER, string(resBytes))
 	return
 }
