@@ -6,7 +6,7 @@ import (
 )
 
 func HandleWSMessage(msg WebsocketMessage) (res WebsocketMessage, err error) {
-	fmt.Println(msg.Content)
+	fmt.Println(msg)
 	switch msg.Action {
 	case BEGIN.String():
 		res, err = OnBegin(msg.Content)
@@ -19,11 +19,13 @@ func HandleWSMessage(msg WebsocketMessage) (res WebsocketMessage, err error) {
 	case REVEAL.String():
 		res, err = OnReveal(msg.Content)
 	}
+
 	fmt.Println(res)
 	return
 }
 
 func OnBegin(content string) (res WebsocketMessage, err error) {
+	fmt.Println(`{"firstName":"John","lastName":"Dow"}`)
 	request, err := DecodePlayerJsonString(content)
 	if err != nil {
 		res = InitWebSocketMessageFailure()
@@ -36,7 +38,15 @@ func OnBegin(content string) (res WebsocketMessage, err error) {
 		return
 	}
 
-	res = WebSocketsResponse(S_PLAYER, response)
+	fmt.Println(response)
+	resBytes, err := json.Marshal(response)
+	if err != nil {
+		res = InitWebSocketMessageFailure()
+		return
+	}
+	fmt.Println(resBytes)
+	fmt.Println(string(resBytes))
+	res = InitWebSocketMessage(S_PLAYER, string(resBytes))
 	return
 }
 
@@ -143,6 +153,7 @@ func OnReveal(content string) (res WebsocketMessage, err error) {
 }
 
 func WebSocketsResponse(action Action, v interface{}) (res WebsocketMessage) {
+	fmt.Println(v)
 	resBytes, err := json.Marshal(v)
 	if err != nil {
 		res = InitWebSocketMessageFailure()

@@ -31,6 +31,7 @@ func InitNewMatch(quizmaster Player, specs Specs) (match Game) {
 	for idx := 0; idx < specs.Teams; idx++ {
 		match.Teams = append(match.Teams, InitNewTeam(NewTeamName(idx), specs.Players))
 	}
+	match.Tags = make([]string, 0)
 	match.QuizMaster = quizmaster
 	match.Specs = specs
 	match.Id = id(match)

@@ -1,19 +1,24 @@
 package core
 
-import "errors"
+import (
+	"errors"
+	"fmt"
+)
 
 func GenerateBeginGameResponse(player Player) (res Player, err error) {
-	player, err = FindOrCreatePlayer(player.Email)
+	res, err = FindOrCreatePlayer(player)
+	fmt.Println(res)
 	if err != nil {
 		err = errors.New(err.Error())
 		return
 	}
+	fmt.Println("  x  ", res)
 	return
 }
 
 func GenerateCreateGameResponse(request CreateGameRequest) (quiz Game, err error) {
 	player := request.Quizmaster
-	player, err = FindOrCreatePlayer(player.Email)
+	player, err = FindOrCreatePlayer(player)
 	if err != nil {
 		err = errors.New(err.Error())
 		return
@@ -84,14 +89,17 @@ func FindTeamInMatch(match Game, teamId string) (team Team, err error) {
 	return
 }
 
-func FindOrCreatePlayer(email string) (player Player, err error) {
-	player, err = FindPlayer(email)
+func FindOrCreatePlayer(request Player) (player Player, err error) {
+	player, err = FindPlayer(request.Email)
+	fmt.Println(player, err)
 	if err != nil {
-		player = InitNewPlayer(player)
+		player = InitNewPlayer(request)
+		fmt.Println(player)
 		if err = CreatePlayer(player); err != nil {
 			err = errors.New(Err_PlayerNotCreated)
 			return
 		}
+		fmt.Println(player)
 	}
 	return
 }

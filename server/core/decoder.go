@@ -3,7 +3,9 @@ package core
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"strings"
 
 	mg "go.mongodb.org/mongo-driver/mongo"
 )
@@ -30,6 +32,7 @@ func DecodePlayer(document *mg.SingleResult) (player Player, err error) {
 }
 
 func DecodePlayerJsonString(content string) (player Player, err error) {
+	fmt.Println(content)
 	if err = json.Unmarshal([]byte(content), &player); err != nil {
 		return
 	}
@@ -110,5 +113,8 @@ func DecodeStartGameRequestJsonString(content string) (request StartGameRequest,
 
 func DecodeWebSocketRequest(input []byte) (request WebsocketMessage, err error) {
 	err = json.Unmarshal(input, &request)
+	request.Content = strings.Replace(request.Content, "\\", "", -1)
+	request.Content = strings.TrimLeft(request.Content, "\"")
+	request.Content = strings.TrimRight(request.Content, "\"")
 	return
 }
