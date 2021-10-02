@@ -147,7 +147,12 @@ func GenerateStartGameResponse(startGameRequest StartGameRequest) (response Star
 		return
 	}
 
-	if result := MatchFull(match); result {
+	teams, err := FindTeams(match)
+	if err != nil {
+		err = errors.New(Err_TeamsNotPresentInMatch)
+	}
+
+	if result := MatchFull(match, teams); !result {
 		err = errors.New(Err_WaitingForPlayers)
 		return
 	}
@@ -160,11 +165,6 @@ func GenerateStartGameResponse(startGameRequest StartGameRequest) (response Star
 	if err = UpdateMatchQuestions(match, questions); err != nil {
 		err = errors.New(Err_MatchNotUpdated)
 		return
-	}
-
-	teams, err := FindTeams(match)
-	if err != nil {
-		err = errors.New(Err_TeamsNotPresentInMatch)
 	}
 
 	response = InitStartGameResponse(match.Id, teams, questions)

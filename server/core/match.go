@@ -14,7 +14,6 @@ type (
 		Tags       []string   `bson:"tags"`
 		Specs      Specs      `json:"specs" bson:"specs"`
 		TeamSTurn  string     `json:"team_s_turn" bson:"team_s_turn"`
-		Ready      bool       `json:"ready" bson:"ready"`
 	}
 
 	Specs struct {
@@ -73,8 +72,7 @@ type (
 		Id         string `json:"id" bson:"_id"`
 		QuestionId string `json:"question_id" bson:"question_id"`
 		Answer     string `json:"answer" bson:"answer"`
-		Hint       string `json:"hint" bson:"hint"
-		`
+		Hint       string `json:"hint" bson:"hint"`
 	}
 
 	AddQuestionRequest struct {
@@ -149,7 +147,7 @@ type (
 	NextQuestionRequest struct {
 		QuizId         string `json:"quiz_id"`
 		TeamSTurn      string `json:"team_s_turn"`
-		LastQuestionId string `json:"last_question_id"`
+		LastQuestionId string `json:"question_id"`
 	}
 
 	FindAnswerRequest struct {

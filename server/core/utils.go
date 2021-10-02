@@ -122,8 +122,13 @@ func PlayerCanBeAdded(match Game, team Team) (result bool) {
 	return
 }
 
-func MatchFull(match Game) (result bool) {
-	return match.Ready
+func MatchFull(match Game, teams []Team) (result bool) {
+	for _, v := range teams {
+		if len(v.Players) < match.Specs.Players {
+			return false
+		}
+	}
+	return true
 }
 
 func QuestionCanBeAdded(match Game) (result bool) {
