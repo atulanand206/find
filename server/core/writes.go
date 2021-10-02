@@ -7,7 +7,7 @@ import (
 )
 
 func QuestionsCollections() []string {
-	return []string{IndexCollection, QuestionCollection, AnswerCollection}
+	return []string{IndexCollection, QuestionCollection, AnswerCollection, TeamCollection}
 }
 
 func CreateQuestionsCollections() (err error) {
@@ -83,15 +83,18 @@ func CreateMatch(match Game) (err error) {
 	return
 }
 
-func UpdateMatchPlayer(match Game, player Player, teamId string) (err error) {
-	for i := 0; i < len(match.Teams); i++ {
-		team := match.Teams[i]
-		if team.Id == teamId {
-			team.Players = append(team.Players, player)
-			match.Teams[i] = team
-		}
+func CreateTeams(match Game) (err error) {
+	var teamsDto []interface{}
+	for _, t := range match.Teams {
+		teamsDto = append(teamsDto, InitNewTeamM(t))
 	}
-	err = UpdateMatch(match)
+	_, err = mongo.WriteMany(Database, TeamCollection, teamsDto)
+	return
+}
+
+func UpdatePlayerInTeam(team Team, player Player) (err error) {
+	team.Players = append(team.Players, player)
+	err = UpdateTeam(team)
 	return
 }
 
@@ -109,5 +112,14 @@ func UpdateMatch(match Game) (err error) {
 		return
 	}
 	_, err = mongo.Update(Database, MatchCollection, bson.M{"_id": match.Id}, bson.D{primitive.E{Key: "$set", Value: *requestDto}})
+	return
+}
+
+func UpdateTeam(team Team) (err error) {
+	requestDto, err := mongo.Document(team)
+	if err != nil {
+		return
+	}
+	_, err = mongo.Update(Database, MatchCollection, bson.M{"_id": team.Id}, bson.D{primitive.E{Key: "$set", Value: *requestDto}})
 	return
 }

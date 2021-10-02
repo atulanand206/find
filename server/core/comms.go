@@ -7,16 +7,22 @@ const (
 	SPECS
 	JOIN
 	WATCH
-	Start
+	START
+	HINT
+	RIGHT
+	PASS
+	NEXT
 	REVEAL
-	Attempt
 	Score
-	Next
 	Over
 	Extend
 	S_GAME
 	S_PLAYER
 	S_START
+	S_HINT
+	S_RIGHT
+	S_PASS
+	S_NEXT
 	S_Question
 	S_Answer
 	S_Over
@@ -29,16 +35,22 @@ func (action Action) String() string {
 		"SPECS",
 		"JOIN",
 		"WATCH",
-		"start",
+		"START",
+		"HINT",
+		"RIGHT",
+		"PASS",
+		"NEXT",
 		"REVEAL",
-		"attempt",
 		"score",
-		"next",
 		"over",
 		"extend",
 		"S_GAME",
 		"S_PLAYER",
 		"S_START",
+		"S_HINT",
+		"S_RIGHT",
+		"S_PASS",
+		"S_NEXT",
 		"s_question",
 		"s_answer",
 		"s_over",

@@ -8,17 +8,25 @@ const (
 
 type (
 	Game struct {
-		Id         string   `json:"id" bson:"_id"`
-		Teams      []Team   `json:"teams" bson:"teams"`
-		QuizMaster Player   `json:"quizmaster" bson:"quizmaster"`
-		Tags       []string `bson:"tags"`
-		Specs      Specs    `json:"specs" bson:"specs"`
+		Id         string     `json:"id" bson:"_id"`
+		Teams      []TeamMini `json:"teams" bson:"teams"`
+		QuizMaster Player     `json:"quizmaster" bson:"quizmaster"`
+		Tags       []string   `bson:"tags"`
+		Specs      Specs      `json:"specs" bson:"specs"`
+		TeamSTurn  string     `json:"team_s_turn" bson:"team_s_turn"`
+		Ready      bool       `json:"ready" bson:"ready"`
 	}
 
 	Specs struct {
 		Teams     int `json:"teams"`
 		Players   int `json:"players"`
 		Questions int `json:"questions"`
+	}
+
+	TeamMini struct {
+		Id    string `json:"id" bson:"_id"`
+		Name  string `json:"name" bson:"name"`
+		Score int    `json:"score" bson:"score"`
 	}
 
 	Team struct {
@@ -65,6 +73,8 @@ type (
 		Id         string `json:"id" bson:"_id"`
 		QuestionId string `json:"question_id" bson:"question_id"`
 		Answer     string `json:"answer" bson:"answer"`
+		Hint       string `json:"hint" bson:"hint"
+		`
 	}
 
 	AddQuestionRequest struct {
@@ -83,6 +93,11 @@ type (
 		TeamId string `json:"team_id"`
 	}
 
+	EnterGameResponse struct {
+		Quiz  Game   `json:"quiz"`
+		Teams []Team `json:"teams"`
+	}
+
 	CreateGameRequest struct {
 		Quizmaster Player `json:"quizmaster"`
 		Specs      Specs  `json:"specs"`
@@ -93,14 +108,48 @@ type (
 	}
 
 	StartGameResponse struct {
-		Match  Game       `json:"game"`
-		Prompt []Question `json:"prompt"`
+		QuizId   string   `json:"quiz_id"`
+		Teams    []Team   `json:"teams"`
+		Question Question `json:"question"`
+	}
+
+	GameSnapRequest struct {
+		QuizId     string `json:"quiz_id"`
+		TeamSTurn  string `json:"team_s_turn"`
+		QuestionId string `json:"question_id"`
+	}
+
+	HintRevealResponse struct {
+		QuizId     string `json:"quiz_id"`
+		TeamSTurn  string `json:"team_s_turn"`
+		QuestionId string `json:"question_id"`
+		Hint       string `json:"hint"`
+	}
+
+	AnswerRevealResponse struct {
+		QuizId     string `json:"quiz_id"`
+		TeamSTurn  string `json:"team_s_turn"`
+		QuestionId string `json:"question_id"`
+		Answer     string `json:"answer"`
+	}
+
+	GamePassResponse struct {
+		QuizId     string `json:"quiz_id"`
+		TeamSTurn  string `json:"team_s_turn"`
+		QuestionId string `json:"question_id"`
+	}
+
+	GameNextResponse struct {
+		QuizId         string   `json:"quiz_id"`
+		TeamSTurn      string   `json:"team_s_turn"`
+		LastQuestionId string   `json:"last_question_id"`
+		Question       Question `json:"question"`
 	}
 
 	NextQuestionRequest struct {
-		QuizId string `json:"quiz_id"`
-		Limit  int    `json:"limit"`
-		Types  int    `json:"types"`
+		QuizId         string `json:"quiz_id"`
+		TeamSTurn      string `json:"team_s_turn"`
+		LastQuestionId string `json:"last_question_id"`
 	}
 
 	FindAnswerRequest struct {

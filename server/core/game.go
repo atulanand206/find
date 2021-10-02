@@ -14,7 +14,7 @@ func GenerateBeginGameResponse(player Player) (res Player, err error) {
 	return
 }
 
-func GenerateCreateGameResponse(request CreateGameRequest) (quiz Game, err error) {
+func GenerateCreateGameResponse(request CreateGameRequest) (response EnterGameResponse, err error) {
 	player := request.Quizmaster
 	player, err = FindOrCreatePlayer(player)
 	if err != nil {
@@ -22,21 +22,38 @@ func GenerateCreateGameResponse(request CreateGameRequest) (quiz Game, err error
 		return
 	}
 
-	quiz = InitNewMatch(player, request.Specs)
+	quiz := InitNewMatch(player, request.Specs)
 	if err = CreateMatch(quiz); err != nil {
 		err = errors.New(Err_MatchNotCreated)
 	}
+
+	if err = CreateTeams(quiz); err != nil {
+		err = errors.New(Err_TeamNotCreated)
+	}
+
+	teams, err := FindTeams(quiz)
+	if err != nil {
+		err = errors.New(Err_TeamNotPresent)
+	}
+
+	response = InitEnterGameResponse(quiz, teams)
+	fmt.Println(response)
 	return
 }
 
-func GenerateEnterGameResponse(enterGameRequest EnterGameRequest) (match Game, err error) {
-	match, err = FindMatch(enterGameRequest.QuizId)
+func GenerateEnterGameResponse(enterGameRequest EnterGameRequest) (response EnterGameResponse, err error) {
+	match, err := FindMatch(enterGameRequest.QuizId)
 	if err != nil {
 		err = errors.New(Err_MatchNotPresent)
 		return
 	}
 
-	team, err := FindTeamInMatch(match, enterGameRequest.TeamId)
+	teams, err := FindTeams(match)
+	if err != nil {
+		err = errors.New(Err_TeamsNotPresentInMatch)
+	}
+
+	team, err := FindTeamInMatch(teams, enterGameRequest.TeamId)
 	if err != nil {
 		err = errors.New(Err_TeamsNotPresentInMatch)
 	}
@@ -47,14 +64,13 @@ func GenerateEnterGameResponse(enterGameRequest EnterGameRequest) (match Game, e
 		return
 	}
 
-	if IsPlayerInMatch(match, player) {
+	if IsPlayerInTeam(team, player) {
 		err = errors.New(Err_PlayerAlreadyInGame)
 		return
 	}
 
 	fmt.Println(match)
-	team, result := PlayerCanBeAdded(match)
-	if !result {
+	if !PlayerCanBeAdded(match, team) {
 		err = errors.New(Err_PlayersFullInTeam)
 		return
 	}
@@ -65,7 +81,7 @@ func GenerateEnterGameResponse(enterGameRequest EnterGameRequest) (match Game, e
 		return
 	}
 
-	if err = UpdateMatchPlayer(match, player, team.Id); err != nil {
+	if err = UpdatePlayerInTeam(team, player); err != nil {
 		err = errors.New(Err_MatchNotUpdated)
 		return
 	}
@@ -75,11 +91,18 @@ func GenerateEnterGameResponse(enterGameRequest EnterGameRequest) (match Game, e
 		err = errors.New(Err_MatchNotPresent)
 		return
 	}
+
+	teams, err = FindTeams(match)
+	if err != nil {
+		err = errors.New(Err_TeamsNotPresentInMatch)
+	}
+
+	response = InitEnterGameResponse(match, teams)
 	return
 }
 
-func FindTeamInMatch(match Game, teamId string) (team Team, err error) {
-	for _, tx := range match.Teams {
+func FindTeamInMatch(teams []Team, teamId string) (team Team, err error) {
+	for _, tx := range teams {
 		if tx.Id == teamId {
 			team = tx
 			return
@@ -101,12 +124,19 @@ func FindOrCreatePlayer(request Player) (player Player, err error) {
 	return
 }
 
-func GenerateWatchGameResponse(enterGameRequest EnterGameRequest) (match Game, err error) {
-	match, err = FindMatch(enterGameRequest.QuizId)
+func GenerateWatchGameResponse(enterGameRequest EnterGameRequest) (response EnterGameResponse, err error) {
+	match, err := FindMatch(enterGameRequest.QuizId)
 	if err != nil {
 		err = errors.New(Err_MatchNotPresent)
 		return
 	}
+
+	teams, err := FindTeams(match)
+	if err != nil {
+		err = errors.New(Err_TeamsNotPresentInMatch)
+	}
+
+	response = InitEnterGameResponse(match, teams)
 	return
 }
 
@@ -117,7 +147,7 @@ func GenerateStartGameResponse(startGameRequest StartGameRequest) (response Star
 		return
 	}
 
-	if _, result := PlayerCanBeAdded(match); result {
+	if result := MatchFull(match); result {
 		err = errors.New(Err_WaitingForPlayers)
 		return
 	}
@@ -132,12 +162,49 @@ func GenerateStartGameResponse(startGameRequest StartGameRequest) (response Star
 		return
 	}
 
-	response = InitStartGameResponse(match, questions)
+	teams, err := FindTeams(match)
+	if err != nil {
+		err = errors.New(Err_TeamsNotPresentInMatch)
+	}
+
+	response = InitStartGameResponse(match.Id, teams, questions)
 	return
 }
 
-func GenerateNextQuestionResponse(nextQuestionRequest NextQuestionRequest) (question Question, err error) {
-	match, err := FindMatch(nextQuestionRequest.QuizId)
+func GenerateQuestionHintResponse(request GameSnapRequest) (response HintRevealResponse, err error) {
+	_, err = FindMatch(request.QuizId)
+	if err != nil {
+		err = errors.New(Err_MatchNotPresent)
+		return
+	}
+
+	answer, err := FindAnswer(request.QuestionId)
+	if err != nil {
+		err = errors.New(Err_QuestionNotPresent)
+	}
+
+	response = InitHintRevealResponse(request, answer)
+	return
+}
+
+func GenerateQuestionAnswerResponse(request GameSnapRequest) (response AnswerRevealResponse, err error) {
+	_, err = FindMatch(request.QuizId)
+	if err != nil {
+		err = errors.New(Err_MatchNotPresent)
+		return
+	}
+
+	answer, err := FindAnswer(request.QuestionId)
+	if err != nil {
+		err = errors.New(Err_QuestionNotPresent)
+	}
+
+	response = InitAnswerRevealResponse(request, answer)
+	return
+}
+
+func GenerateNextQuestionResponse(request NextQuestionRequest) (response GameNextResponse, err error) {
+	match, err := FindMatch(request.QuizId)
 	if err != nil {
 		err = errors.New(Err_MatchNotPresent)
 		return
@@ -152,13 +219,15 @@ func GenerateNextQuestionResponse(nextQuestionRequest NextQuestionRequest) (ques
 	if err != nil {
 		return
 	}
-	question = questions[0]
+	question := questions[0]
 
 	if err = UpdateMatchQuestions(match, questions); err != nil {
 		err = errors.New(Err_MatchNotUpdated)
 		return
 	}
 
+	teamsTurn := NextTeam(match.Teams, request.TeamSTurn)
+	response = InitNextQuestionResponse(request, question, teamsTurn)
 	return
 }
 
@@ -189,5 +258,18 @@ func GenerateFindAnswerResponse(request FindAnswerRequest) (answer Answer, err e
 		err = errors.New(Err_AnswerNotPresent)
 		return
 	}
+	return
+}
+
+func GeneratePassQuestionResponse(request GameSnapRequest) (response GamePassResponse, err error) {
+	match, err := FindMatch(request.QuizId)
+	if err != nil {
+		err = errors.New(Err_MatchNotPresent)
+		return
+	}
+
+	teamsTurn := NextTeam(match.Teams, request.TeamSTurn)
+	fmt.Println(teamsTurn)
+	response = InitPassQuestionResponse(request, teamsTurn)
 	return
 }

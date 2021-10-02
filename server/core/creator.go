@@ -27,7 +27,7 @@ func InitNewAnswer(question Question, newQuestion NewQuestion) (answer Answer) {
 }
 
 func InitNewMatch(quizmaster Player, specs Specs) (match Game) {
-	match.Teams = make([]Team, 0)
+	match.Teams = make([]TeamMini, 0)
 	for idx := 0; idx < specs.Teams; idx++ {
 		match.Teams = append(match.Teams, InitNewTeam(NewTeamName(idx), specs.Players))
 	}
@@ -42,10 +42,16 @@ func NewTeamName(idx int) (name string) {
 	return fmt.Sprintf("Team %d", idx)
 }
 
-func InitNewTeam(name string, players int) (team Team) {
-	team.Players = make([]Player, 0)
+func InitNewTeam(name string, players int) (team TeamMini) {
 	team.Name = name
 	team.Id = id(team)
+	return
+}
+
+func InitNewTeamM(teammini TeamMini) (team Team) {
+	team.Players = make([]Player, 0)
+	team.Name = teammini.Name
+	team.Id = teammini.Id
 	return
 }
 
@@ -72,9 +78,47 @@ func InitAddQuestionResponse(question Question, answer Answer) (response AddQues
 	return
 }
 
-func InitStartGameResponse(match Game, questions []Question) (response StartGameResponse) {
-	response.Match = match
-	response.Prompt = questions
+func InitEnterGameResponse(match Game, teams []Team) (response EnterGameResponse) {
+	response.Quiz = match
+	response.Teams = teams
+	return
+}
+
+func InitStartGameResponse(quizId string, teams []Team, questions []Question) (response StartGameResponse) {
+	response.QuizId = quizId
+	response.Teams = teams
+	response.Question = questions[0]
+	return
+}
+
+func InitHintRevealResponse(request GameSnapRequest, answer Answer) (response HintRevealResponse) {
+	response.QuizId = request.QuizId
+	response.QuestionId = request.QuestionId
+	response.TeamSTurn = request.TeamSTurn
+	response.Hint = answer.Hint
+	return
+}
+
+func InitAnswerRevealResponse(request GameSnapRequest, answer Answer) (response AnswerRevealResponse) {
+	response.QuizId = request.QuizId
+	response.QuestionId = request.QuestionId
+	response.TeamSTurn = request.TeamSTurn
+	response.Answer = answer.Answer
+	return
+}
+
+func InitNextQuestionResponse(request NextQuestionRequest, question Question, teamsTurn string) (response GameNextResponse) {
+	response.QuizId = request.QuizId
+	response.LastQuestionId = request.LastQuestionId
+	response.TeamSTurn = teamsTurn
+	response.Question = question
+	return
+}
+
+func InitPassQuestionResponse(request GameSnapRequest, teamsTurn string) (response GamePassResponse) {
+	response.QuizId = request.QuizId
+	response.TeamSTurn = teamsTurn
+	response.QuestionId = request.QuestionId
 	return
 }
 

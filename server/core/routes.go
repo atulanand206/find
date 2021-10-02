@@ -18,7 +18,9 @@ var (
 	QuestionCollection string
 	// Instance variable to store the DB Answer Collection name.
 	AnswerCollection string
-	// Instance variable to store the DB Match Collection name.
+	// Instance variable to store the DB Team Collection name.
+	TeamCollection string
+	// Instance variable to store the DB Player Collection name.
 	PlayerCollection string
 
 	hub *Hub
@@ -30,6 +32,7 @@ func Routes() *http.ServeMux {
 	MatchCollection = os.Getenv("MATCH_COLLECTION")
 	QuestionCollection = os.Getenv("QUESTION_COLLECTION")
 	AnswerCollection = os.Getenv("ANSWER_COLLECTION")
+	TeamCollection = os.Getenv("TEAM_COLLECTION")
 	PlayerCollection = os.Getenv("PLAYER_COLLECTION")
 	IndexCollection = os.Getenv("INDEX_COLLECTION")
 

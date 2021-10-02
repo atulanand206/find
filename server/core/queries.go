@@ -16,6 +16,15 @@ func FindMatch(matchId string) (match Game, err error) {
 	return
 }
 
+func FindQuestion(questionId string) (question Question, err error) {
+	dto := mongo.FindOne(Database, MatchCollection, bson.M{"_id": questionId})
+	if err = dto.Err(); err != nil {
+		return
+	}
+	question, err = DecodeQuestion(dto)
+	return
+}
+
 func FindPlayer(emailId string) (player Player, err error) {
 	dto := mongo.FindOne(Database, PlayerCollection, bson.M{"email": emailId})
 	if err = dto.Err(); err != nil {
@@ -71,5 +80,19 @@ func FindQuestionsFromIndexes(indexes []Index, limit int64) (questions []Questio
 		}
 		questions = append(questions, indxQues...)
 	}
+	return
+}
+
+func FindTeams(match Game) (teams []Team, err error) {
+	teamIds := make([]string, 0)
+	for _, v := range match.Teams {
+		teamIds = append(teamIds, v.Id)
+	}
+	cursor, err := mongo.Find(Database, TeamCollection,
+		bson.M{"_id": bson.M{"$in": teamIds}}, &options.FindOptions{})
+	if err != nil {
+		return
+	}
+	teams, err = DecodeTeams(cursor)
 	return
 }

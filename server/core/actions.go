@@ -16,8 +16,16 @@ func HandleWSMessage(msg WebsocketMessage) (res WebsocketMessage, err error) {
 		res, err = OnJoin(msg.Content)
 	case WATCH.String():
 		res, err = OnWatch(msg.Content)
-	case REVEAL.String():
-		res, err = OnReveal(msg.Content)
+	case START.String():
+		res, err = OnStart(msg.Content)
+	case HINT.String():
+		res, err = OnHint(msg.Content)
+	case RIGHT.String():
+		res, err = OnRight(msg.Content)
+	case NEXT.String():
+		res, err = OnNext(msg.Content)
+	case PASS.String():
+		res, err = OnPass(msg.Content)
 	}
 
 	fmt.Println(res)
@@ -115,6 +123,40 @@ func OnStart(content string) (res WebsocketMessage, err error) {
 	return
 }
 
+func OnHint(content string) (res WebsocketMessage, err error) {
+	request, err := DecodeGameSnapRequestJsonString(content)
+	if err != nil {
+		res = InitWebSocketMessageFailure()
+		return
+	}
+
+	response, err := GenerateQuestionHintResponse(request)
+	if err != nil {
+		res = InitWebSocketMessage(Failure, err.Error())
+		return
+	}
+
+	res = WebSocketsResponse(S_HINT, response)
+	return
+}
+
+func OnRight(content string) (res WebsocketMessage, err error) {
+	request, err := DecodeGameSnapRequestJsonString(content)
+	if err != nil {
+		res = InitWebSocketMessageFailure()
+		return
+	}
+
+	response, err := GenerateQuestionAnswerResponse(request)
+	if err != nil {
+		res = InitWebSocketMessage(Failure, err.Error())
+		return
+	}
+
+	res = WebSocketsResponse(S_RIGHT, response)
+	return
+}
+
 func OnNext(content string) (res WebsocketMessage, err error) {
 	request, err := DecodeNextQuestionRequestJsonString(content)
 	if err != nil {
@@ -128,24 +170,24 @@ func OnNext(content string) (res WebsocketMessage, err error) {
 		return
 	}
 
-	res = WebSocketsResponse(S_Question, response)
+	res = WebSocketsResponse(S_NEXT, response)
 	return
 }
 
-func OnReveal(content string) (res WebsocketMessage, err error) {
-	request, err := DecodeFindAnswerRequestJsonString(content)
+func OnPass(content string) (res WebsocketMessage, err error) {
+	request, err := DecodeGameSnapRequestJsonString(content)
 	if err != nil {
 		res = InitWebSocketMessageFailure()
 		return
 	}
 
-	response, err := GenerateFindAnswerResponse(request)
+	response, err := GeneratePassQuestionResponse(request)
 	if err != nil {
 		res = InitWebSocketMessage(Failure, err.Error())
 		return
 	}
 
-	res = WebSocketsResponse(S_Answer, response)
+	res = WebSocketsResponse(S_PASS, response)
 	return
 }
 

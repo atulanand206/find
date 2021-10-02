@@ -57,6 +57,7 @@ func filteredIndices(input []Index, sans map[string]bool) (indxs []Index) {
 }
 
 func randomFilteredIndicesMap(indxs []Index, limit int) (mp map[Index]bool) {
+	mp = make(map[Index]bool)
 	rand.Seed(time.Now().UnixNano())
 	indexCount := len(indxs)
 	for {
@@ -81,13 +82,11 @@ func IsQuizMasterInMatch(match Game, person Player) (result bool) {
 	return match.QuizMaster.Id == person.Id
 }
 
-func IsPlayerInMatch(match Game, person Player) (result bool) {
-	for _, team := range match.Teams {
-		for _, player := range team.Players {
-			if player.Id == person.Id {
-				result = true
-				return
-			}
+func IsPlayerInTeam(team Team, person Player) (result bool) {
+	for _, player := range team.Players {
+		if player.Id == person.Id {
+			result = true
+			return
 		}
 	}
 	return
@@ -97,15 +96,34 @@ func NewTeam(team Team) (result bool) {
 	return team.Id == ""
 }
 
-func PlayerCanBeAdded(match Game) (team Team, result bool) {
-	for _, tem := range match.Teams {
-		if len(tem.Players) < match.Specs.Players {
-			team = tem
-			result = true
+func NextTeam(teams []TeamMini, teamsTurn string) (teamId string) {
+	teamId = ""
+	if len(teams) == 0 {
+		return
+	}
+	for _, v := range teams {
+		if teamId != "" {
+			teamId = v.Id
 			return
 		}
+		if v.Id == teamsTurn {
+			teamId = v.Id
+		}
+	}
+	teamId = teams[0].Id
+	return
+}
+
+func PlayerCanBeAdded(match Game, team Team) (result bool) {
+	if len(team.Players) < match.Specs.Players {
+		result = true
+		return
 	}
 	return
+}
+
+func MatchFull(match Game) (result bool) {
+	return match.Ready
 }
 
 func QuestionCanBeAdded(match Game) (result bool) {

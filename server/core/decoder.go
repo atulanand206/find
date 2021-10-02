@@ -23,6 +23,13 @@ func DecodeMatch(document *mg.SingleResult) (game Game, err error) {
 	return
 }
 
+func DecodeQuestion(document *mg.SingleResult) (question Question, err error) {
+	if err = document.Decode(&question); err != nil {
+		return
+	}
+	return
+}
+
 func DecodePlayer(document *mg.SingleResult) (player Player, err error) {
 	if err = document.Decode(&player); err != nil {
 		return
@@ -68,6 +75,18 @@ func DecodeQuestions(cursor *mg.Cursor) (questions []Question, err error) {
 	return
 }
 
+func DecodeTeams(cursor *mg.Cursor) (teams []Team, err error) {
+	for cursor.Next(context.Background()) {
+		var team Team
+		err = cursor.Decode(&team)
+		if err != nil {
+			return
+		}
+		teams = append(teams, team)
+	}
+	return
+}
+
 func DecodeAddQuestionRequest(r *http.Request) (request AddQuestionRequest, err error) {
 	decoder := json.NewDecoder(r.Body)
 	err = decoder.Decode(&request)
@@ -103,6 +122,13 @@ func DecodeCreateGameRequestJsonString(content string) (request CreateGameReques
 }
 
 func DecodeStartGameRequestJsonString(content string) (request StartGameRequest, err error) {
+	if err = json.Unmarshal([]byte(content), &request); err != nil {
+		return
+	}
+	return
+}
+
+func DecodeGameSnapRequestJsonString(content string) (request GameSnapRequest, err error) {
 	if err = json.Unmarshal([]byte(content), &request); err != nil {
 		return
 	}

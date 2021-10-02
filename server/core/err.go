@@ -7,6 +7,7 @@ const (
 	Err_DeckDtosNotCreated     = "Deck dtos can't be created."
 	Err_MatchRequestNotCreated = "New match request can't be created."
 	Err_MatchNotCreated        = "New match can't be created."
+	Err_TeamNotCreated         = "Team can't be created."
 	Err_PlayerNotCreated       = "Player can't be created."
 	Err_QuestionNotCreated     = "Question can't be created."
 	Err_AnswerNotCreated       = "Answer can't be created."
