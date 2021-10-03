@@ -26,8 +26,9 @@ func HandleWSMessage(msg WebsocketMessage) (res WebsocketMessage, err error) {
 		res, err = OnNext(msg.Content)
 	case PASS.String():
 		res, err = OnPass(msg.Content)
+	case SCORE.String():
+		res, err = OnScore(msg.Content)
 	}
-
 	fmt.Println(res)
 	fmt.Println()
 	return
@@ -158,7 +159,7 @@ func OnRight(content string) (res WebsocketMessage, err error) {
 }
 
 func OnNext(content string) (res WebsocketMessage, err error) {
-	request, err := DecodeNextQuestionRequestJsonString(content)
+	request, err := DecodeGameSnapRequestJsonString(content)
 	if err != nil {
 		res = InitWebSocketMessageFailure()
 		return
@@ -188,6 +189,23 @@ func OnPass(content string) (res WebsocketMessage, err error) {
 	}
 
 	res = WebSocketsResponse(S_PASS, response)
+	return
+}
+
+func OnScore(content string) (res WebsocketMessage, err error) {
+	request, err := DecodeScoreRequestJsonString(content)
+	if err != nil {
+		res = InitWebSocketMessageFailure()
+		return
+	}
+
+	response, err := GenerateScoreResponse(request)
+	if err != nil {
+		res = InitWebSocketMessage(Failure, err.Error())
+		return
+	}
+
+	res = WebSocketsResponse(S_SCORE, response)
 	return
 }
 

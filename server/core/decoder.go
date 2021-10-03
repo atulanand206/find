@@ -51,6 +51,13 @@ func DecodeAnswer(document *mg.SingleResult) (answer Answer, err error) {
 	return
 }
 
+func DecodeSnapshot(document *mg.SingleResult) (snapshot Snapshot, err error) {
+	if err = document.Decode(&snapshot); err != nil {
+		return
+	}
+	return
+}
+
 func DecodeIndexes(cursor *mg.Cursor) (indexes []Index, err error) {
 	for cursor.Next(context.Background()) {
 		var index Index
@@ -71,6 +78,18 @@ func DecodeQuestions(cursor *mg.Cursor) (questions []Question, err error) {
 			return
 		}
 		questions = append(questions, question)
+	}
+	return
+}
+
+func DecodeSnapshots(cursor *mg.Cursor) (snapshots []Snapshot, err error) {
+	for cursor.Next(context.Background()) {
+		var snapshot Snapshot
+		err = cursor.Decode(&snapshot)
+		if err != nil {
+			return
+		}
+		snapshots = append(snapshots, snapshot)
 	}
 	return
 }
@@ -129,6 +148,13 @@ func DecodeStartGameRequestJsonString(content string) (request StartGameRequest,
 }
 
 func DecodeGameSnapRequestJsonString(content string) (request GameSnapRequest, err error) {
+	if err = json.Unmarshal([]byte(content), &request); err != nil {
+		return
+	}
+	return
+}
+
+func DecodeScoreRequestJsonString(content string) (request ScoreRequest, err error) {
 	if err = json.Unmarshal([]byte(content), &request); err != nil {
 		return
 	}

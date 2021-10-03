@@ -1,6 +1,8 @@
 package core
 
 import (
+	"fmt"
+
 	"github.com/atulanand206/go-mongo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -65,6 +67,15 @@ func SeedAnswers(answers []Answer) (err error) {
 	return err
 }
 
+func CreateSnapshot(snapshot Snapshot) (err error) {
+	requestDto, err := mongo.Document(snapshot)
+	if err != nil {
+		return
+	}
+	_, err = mongo.Write(Database, SnapshotCollection, *requestDto)
+	return
+}
+
 func CreatePlayer(player Player) (err error) {
 	requestDto, err := mongo.Document(player)
 	if err != nil {
@@ -94,6 +105,7 @@ func CreateTeams(match Game) (err error) {
 
 func UpdatePlayerInTeam(team Team, player Player) (err error) {
 	team.Players = append(team.Players, player)
+	fmt.Println(team)
 	err = UpdateTeam(team)
 	return
 }
@@ -120,6 +132,6 @@ func UpdateTeam(team Team) (err error) {
 	if err != nil {
 		return
 	}
-	_, err = mongo.Update(Database, MatchCollection, bson.M{"_id": team.Id}, bson.D{primitive.E{Key: "$set", Value: *requestDto}})
+	_, err = mongo.Update(Database, TeamCollection, bson.M{"_id": team.Id}, bson.D{primitive.E{Key: "$set", Value: *requestDto}})
 	return
 }

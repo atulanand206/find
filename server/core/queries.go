@@ -8,7 +8,7 @@ import (
 )
 
 func FindMatch(matchId string) (match Game, err error) {
-	dto := mongo.FindOne(Database, MatchCollection, bson.M{"_id": matchId})
+	dto := mongo.FindOne(Database, MatchCollection, bson.M{"_id": matchId}, &options.FindOneOptions{})
 	if err = dto.Err(); err != nil {
 		return
 	}
@@ -17,7 +17,7 @@ func FindMatch(matchId string) (match Game, err error) {
 }
 
 func FindQuestion(questionId string) (question Question, err error) {
-	dto := mongo.FindOne(Database, MatchCollection, bson.M{"_id": questionId})
+	dto := mongo.FindOne(Database, MatchCollection, bson.M{"_id": questionId}, &options.FindOneOptions{})
 	if err = dto.Err(); err != nil {
 		return
 	}
@@ -26,7 +26,7 @@ func FindQuestion(questionId string) (question Question, err error) {
 }
 
 func FindPlayer(emailId string) (player Player, err error) {
-	dto := mongo.FindOne(Database, PlayerCollection, bson.M{"email": emailId})
+	dto := mongo.FindOne(Database, PlayerCollection, bson.M{"email": emailId}, &options.FindOneOptions{})
 	if err = dto.Err(); err != nil {
 		return
 	}
@@ -35,7 +35,7 @@ func FindPlayer(emailId string) (player Player, err error) {
 }
 
 func FindIndexForTag(tag string) (index Index, err error) {
-	dto := mongo.FindOne(Database, IndexCollection, bson.M{"tag": tag})
+	dto := mongo.FindOne(Database, IndexCollection, bson.M{"tag": tag}, &options.FindOneOptions{})
 	if err = dto.Err(); err != nil {
 		return
 	}
@@ -44,7 +44,7 @@ func FindIndexForTag(tag string) (index Index, err error) {
 }
 
 func FindAnswer(questionId string) (answer Answer, err error) {
-	dto := mongo.FindOne(Database, AnswerCollection, bson.M{"question_id": questionId})
+	dto := mongo.FindOne(Database, AnswerCollection, bson.M{"question_id": questionId}, &options.FindOneOptions{})
 	if err = dto.Err(); err != nil {
 		return
 	}
@@ -94,5 +94,43 @@ func FindTeams(match Game) (teams []Team, err error) {
 		return
 	}
 	teams, err = DecodeTeams(cursor)
+	return
+}
+
+func FindSnapshots(matchId string) (snapshots []Snapshot, err error) {
+	cursor, err := mongo.Find(Database, SnapshotCollection,
+		bson.M{"quiz_id": matchId}, &options.FindOptions{})
+	if err != nil {
+		return
+	}
+	snapshots, err = DecodeSnapshots(cursor)
+	return
+}
+
+func FindLatestSnapshot(matchId string) (snapshot Snapshot, err error) {
+	findOptions := &options.FindOneOptions{}
+	sort := bson.D{}
+	sort = append(sort, bson.E{Key: "timestamp", Value: -1})
+	findOptions.SetSort(sort)
+	dto := mongo.FindOne(Database, SnapshotCollection,
+		bson.M{"quiz_id": matchId}, findOptions)
+	if err = dto.Err(); err != nil {
+		return
+	}
+	snapshot, err = DecodeSnapshot(dto)
+	return
+}
+
+func FindQuestionSnapshots(matchId string, questionId string) (snapshot []Snapshot, err error) {
+	findOptions := &options.FindOptions{}
+	sort := bson.D{}
+	sort = append(sort, bson.E{Key: "timestamp", Value: -1})
+	findOptions.SetSort(sort)
+	cursor, err := mongo.Find(Database, SnapshotCollection,
+		bson.M{"quiz_id": matchId, "question_id": questionId}, findOptions)
+	if err != nil {
+		return
+	}
+	snapshot, err = DecodeSnapshots(cursor)
 	return
 }

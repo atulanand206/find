@@ -2,6 +2,7 @@ package core
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -34,6 +35,8 @@ func InitNewMatch(quizmaster Player, specs Specs) (match Game) {
 	match.Tags = make([]string, 0)
 	match.QuizMaster = quizmaster
 	match.Specs = specs
+	match.Specs.Points = 16
+	match.Specs.Rounds = 2
 	match.Id = id(match)
 	return
 }
@@ -88,37 +91,78 @@ func InitStartGameResponse(quizId string, teams []Team, questions []Question) (r
 	response.QuizId = quizId
 	response.Teams = teams
 	response.Question = questions[0]
+	response.TeamSTurn = teams[0].Id
+	response.QuestionNo = 1
+	response.RoundNo = 1
 	return
 }
 
-func InitHintRevealResponse(request GameSnapRequest, answer Answer) (response HintRevealResponse) {
+func InitHintRevealResponse(request GameSnapRequest, answer Answer, questionNo int, roundNo int) (response HintRevealResponse) {
 	response.QuizId = request.QuizId
 	response.QuestionId = request.QuestionId
 	response.TeamSTurn = request.TeamSTurn
 	response.Hint = answer.Hint
+	response.QuestionNo = questionNo
+	response.RoundNo = roundNo
 	return
 }
 
-func InitAnswerRevealResponse(request GameSnapRequest, answer Answer) (response AnswerRevealResponse) {
+func InitAnswerRevealResponse(request GameSnapRequest, answer Answer, questionNo int, roundNo int) (response AnswerRevealResponse) {
 	response.QuizId = request.QuizId
 	response.QuestionId = request.QuestionId
 	response.TeamSTurn = request.TeamSTurn
 	response.Answer = answer.Answer
+	response.QuestionNo = questionNo
+	response.RoundNo = roundNo
 	return
 }
 
-func InitNextQuestionResponse(request NextQuestionRequest, question Question, teamsTurn string) (response GameNextResponse) {
+func InitNextQuestionResponse(request GameSnapRequest, question Question, teamsTurn string, questionNo int, roundNo int) (response GameNextResponse) {
 	response.QuizId = request.QuizId
-	response.LastQuestionId = request.LastQuestionId
+	response.LastQuestionId = request.QuestionId
 	response.TeamSTurn = teamsTurn
 	response.Question = question
+	response.QuestionNo = questionNo
+	response.RoundNo = roundNo
 	return
 }
 
-func InitPassQuestionResponse(request GameSnapRequest, teamsTurn string) (response GamePassResponse) {
+func InitPassQuestionResponse(request GameSnapRequest, teamsTurn string, questionNo int, roundNo int) (response GamePassResponse) {
 	response.QuizId = request.QuizId
 	response.TeamSTurn = teamsTurn
 	response.QuestionId = request.QuestionId
+	response.QuestionNo = questionNo
+	response.RoundNo = roundNo
+	return
+}
+
+func InitScoreResponse(request ScoreRequest, snapshots []Snapshot) (response ScoreResponse) {
+	response.QuizId = request.QuizId
+	response.Snapshots = snapshots
+	return
+}
+
+func InitSnapshotDto(request GameSnapRequest, eventType string, score int, questionNo int, roundNo int) (response Snapshot) {
+	response.QuizId = request.QuizId
+	response.QuestionId = request.QuestionId
+	response.TeamSTurn = request.TeamSTurn
+	response.EventType = eventType
+	response.Score = score
+	response.QuestionNo = questionNo
+	response.RoundNo = roundNo
+	response.Timestamp = time.Now().String()
+	return
+}
+
+func InitSnapshotDtoF(quizId string, questionId string, teamsTurn string, eventType string, score int, questionNo int, roundNo int) (response Snapshot) {
+	response.QuizId = quizId
+	response.QuestionId = questionId
+	response.TeamSTurn = teamsTurn
+	response.EventType = eventType
+	response.Score = score
+	response.QuestionNo = questionNo
+	response.RoundNo = roundNo
+	response.Timestamp = time.Now().String()
 	return
 }
 

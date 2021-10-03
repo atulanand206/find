@@ -3,6 +3,7 @@ package core
 import (
 	"errors"
 	"fmt"
+	"math"
 )
 
 func GenerateBeginGameResponse(player Player) (res Player, err error) {
@@ -53,7 +54,7 @@ func GenerateEnterGameResponse(enterGameRequest EnterGameRequest) (response Ente
 		err = errors.New(Err_TeamsNotPresentInMatch)
 	}
 
-	team, err := FindTeamInMatch(teams, enterGameRequest.TeamId)
+	team, err := FindTeamVacancy(match, teams)
 	if err != nil {
 		err = errors.New(Err_TeamsNotPresentInMatch)
 	}
@@ -101,9 +102,9 @@ func GenerateEnterGameResponse(enterGameRequest EnterGameRequest) (response Ente
 	return
 }
 
-func FindTeamInMatch(teams []Team, teamId string) (team Team, err error) {
+func FindTeamVacancy(match Game, teams []Team) (team Team, err error) {
 	for _, tx := range teams {
-		if tx.Id == teamId {
+		if len(tx.Players) < match.Specs.Players {
 			team = tx
 			return
 		}
@@ -167,6 +168,11 @@ func GenerateStartGameResponse(startGameRequest StartGameRequest) (response Star
 		return
 	}
 
+	if err = CreateSnapshot(InitSnapshotDtoF(match.Id, questions[0].Id, teams[0].Id, START.String(), 0, 1, 1)); err != nil {
+		err = errors.New(Err_SnapshotNotCreated)
+		return
+	}
+
 	response = InitStartGameResponse(match.Id, teams, questions)
 	return
 }
@@ -183,12 +189,24 @@ func GenerateQuestionHintResponse(request GameSnapRequest) (response HintRevealR
 		err = errors.New(Err_QuestionNotPresent)
 	}
 
-	response = InitHintRevealResponse(request, answer)
+	snapshot, err := FindLatestSnapshot(request.QuizId)
+	if err != nil {
+		err = errors.New(Err_SnapshotNotPresent)
+	}
+
+	snapshot = InitSnapshotDto(request, HINT.String(), 0, snapshot.QuestionNo, snapshot.RoundNo)
+
+	if err = CreateSnapshot(snapshot); err != nil {
+		err = errors.New(Err_SnapshotNotCreated)
+		return
+	}
+
+	response = InitHintRevealResponse(request, answer, snapshot.QuestionNo, snapshot.RoundNo)
 	return
 }
 
 func GenerateQuestionAnswerResponse(request GameSnapRequest) (response AnswerRevealResponse, err error) {
-	_, err = FindMatch(request.QuizId)
+	match, err := FindMatch(request.QuizId)
 	if err != nil {
 		err = errors.New(Err_MatchNotPresent)
 		return
@@ -199,11 +217,22 @@ func GenerateQuestionAnswerResponse(request GameSnapRequest) (response AnswerRev
 		err = errors.New(Err_QuestionNotPresent)
 	}
 
-	response = InitAnswerRevealResponse(request, answer)
+	snapshot, err := FindLatestSnapshot(request.QuizId)
+	if err != nil {
+		err = errors.New(Err_SnapshotNotPresent)
+	}
+
+	snapshot = InitSnapshotDto(request, RIGHT.String(), match.Specs.Points/int(math.Pow(2, float64(snapshot.RoundNo))), snapshot.QuestionNo, snapshot.RoundNo)
+	if err = CreateSnapshot(snapshot); err != nil {
+		err = errors.New(Err_SnapshotNotCreated)
+		return
+	}
+
+	response = InitAnswerRevealResponse(request, answer, snapshot.QuestionNo, snapshot.RoundNo)
 	return
 }
 
-func GenerateNextQuestionResponse(request NextQuestionRequest) (response GameNextResponse, err error) {
+func GenerateNextQuestionResponse(request GameSnapRequest) (response GameNextResponse, err error) {
 	match, err := FindMatch(request.QuizId)
 	if err != nil {
 		err = errors.New(Err_MatchNotPresent)
@@ -226,8 +255,19 @@ func GenerateNextQuestionResponse(request NextQuestionRequest) (response GameNex
 		return
 	}
 
+	snapshot, err := FindLatestSnapshot(request.QuizId)
+	if err != nil {
+		err = errors.New(Err_SnapshotNotPresent)
+	}
+
+	snapshot = InitSnapshotDto(request, NEXT.String(), 0, snapshot.QuestionNo+1, 1)
+	if err = CreateSnapshot(snapshot); err != nil {
+		err = errors.New(Err_SnapshotNotCreated)
+		return
+	}
+
 	teamsTurn := NextTeam(match.Teams, request.TeamSTurn)
-	response = InitNextQuestionResponse(request, question, teamsTurn)
+	response = InitNextQuestionResponse(request, question, teamsTurn, snapshot.QuestionNo, snapshot.RoundNo)
 	return
 }
 
@@ -268,8 +308,31 @@ func GeneratePassQuestionResponse(request GameSnapRequest) (response GamePassRes
 		return
 	}
 
+	snapshots, err := FindQuestionSnapshots(request.QuizId, request.QuestionId)
+	if len(snapshots) == 0 || err != nil {
+		err = errors.New(Err_SnapshotNotPresent)
+	}
+
+	snapshot := snapshots[len(snapshots)-1]
+	snapshot = InitSnapshotDto(request, PASS.String(), 0, snapshot.QuestionNo, snapshot.RoundNo)
+
+	if err = CreateSnapshot(snapshot); err != nil {
+		err = errors.New(Err_SnapshotNotCreated)
+		return
+	}
+
 	teamsTurn := NextTeam(match.Teams, request.TeamSTurn)
-	fmt.Println(teamsTurn)
-	response = InitPassQuestionResponse(request, teamsTurn)
+	response = InitPassQuestionResponse(request, teamsTurn, snapshot.QuestionNo, snapshot.RoundNo)
+	return
+}
+
+func GenerateScoreResponse(request ScoreRequest) (response ScoreResponse, err error) {
+	snapshots, err := FindSnapshots(request.QuizId)
+	if err != nil {
+		err = errors.New(Err_SnapshotNotPresent)
+		return
+	}
+
+	response = InitScoreResponse(request, snapshots)
 	return
 }

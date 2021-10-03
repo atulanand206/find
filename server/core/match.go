@@ -20,6 +20,8 @@ type (
 		Teams     int `json:"teams"`
 		Players   int `json:"players"`
 		Questions int `json:"questions"`
+		Rounds    int `json:"rounds"`
+		Points    int `json:"points"`
 	}
 
 	TeamMini struct {
@@ -75,6 +77,17 @@ type (
 		Hint       string `json:"hint" bson:"hint"`
 	}
 
+	Snapshot struct {
+		QuizId     string `json:"quiz_id" bson:"quiz_id"`
+		RoundNo    int    `json:"round_no" bson:"round_no"`
+		QuestionNo int    `json:"question_no" bson:"question_no"`
+		QuestionId string `json:"question_id" bson:"question_id"`
+		TeamSTurn  string `json:"team_s_turn" bson:"team_s_turn"`
+		EventType  string `json:"event_type" bson:"event_type"`
+		Score      int    `json:"score" bson:"score"`
+		Timestamp  string `json:"timestamp" bson:"timestamp"`
+	}
+
 	AddQuestionRequest struct {
 		Question NewQuestion `json:"question"`
 		Tag      string      `json:"tag"`
@@ -106,9 +119,12 @@ type (
 	}
 
 	StartGameResponse struct {
-		QuizId   string   `json:"quiz_id"`
-		Teams    []Team   `json:"teams"`
-		Question Question `json:"question"`
+		QuizId     string   `json:"quiz_id"`
+		Teams      []Team   `json:"teams"`
+		Question   Question `json:"question"`
+		TeamSTurn  string   `json:"team_s_turn"`
+		RoundNo    int      `json:"round_no" bson:"round_no"`
+		QuestionNo int      `json:"question_no" bson:"question_no"`
 	}
 
 	GameSnapRequest struct {
@@ -122,6 +138,8 @@ type (
 		TeamSTurn  string `json:"team_s_turn"`
 		QuestionId string `json:"question_id"`
 		Hint       string `json:"hint"`
+		RoundNo    int    `json:"round_no" bson:"round_no"`
+		QuestionNo int    `json:"question_no" bson:"question_no"`
 	}
 
 	AnswerRevealResponse struct {
@@ -129,12 +147,16 @@ type (
 		TeamSTurn  string `json:"team_s_turn"`
 		QuestionId string `json:"question_id"`
 		Answer     string `json:"answer"`
+		RoundNo    int    `json:"round_no" bson:"round_no"`
+		QuestionNo int    `json:"question_no" bson:"question_no"`
 	}
 
 	GamePassResponse struct {
 		QuizId     string `json:"quiz_id"`
 		TeamSTurn  string `json:"team_s_turn"`
 		QuestionId string `json:"question_id"`
+		RoundNo    int    `json:"round_no" bson:"round_no"`
+		QuestionNo int    `json:"question_no" bson:"question_no"`
 	}
 
 	GameNextResponse struct {
@@ -142,6 +164,8 @@ type (
 		TeamSTurn      string   `json:"team_s_turn"`
 		LastQuestionId string   `json:"last_question_id"`
 		Question       Question `json:"question"`
+		RoundNo        int      `json:"round_no" bson:"round_no"`
+		QuestionNo     int      `json:"question_no" bson:"question_no"`
 	}
 
 	NextQuestionRequest struct {
@@ -157,5 +181,14 @@ type (
 	FindAnswerResponse struct {
 		QuestionId string `json:"question_id"`
 		Answer     string `json:"answer"`
+	}
+
+	ScoreRequest struct {
+		QuizId string `json:"quiz_id"`
+	}
+
+	ScoreResponse struct {
+		QuizId    string     `json:"quiz_id"`
+		Snapshots []Snapshot `json:"snapshots"`
 	}
 )

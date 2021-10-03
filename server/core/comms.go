@@ -13,7 +13,7 @@ const (
 	PASS
 	NEXT
 	REVEAL
-	Score
+	SCORE
 	Over
 	Extend
 	S_GAME
@@ -23,6 +23,7 @@ const (
 	S_RIGHT
 	S_PASS
 	S_NEXT
+	S_SCORE
 	S_Question
 	S_Answer
 	S_Over
@@ -41,7 +42,7 @@ func (action Action) String() string {
 		"PASS",
 		"NEXT",
 		"REVEAL",
-		"score",
+		"SCORE",
 		"over",
 		"extend",
 		"S_GAME",
@@ -51,6 +52,7 @@ func (action Action) String() string {
 		"S_RIGHT",
 		"S_PASS",
 		"S_NEXT",
+		"S_SCORE",
 		"s_question",
 		"s_answer",
 		"s_over",
