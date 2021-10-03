@@ -110,10 +110,8 @@ func UpdatePlayerInTeam(team Team, player Player) (err error) {
 	return
 }
 
-func UpdateMatchQuestions(match Game, questions []Question) (err error) {
-	for _, question := range questions {
-		match.Tags = append(match.Tags, question.Tag)
-	}
+func UpdateMatchQuestions(match Game, question Question) (err error) {
+	match.Tags = append(match.Tags, question.Tag)
 	err = UpdateMatch(match)
 	return
 }

@@ -13,7 +13,6 @@ type (
 		QuizMaster Player     `json:"quizmaster" bson:"quizmaster"`
 		Tags       []string   `bson:"tags"`
 		Specs      Specs      `json:"specs" bson:"specs"`
-		TeamSTurn  string     `json:"team_s_turn" bson:"team_s_turn"`
 	}
 
 	Specs struct {
@@ -61,7 +60,7 @@ type (
 
 	NewQuestion struct {
 		Statements []string `json:"statements"`
-		Answer     string   `json:"answer"`
+		Answer     []string `json:"answer"`
 	}
 
 	Question struct {
@@ -71,21 +70,22 @@ type (
 	}
 
 	Answer struct {
-		Id         string `json:"id" bson:"_id"`
-		QuestionId string `json:"question_id" bson:"question_id"`
-		Answer     string `json:"answer" bson:"answer"`
-		Hint       string `json:"hint" bson:"hint"`
+		Id         string   `json:"id" bson:"_id"`
+		QuestionId string   `json:"question_id" bson:"question_id"`
+		Answer     []string `json:"answer" bson:"answer"`
+		Hint       []string `json:"hints" bson:"hints"`
 	}
 
 	Snapshot struct {
-		QuizId     string `json:"quiz_id" bson:"quiz_id"`
-		RoundNo    int    `json:"round_no" bson:"round_no"`
-		QuestionNo int    `json:"question_no" bson:"question_no"`
-		QuestionId string `json:"question_id" bson:"question_id"`
-		TeamSTurn  string `json:"team_s_turn" bson:"team_s_turn"`
-		EventType  string `json:"event_type" bson:"event_type"`
-		Score      int    `json:"score" bson:"score"`
-		Timestamp  string `json:"timestamp" bson:"timestamp"`
+		QuizId     string   `json:"quiz_id" bson:"quiz_id"`
+		RoundNo    int      `json:"round_no" bson:"round_no"`
+		QuestionNo int      `json:"question_no" bson:"question_no"`
+		QuestionId string   `json:"question_id" bson:"question_id"`
+		TeamSTurn  string   `json:"team_s_turn" bson:"team_s_turn"`
+		EventType  string   `json:"event_type" bson:"event_type"`
+		Score      int      `json:"score" bson:"score"`
+		Timestamp  string   `json:"timestamp" bson:"timestamp"`
+		Content    []string `json:"content" bson:"content"`
 	}
 
 	AddQuestionRequest struct {
@@ -119,12 +119,10 @@ type (
 	}
 
 	StartGameResponse struct {
-		QuizId     string   `json:"quiz_id"`
-		Teams      []Team   `json:"teams"`
-		Question   Question `json:"question"`
-		TeamSTurn  string   `json:"team_s_turn"`
-		RoundNo    int      `json:"round_no" bson:"round_no"`
-		QuestionNo int      `json:"question_no" bson:"question_no"`
+		QuizId   string   `json:"quiz_id"`
+		Teams    []Team   `json:"teams"`
+		Question Question `json:"question"`
+		Snapshot Snapshot `json:"snapshot"`
 	}
 
 	GameSnapRequest struct {
@@ -133,54 +131,10 @@ type (
 		QuestionId string `json:"question_id"`
 	}
 
-	HintRevealResponse struct {
-		QuizId     string `json:"quiz_id"`
-		TeamSTurn  string `json:"team_s_turn"`
-		QuestionId string `json:"question_id"`
-		Hint       string `json:"hint"`
-		RoundNo    int    `json:"round_no" bson:"round_no"`
-		QuestionNo int    `json:"question_no" bson:"question_no"`
-	}
-
-	AnswerRevealResponse struct {
-		QuizId     string `json:"quiz_id"`
-		TeamSTurn  string `json:"team_s_turn"`
-		QuestionId string `json:"question_id"`
-		Answer     string `json:"answer"`
-		RoundNo    int    `json:"round_no" bson:"round_no"`
-		QuestionNo int    `json:"question_no" bson:"question_no"`
-	}
-
-	GamePassResponse struct {
-		QuizId     string `json:"quiz_id"`
-		TeamSTurn  string `json:"team_s_turn"`
-		QuestionId string `json:"question_id"`
-		RoundNo    int    `json:"round_no" bson:"round_no"`
-		QuestionNo int    `json:"question_no" bson:"question_no"`
-	}
-
-	GameNextResponse struct {
-		QuizId         string   `json:"quiz_id"`
-		TeamSTurn      string   `json:"team_s_turn"`
-		LastQuestionId string   `json:"last_question_id"`
-		Question       Question `json:"question"`
-		RoundNo        int      `json:"round_no" bson:"round_no"`
-		QuestionNo     int      `json:"question_no" bson:"question_no"`
-	}
-
 	NextQuestionRequest struct {
 		QuizId         string `json:"quiz_id"`
 		TeamSTurn      string `json:"team_s_turn"`
 		LastQuestionId string `json:"question_id"`
-	}
-
-	FindAnswerRequest struct {
-		QuestionId string `json:"question_id"`
-	}
-
-	FindAnswerResponse struct {
-		QuestionId string `json:"question_id"`
-		Answer     string `json:"answer"`
 	}
 
 	ScoreRequest struct {

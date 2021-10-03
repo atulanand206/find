@@ -112,20 +112,6 @@ func DecodeAddQuestionRequest(r *http.Request) (request AddQuestionRequest, err 
 	return
 }
 
-func DecodeNextQuestionRequestJsonString(content string) (request NextQuestionRequest, err error) {
-	if err = json.Unmarshal([]byte(content), &request); err != nil {
-		return
-	}
-	return
-}
-
-func DecodeFindAnswerRequestJsonString(content string) (request FindAnswerRequest, err error) {
-	if err = json.Unmarshal([]byte(content), &request); err != nil {
-		return
-	}
-	return
-}
-
 func DecodeEnterGameRequestJsonString(content string) (request EnterGameRequest, err error) {
 	if err = json.Unmarshal([]byte(content), &request); err != nil {
 		return
