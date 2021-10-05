@@ -202,7 +202,6 @@ func OnScore(content string) (res WebsocketMessage, err error) {
 }
 
 func WebSocketsResponse(action Action, v interface{}) (res WebsocketMessage) {
-	fmt.Println(v)
 	resBytes, err := json.Marshal(v)
 	if err != nil {
 		res = InitWebSocketMessageFailure()

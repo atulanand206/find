@@ -79,10 +79,11 @@ func InitAddQuestionResponse(question Question, answer Answer) (response AddQues
 	return
 }
 
-func InitEnterGameResponse(match Game, teams []Team, teamPlayers []TeamPlayer, players []Player, playerTeamId string) (response EnterGameResponse) {
+func InitEnterGameResponse(match Game, teams []Team, teamPlayers []TeamPlayer, players []Player, playerTeamId string, snapshot Snapshot) (response EnterGameResponse) {
 	response.Quiz = match
 	response.Roster = TableRoster(teams, teamPlayers, players)
 	response.PlayerTeamId = playerTeamId
+	response.Snapshot = snapshot
 	return
 }
 

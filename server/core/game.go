@@ -2,7 +2,6 @@ package core
 
 import (
 	"errors"
-	"fmt"
 	"math"
 )
 
@@ -33,7 +32,7 @@ func GenerateCreateGameResponse(request CreateGameRequest) (response EnterGameRe
 		err = errors.New(Err_TeamNotCreated)
 	}
 
-	response = InitEnterGameResponse(quiz, teams, []TeamPlayer{}, []Player{}, "")
+	response = InitEnterGameResponse(quiz, teams, []TeamPlayer{}, []Player{}, "", Snapshot{})
 	return
 }
 
@@ -50,6 +49,15 @@ func GenerateEnterGameResponse(enterGameRequest EnterGameRequest) (response Ente
 		return
 	}
 
+	var snapshot Snapshot
+	if match.Active {
+		snapshot, err = FindLatestSnapshot(match.Id)
+		if err != nil {
+			err = errors.New(Err_SnapshotNotPresent)
+			return
+		}
+	}
+
 	teams, err := FindTeams(match)
 	if err != nil {
 		err = errors.New(Err_TeamsNotPresentInMatch)
@@ -61,8 +69,6 @@ func GenerateEnterGameResponse(enterGameRequest EnterGameRequest) (response Ente
 		return
 	}
 
-	fmt.Println("|")
-	fmt.Println(teamPlayers)
 	players, err := FindPlayers(teamPlayers)
 	if err != nil {
 		err = errors.New(Err_PlayerNotPresent)
@@ -70,17 +76,16 @@ func GenerateEnterGameResponse(enterGameRequest EnterGameRequest) (response Ente
 	}
 
 	if IsQuizMasterInMatch(match, player) {
-		response = InitEnterGameResponse(match, teams, teamPlayers, players, "")
+		response = InitEnterGameResponse(match, teams, teamPlayers, players, "", snapshot)
 		return
 	}
 
 	if IsPlayerInTeams(teamPlayers, player) {
-		response = InitEnterGameResponse(match, teams, teamPlayers, players, TeamIdForPlayer(teamPlayers, player))
+		response = InitEnterGameResponse(match, teams, teamPlayers, players, TeamIdForPlayer(teamPlayers, player), snapshot)
 		return
 	}
 
 	teamId, err := FindTeamVacancy(match, teams, teamPlayers)
-	fmt.Println(err)
 	if err != nil {
 		err = errors.New(Err_PlayersFullInTeam)
 		return
@@ -114,7 +119,7 @@ func GenerateEnterGameResponse(enterGameRequest EnterGameRequest) (response Ente
 		return
 	}
 
-	response = InitEnterGameResponse(match, teams, teamPlayers, players, TeamIdForPlayer(teamPlayers, player))
+	response = InitEnterGameResponse(match, teams, teamPlayers, players, TeamIdForPlayer(teamPlayers, player), snapshot)
 	return
 }
 
@@ -148,7 +153,16 @@ func GenerateWatchGameResponse(enterGameRequest EnterGameRequest) (response Ente
 		return
 	}
 
-	response = InitEnterGameResponse(match, teams, teamPlayers, players, "")
+	var snapshot Snapshot
+	if match.Active {
+		snapshot, err = FindLatestSnapshot(match.Id)
+		if err != nil {
+			err = errors.New(Err_SnapshotNotPresent)
+			return
+		}
+	}
+
+	response = InitEnterGameResponse(match, teams, teamPlayers, players, "", snapshot)
 	return
 }
 

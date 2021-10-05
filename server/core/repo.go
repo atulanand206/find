@@ -2,7 +2,6 @@ package core
 
 import (
 	"errors"
-	"fmt"
 )
 
 func FindTeamVacancy(match Game, teams []Team, teamPlayers []TeamPlayer) (teamId string, err error) {
@@ -15,8 +14,6 @@ func FindTeamVacancy(match Game, teams []Team, teamPlayers []TeamPlayer) (teamId
 		return
 	}
 	mp := make(map[string]int)
-	fmt.Println(match)
-	fmt.Println(teamPlayers)
 	for _, v := range teamPlayers {
 		if mp[v.TeamId] == 0 {
 			mp[v.TeamId] = 1
@@ -24,14 +21,12 @@ func FindTeamVacancy(match Game, teams []Team, teamPlayers []TeamPlayer) (teamId
 			mp[v.TeamId] = mp[v.TeamId] + 1
 		}
 	}
-	fmt.Println(mp)
 	for k, v := range mp {
 		if v < match.Specs.Players {
 			teamId = k
 			return
 		}
 	}
-	fmt.Println(teamId)
 	return
 }
 

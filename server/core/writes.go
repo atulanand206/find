@@ -112,6 +112,7 @@ func CreateTeamPlayer(team TeamPlayer) (err error) {
 
 func UpdateMatchQuestions(match Game, question Question) (err error) {
 	match.Tags = append(match.Tags, question.Tag)
+	match.Active = true
 	err = UpdateMatch(match)
 	return
 }

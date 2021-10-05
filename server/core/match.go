@@ -12,6 +12,7 @@ type (
 		QuizMaster Player   `json:"quizmaster" bson:"quizmaster"`
 		Tags       []string `bson:"tags"`
 		Specs      Specs    `json:"specs" bson:"specs"`
+		Active     bool     `json:"active" bson:"active"`
 	}
 
 	Specs struct {
@@ -113,6 +114,7 @@ type (
 	EnterGameResponse struct {
 		Quiz         Game         `json:"quiz"`
 		Roster       []TeamRoster `json:"teams"`
+		Snapshot     Snapshot     `json:"snapshot"`
 		PlayerTeamId string       `json:"player_team_id"`
 	}
 

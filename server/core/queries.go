@@ -97,9 +97,6 @@ func FindTeams(match Game) (teams []Team, err error) {
 		return
 	}
 	teams, err = DecodeTeams(cursor)
-	fmt.Println(cursor)
-	fmt.Println(teams)
-	fmt.Println(err)
 	return
 }
 
@@ -153,10 +150,12 @@ func FindLatestSnapshot(matchId string) (snapshot Snapshot, err error) {
 	findOptions.SetSort(sort)
 	dto := mongo.FindOne(Database, SnapshotCollection,
 		bson.M{"quiz_id": matchId}, findOptions)
+	fmt.Println(dto)
 	if err = dto.Err(); err != nil {
 		return
 	}
 	snapshot, err = DecodeSnapshot(dto)
+	fmt.Println(snapshot)
 	return
 }
 
