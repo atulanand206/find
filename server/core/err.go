@@ -17,13 +17,14 @@ const (
 	Err_QuestionsNotSeeded = "Questions can't be seeded."
 	Err_AnswersNotSeeded   = "Answers can't be seeded."
 
-	Err_IndexNotPresent    = "Index does not exist."
-	Err_MatchNotPresent    = "Match with the given info does not exist."
-	Err_SnapshotNotPresent = "Snapshot with the given info does not exist."
-	Err_PlayerNotPresent   = "Player with the given info does not exist."
-	Err_QuestionNotPresent = "Question does not exist."
-	Err_AnswerNotPresent   = "Answer does not exist."
-	Err_TeamNotPresent     = "Team does not exist."
+	Err_IndexNotPresent       = "Index does not exist."
+	Err_MatchNotPresent       = "Match with the given info does not exist."
+	Err_SnapshotNotPresent    = "Snapshot with the given info does not exist."
+	Err_PlayerNotPresent      = "Player with the given info does not exist."
+	Err_QuestionNotPresent    = "Question does not exist."
+	Err_AnswerNotPresent      = "Answer does not exist."
+	Err_TeamNotPresent        = "Team does not exist."
+	Err_TeamPlayersNotPresent = "Team players does not exist."
 
 	Err_MatchNotUpdated = "Match can't be updated."
 

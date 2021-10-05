@@ -1,8 +1,6 @@
 package core
 
 import (
-	"fmt"
-
 	"github.com/atulanand206/go-mongo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -94,19 +92,21 @@ func CreateMatch(match Game) (err error) {
 	return
 }
 
-func CreateTeams(match Game) (err error) {
+func CreateTeams(teams []Team) (err error) {
 	var teamsDto []interface{}
-	for _, t := range match.Teams {
-		teamsDto = append(teamsDto, InitNewTeamM(t))
+	for _, t := range teams {
+		teamsDto = append(teamsDto, t)
 	}
 	_, err = mongo.WriteMany(Database, TeamCollection, teamsDto)
 	return
 }
 
-func UpdatePlayerInTeam(team Team, player Player) (err error) {
-	team.Players = append(team.Players, player)
-	fmt.Println(team)
-	err = UpdateTeam(team)
+func CreateTeamPlayer(team TeamPlayer) (err error) {
+	requestDto, err := mongo.Document(team)
+	if err != nil {
+		return
+	}
+	_, err = mongo.Write(Database, TeamPlayerCollection, *requestDto)
 	return
 }
 
@@ -125,11 +125,7 @@ func UpdateMatch(match Game) (err error) {
 	return
 }
 
-func UpdateTeam(team Team) (err error) {
-	requestDto, err := mongo.Document(team)
-	if err != nil {
-		return
-	}
-	_, err = mongo.Update(Database, TeamCollection, bson.M{"_id": team.Id}, bson.D{primitive.E{Key: "$set", Value: *requestDto}})
+func DeletePlayerLiveSession(playerId string) (err error) {
+	_, err = mongo.Delete(Database, TeamPlayerCollection, bson.M{"player_id": playerId})
 	return
 }

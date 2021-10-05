@@ -82,9 +82,9 @@ func IsQuizMasterInMatch(match Game, person Player) (result bool) {
 	return match.QuizMaster.Id == person.Id
 }
 
-func IsPlayerInTeam(team Team, person Player) (result bool) {
-	for _, player := range team.Players {
-		if player.Id == person.Id {
+func IsPlayerInTeams(teamPlayers []TeamPlayer, person Player) (result bool) {
+	for _, player := range teamPlayers {
+		if player.PlayerId == person.Id {
 			result = true
 			return
 		}
@@ -96,7 +96,7 @@ func NewTeam(team Team) (result bool) {
 	return team.Id == ""
 }
 
-func NextTeam(teams []TeamMini, teamsTurn string) (teamId string) {
+func NextTeam(teams []Team, teamsTurn string) (teamId string) {
 	teamId = ""
 	if len(teams) == 0 {
 		return
@@ -114,23 +114,36 @@ func NextTeam(teams []TeamMini, teamsTurn string) (teamId string) {
 	return
 }
 
-func PlayerCanBeAdded(match Game, team Team) (result bool) {
-	if len(team.Players) < match.Specs.Players {
-		result = true
-		return
-	}
-	return
-}
-
-func MatchFull(match Game, teams []Team) (result bool) {
-	for _, v := range teams {
-		if len(v.Players) < match.Specs.Players {
-			return false
-		}
+func MatchFull(match Game, teamPlayers []TeamPlayer) (result bool) {
+	if len(teamPlayers) < match.Specs.Players*match.Specs.Teams {
+		return false
 	}
 	return true
 }
 
 func QuestionCanBeAdded(match Game) (result bool) {
 	return len(match.Tags) < match.Specs.Questions
+}
+
+func TableRoster(teams []Team, teamPlayers []TeamPlayer, players []Player) (roster []TeamRoster) {
+	roster = make([]TeamRoster, 0)
+	for _, v := range teams {
+		var entry TeamRoster
+		entry.Id = v.Id
+		entry.Name = v.Name
+		entry.Score = v.Score
+		playrs := make([]Player, 0)
+		for _, w := range teamPlayers {
+			if w.TeamId == v.Id {
+				for _, x := range players {
+					if x.Id == w.PlayerId {
+						playrs = append(playrs, x)
+					}
+				}
+			}
+		}
+		entry.Players = playrs
+		roster = append(roster, entry)
+	}
+	return
 }

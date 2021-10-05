@@ -1,15 +1,37 @@
 package core
 
-import "errors"
+import (
+	"errors"
+	"fmt"
+)
 
-func FindTeamVacancy(match Game, teams []Team) (team Team, err error) {
-	for _, tx := range teams {
-		if len(tx.Players) < match.Specs.Players {
-			team = tx
+func FindTeamVacancy(match Game, teams []Team, teamPlayers []TeamPlayer) (teamId string, err error) {
+	if len(teamPlayers) >= match.Specs.Players*match.Specs.Teams {
+		err = errors.New(Err_PlayersFullInTeam)
+		return
+	}
+	if len(teamPlayers) < len(teams) {
+		teamId = teams[len(teamPlayers)].Id
+		return
+	}
+	mp := make(map[string]int)
+	fmt.Println(match)
+	fmt.Println(teamPlayers)
+	for _, v := range teamPlayers {
+		if mp[v.TeamId] == 0 {
+			mp[v.TeamId] = 1
+		} else {
+			mp[v.TeamId] = mp[v.TeamId] + 1
+		}
+	}
+	fmt.Println(mp)
+	for k, v := range mp {
+		if v < match.Specs.Players {
+			teamId = k
 			return
 		}
 	}
-	err = errors.New(Err_TeamsNotPresentInMatch)
+	fmt.Println(teamId)
 	return
 }
 
@@ -40,5 +62,15 @@ func FindQuestionForMatch(match Game) (question Question, err error) {
 	}
 
 	question = questions[0]
+	return
+}
+
+func TeamIdForPlayer(teamPlayers []TeamPlayer, player Player) (teamId string) {
+	for _, v := range teamPlayers {
+		if v.PlayerId == player.Id {
+			teamId = v.TeamId
+			return
+		}
+	}
 	return
 }

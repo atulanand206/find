@@ -1,6 +1,8 @@
 package core
 
 import (
+	"fmt"
+
 	"github.com/atulanand206/go-mongo"
 	"github.com/xorcare/pointer"
 	"go.mongodb.org/mongo-driver/bson"
@@ -84,16 +86,53 @@ func FindQuestionsFromIndexes(indexes []Index, limit int64) (questions []Questio
 }
 
 func FindTeams(match Game) (teams []Team, err error) {
-	teamIds := make([]string, 0)
-	for _, v := range match.Teams {
-		teamIds = append(teamIds, v.Id)
-	}
+	findOptions := &options.FindOptions{}
+	sort := bson.D{}
+	sort = append(sort, bson.E{Key: "name", Value: -1})
+	findOptions.SetSort(sort)
 	cursor, err := mongo.Find(Database, TeamCollection,
-		bson.M{"_id": bson.M{"$in": teamIds}}, &options.FindOptions{})
+		bson.M{"quiz_id": match.Id}, findOptions)
+
 	if err != nil {
 		return
 	}
 	teams, err = DecodeTeams(cursor)
+	fmt.Println(cursor)
+	fmt.Println(teams)
+	fmt.Println(err)
+	return
+}
+
+func FindPlayers(teamPlayers []TeamPlayer) (players []Player, err error) {
+	playerIds := make([]string, 0)
+	for _, v := range teamPlayers {
+		playerIds = append(playerIds, v.PlayerId)
+	}
+	findOptions := &options.FindOptions{}
+	cursor, err := mongo.Find(Database, PlayerCollection,
+		bson.M{"_id": bson.M{"$in": playerIds}}, findOptions)
+	if err != nil {
+		return
+	}
+	players, err = DecodePlayers(cursor)
+	return
+}
+
+func FindTeamPlayers(teams []Team) (teamPlayers []TeamPlayer, err error) {
+	teamIds := make([]string, 0)
+	for _, v := range teams {
+		teamIds = append(teamIds, v.Id)
+	}
+	findOptions := &options.FindOptions{}
+	sort := bson.D{}
+	sort = append(sort, bson.E{Key: "team_id", Value: -1})
+	findOptions.SetSort(sort)
+	cursor, err := mongo.Find(Database, TeamPlayerCollection,
+		bson.M{"team_id": bson.M{"$in": teamIds}}, findOptions)
+	if err != nil {
+		return
+	}
+	teamPlayers, err = DecodeTeamPlayers(cursor)
 	return
 }
 

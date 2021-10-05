@@ -6,6 +6,9 @@ type Hub struct {
 	// Registered clients.
 	clients map[*Client]bool
 
+	// Registered livePlayerIds.
+	livePlayerIds map[*Client]string
+
 	// Inbound messages from the clients.
 	broadcast chan []byte
 
@@ -18,10 +21,11 @@ type Hub struct {
 
 func NewHub() *Hub {
 	return &Hub{
-		broadcast:  make(chan []byte),
-		register:   make(chan *Client),
-		unregister: make(chan *Client),
-		clients:    make(map[*Client]bool),
+		broadcast:     make(chan []byte),
+		register:      make(chan *Client),
+		unregister:    make(chan *Client),
+		clients:       make(map[*Client]bool),
+		livePlayerIds: make(map[*Client]string),
 	}
 }
 
@@ -32,6 +36,8 @@ func (h *Hub) Run() {
 			h.clients[client] = true
 		case client := <-h.unregister:
 			if _, ok := h.clients[client]; ok {
+				DeletePlayerLiveSession(h.livePlayerIds[client])
+				delete(h.livePlayerIds, client)
 				delete(h.clients, client)
 				close(client.send)
 			}

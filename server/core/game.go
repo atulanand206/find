@@ -28,21 +28,22 @@ func GenerateCreateGameResponse(request CreateGameRequest) (response EnterGameRe
 		err = errors.New(Err_MatchNotCreated)
 	}
 
-	if err = CreateTeams(quiz); err != nil {
+	teams := InitNewTeams(quiz)
+	if err = CreateTeams(teams); err != nil {
 		err = errors.New(Err_TeamNotCreated)
 	}
 
-	teams, err := FindTeams(quiz)
-	if err != nil {
-		err = errors.New(Err_TeamNotPresent)
-	}
-
-	response = InitEnterGameResponse(quiz, teams)
-	fmt.Println(response)
+	response = InitEnterGameResponse(quiz, teams, []TeamPlayer{}, []Player{}, "")
 	return
 }
 
 func GenerateEnterGameResponse(enterGameRequest EnterGameRequest) (response EnterGameResponse, err error) {
+	player, err := FindPlayer(enterGameRequest.Person.Email)
+	if err != nil {
+		err = errors.New(err.Error())
+		return
+	}
+
 	match, err := FindMatch(enterGameRequest.QuizId)
 	if err != nil {
 		err = errors.New(Err_MatchNotPresent)
@@ -54,35 +55,38 @@ func GenerateEnterGameResponse(enterGameRequest EnterGameRequest) (response Ente
 		err = errors.New(Err_TeamsNotPresentInMatch)
 	}
 
-	team, err := FindTeamVacancy(match, teams)
+	teamPlayers, err := FindTeamPlayers(teams)
 	if err != nil {
-		err = errors.New(Err_TeamsNotPresentInMatch)
+		err = errors.New(Err_TeamPlayersNotPresent)
+		return
 	}
 
-	player := enterGameRequest.Person
+	fmt.Println("|")
+	fmt.Println(teamPlayers)
+	players, err := FindPlayers(teamPlayers)
+	if err != nil {
+		err = errors.New(Err_PlayerNotPresent)
+		return
+	}
+
 	if IsQuizMasterInMatch(match, player) {
-		err = errors.New(Err_QuizmasterCantPlay)
+		response = InitEnterGameResponse(match, teams, teamPlayers, players, "")
 		return
 	}
 
-	if IsPlayerInTeam(team, player) {
-		err = errors.New(Err_PlayerAlreadyInGame)
+	if IsPlayerInTeams(teamPlayers, player) {
+		response = InitEnterGameResponse(match, teams, teamPlayers, players, TeamIdForPlayer(teamPlayers, player))
 		return
 	}
 
-	fmt.Println(match)
-	if !PlayerCanBeAdded(match, team) {
+	teamId, err := FindTeamVacancy(match, teams, teamPlayers)
+	fmt.Println(err)
+	if err != nil {
 		err = errors.New(Err_PlayersFullInTeam)
 		return
 	}
 
-	player, err = FindPlayer(player.Email)
-	if err != nil {
-		err = errors.New(err.Error())
-		return
-	}
-
-	if err = UpdatePlayerInTeam(team, player); err != nil {
+	if err = CreateTeamPlayer(InitTeamPlayer(teamId, player)); err != nil {
 		err = errors.New(Err_MatchNotUpdated)
 		return
 	}
@@ -98,11 +102,29 @@ func GenerateEnterGameResponse(enterGameRequest EnterGameRequest) (response Ente
 		err = errors.New(Err_TeamsNotPresentInMatch)
 	}
 
-	response = InitEnterGameResponse(match, teams)
+	teamPlayers, err = FindTeamPlayers(teams)
+	if err != nil {
+		err = errors.New(Err_TeamsNotPresentInMatch)
+		return
+	}
+
+	players, err = FindPlayers(teamPlayers)
+	if err != nil {
+		err = errors.New(Err_PlayerNotPresent)
+		return
+	}
+
+	response = InitEnterGameResponse(match, teams, teamPlayers, players, TeamIdForPlayer(teamPlayers, player))
 	return
 }
 
 func GenerateWatchGameResponse(enterGameRequest EnterGameRequest) (response EnterGameResponse, err error) {
+	_, err = FindPlayer(enterGameRequest.Person.Email)
+	if err != nil {
+		err = errors.New(err.Error())
+		return
+	}
+
 	match, err := FindMatch(enterGameRequest.QuizId)
 	if err != nil {
 		err = errors.New(Err_MatchNotPresent)
@@ -114,7 +136,19 @@ func GenerateWatchGameResponse(enterGameRequest EnterGameRequest) (response Ente
 		err = errors.New(Err_TeamsNotPresentInMatch)
 	}
 
-	response = InitEnterGameResponse(match, teams)
+	teamPlayers, err := FindTeamPlayers(teams)
+	if err != nil {
+		err = errors.New(Err_TeamsNotPresentInMatch)
+		return
+	}
+
+	players, err := FindPlayers(teamPlayers)
+	if err != nil {
+		err = errors.New(Err_PlayerNotPresent)
+		return
+	}
+
+	response = InitEnterGameResponse(match, teams, teamPlayers, players, "")
 	return
 }
 
@@ -130,7 +164,13 @@ func GenerateStartGameResponse(startGameRequest StartGameRequest) (response Star
 		err = errors.New(Err_TeamsNotPresentInMatch)
 	}
 
-	if result := MatchFull(match, teams); !result {
+	teamPlayers, err := FindTeamPlayers(teams)
+	if err != nil {
+		err = errors.New(Err_TeamsNotPresentInMatch)
+		return
+	}
+
+	if result := MatchFull(match, teamPlayers); !result {
 		err = errors.New(Err_WaitingForPlayers)
 		return
 	}
@@ -152,7 +192,13 @@ func GenerateStartGameResponse(startGameRequest StartGameRequest) (response Star
 		return
 	}
 
-	response = InitStartGameResponse(match.Id, teams, question, snapshot)
+	players, err := FindPlayers(teamPlayers)
+	if err != nil {
+		err = errors.New(Err_PlayerNotPresent)
+		return
+	}
+
+	response = InitStartGameResponse(match.Id, teams, teamPlayers, players, question, snapshot)
 	return
 }
 
@@ -242,7 +288,12 @@ func GenerateNextQuestionResponse(request GameSnapRequest) (response Snapshot, e
 		err = errors.New(Err_SnapshotNotPresent)
 	}
 
-	teamsTurn := NextTeam(match.Teams, request.TeamSTurn)
+	teams, err := FindTeams(match)
+	if err != nil {
+		err = errors.New(Err_TeamsNotPresentInMatch)
+	}
+
+	teamsTurn := NextTeam(teams, request.TeamSTurn)
 	snapshot = InitSnapshotDtoF(request.QuestionId, question.Id, teamsTurn, NEXT.String(), 0, snapshot.QuestionNo+1, 1, question.Statements)
 	if err = CreateSnapshot(snapshot); err != nil {
 		err = errors.New(Err_SnapshotNotCreated)
@@ -265,9 +316,14 @@ func GeneratePassQuestionResponse(request GameSnapRequest) (response Snapshot, e
 		err = errors.New(Err_SnapshotNotPresent)
 	}
 
-	teamsTurn := NextTeam(match.Teams, request.TeamSTurn)
+	teams, err := FindTeams(match)
+	if err != nil {
+		err = errors.New(Err_TeamsNotPresentInMatch)
+	}
+
+	teamsTurn := NextTeam(teams, request.TeamSTurn)
 	snapshot := snapshots[len(snapshots)-1]
-	snapshot = InitSnapshotDtoF(request.QuizId, request.QuestionId, teamsTurn, PASS.String(), 0, snapshot.QuestionNo, snapshot.RoundNo, []string{})
+	snapshot = InitSnapshotDtoF(match.Id, request.QuestionId, teamsTurn, PASS.String(), 0, snapshot.QuestionNo, snapshot.RoundNo, []string{})
 	if err = CreateSnapshot(snapshot); err != nil {
 		err = errors.New(Err_SnapshotNotCreated)
 		return

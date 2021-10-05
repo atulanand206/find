@@ -8,8 +8,6 @@ import (
 func HandleWSMessage(msg WebsocketMessage) (res WebsocketMessage, err error) {
 	fmt.Println(msg)
 	switch msg.Action {
-	case BEGIN.String():
-		res, err = OnBegin(msg.Content)
 	case SPECS.String():
 		res, err = OnCreate(msg.Content)
 	case JOIN.String():
@@ -34,25 +32,19 @@ func HandleWSMessage(msg WebsocketMessage) (res WebsocketMessage, err error) {
 	return
 }
 
-func OnBegin(content string) (res WebsocketMessage, err error) {
+func OnBegin(content string) (res Player, err error) {
 	request, err := DecodePlayerJsonString(content)
 	if err != nil {
-		res = InitWebSocketMessageFailure()
+		// res = InitWebSocketMessageFailure()
 		return
 	}
 
 	response, err := GenerateBeginGameResponse(request)
 	if err != nil {
-		res = InitWebSocketMessage(Failure, err.Error())
+		// res = InitWebSocketMessage(Failure, err.Error())
 		return
 	}
-
-	resBytes, err := json.Marshal(response)
-	if err != nil {
-		res = InitWebSocketMessageFailure()
-		return
-	}
-	res = InitWebSocketMessage(S_PLAYER, string(resBytes))
+	res = response
 	return
 }
 

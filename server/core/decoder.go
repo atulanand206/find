@@ -106,6 +106,30 @@ func DecodeTeams(cursor *mg.Cursor) (teams []Team, err error) {
 	return
 }
 
+func DecodePlayers(cursor *mg.Cursor) (players []Player, err error) {
+	for cursor.Next(context.Background()) {
+		var player Player
+		err = cursor.Decode(&player)
+		if err != nil {
+			return
+		}
+		players = append(players, player)
+	}
+	return
+}
+
+func DecodeTeamPlayers(cursor *mg.Cursor) (teamPlayers []TeamPlayer, err error) {
+	for cursor.Next(context.Background()) {
+		var teamPlayer TeamPlayer
+		err = cursor.Decode(&teamPlayer)
+		if err != nil {
+			return
+		}
+		teamPlayers = append(teamPlayers, teamPlayer)
+	}
+	return
+}
+
 func DecodeAddQuestionRequest(r *http.Request) (request AddQuestionRequest, err error) {
 	decoder := json.NewDecoder(r.Body)
 	err = decoder.Decode(&request)

@@ -27,11 +27,15 @@ func InitNewAnswer(question Question, newQuestion NewQuestion) (answer Answer) {
 	return
 }
 
-func InitNewMatch(quizmaster Player, specs Specs) (match Game) {
-	match.Teams = make([]TeamMini, 0)
-	for idx := 0; idx < specs.Teams; idx++ {
-		match.Teams = append(match.Teams, InitNewTeam(NewTeamName(idx), specs.Players))
+func InitNewTeams(match Game) (teams []Team) {
+	teams = make([]Team, 0)
+	for idx := 0; idx < match.Specs.Teams; idx++ {
+		teams = append(teams, InitNewTeam(NewTeamName(idx), match.Id))
 	}
+	return
+}
+
+func InitNewMatch(quizmaster Player, specs Specs) (match Game) {
 	match.Tags = make([]string, 0)
 	match.QuizMaster = quizmaster
 	match.Specs = specs
@@ -45,23 +49,23 @@ func NewTeamName(idx int) (name string) {
 	return fmt.Sprintf("Team %d", idx)
 }
 
-func InitNewTeam(name string, players int) (team TeamMini) {
+func InitNewTeam(name string, quizId string) (team Team) {
 	team.Name = name
+	team.QuizId = quizId
 	team.Id = id(team)
-	return
-}
-
-func InitNewTeamM(teammini TeamMini) (team Team) {
-	team.Players = make([]Player, 0)
-	team.Name = teammini.Name
-	team.Id = teammini.Id
 	return
 }
 
 func InitNewPlayer(playerRequest Player) (player Player) {
 	player.Name = playerRequest.Name
 	player.Email = playerRequest.Email
-	player.Id = id(player)
+	player.Id = playerRequest.Id
+	return
+}
+
+func InitTeamPlayer(teamId string, player Player) (teamPlayer TeamPlayer) {
+	teamPlayer.TeamId = teamId
+	teamPlayer.PlayerId = player.Id
 	return
 }
 
@@ -75,15 +79,16 @@ func InitAddQuestionResponse(question Question, answer Answer) (response AddQues
 	return
 }
 
-func InitEnterGameResponse(match Game, teams []Team) (response EnterGameResponse) {
+func InitEnterGameResponse(match Game, teams []Team, teamPlayers []TeamPlayer, players []Player, playerTeamId string) (response EnterGameResponse) {
 	response.Quiz = match
-	response.Teams = teams
+	response.Roster = TableRoster(teams, teamPlayers, players)
+	response.PlayerTeamId = playerTeamId
 	return
 }
 
-func InitStartGameResponse(quizId string, teams []Team, question Question, snapshot Snapshot) (response StartGameResponse) {
+func InitStartGameResponse(quizId string, teams []Team, teamPlayers []TeamPlayer, players []Player, question Question, snapshot Snapshot) (response StartGameResponse) {
 	response.QuizId = quizId
-	response.Teams = teams
+	response.Roster = TableRoster(teams, teamPlayers, players)
 	response.Snapshot = snapshot
 	return
 }

@@ -78,7 +78,7 @@ func (c *Client) ReadPump() {
 			}
 			break
 		}
-		message, err = HandleMessages(message)
+		message, err = HandleMessages(message, c)
 		if err != nil {
 			log.Printf("error: %v", err)
 		}
@@ -87,12 +87,12 @@ func (c *Client) ReadPump() {
 	}
 }
 
-func HandleMessages(input []byte) (output []byte, err error) {
+func HandleMessages(input []byte, client *Client) (output []byte, err error) {
 	request, err := DecodeWebSocketRequest(input)
 	if err != nil {
 		return
 	}
-	response, err := HandleWSMessage(request)
+	response, err := Handle(request, client)
 	if err != nil {
 		return
 	}
@@ -100,6 +100,30 @@ func HandleMessages(input []byte) (output []byte, err error) {
 	if err != nil {
 		return
 	}
+	return
+}
+
+func Handle(request WebsocketMessage, client *Client) (response WebsocketMessage, err error) {
+	if request.Action == BEGIN.String() {
+		response = createPlayer(request, client)
+		return
+	}
+
+	response, err = HandleWSMessage(request)
+	return
+}
+
+func createPlayer(request WebsocketMessage, client *Client) (response WebsocketMessage) {
+	player, er := OnBegin(request.Content)
+
+	client.hub.livePlayerIds[client] = player.Id
+
+	resBytes, er := json.Marshal(player)
+	if er != nil {
+		response = InitWebSocketMessageFailure()
+	}
+
+	response = InitWebSocketMessage(S_PLAYER, string(resBytes))
 	return
 }
 

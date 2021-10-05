@@ -23,7 +23,9 @@ var (
 	// Instance variable to store the DB Team Collection name.
 	TeamCollection string
 	// Instance variable to store the DB Player Collection name.
-	PlayerCollection string
+	PlayerCollection     string
+	MatchTeamCollection  string
+	TeamPlayerCollection string
 
 	hub *Hub
 )
@@ -38,6 +40,8 @@ func Routes() *http.ServeMux {
 	TeamCollection = os.Getenv("TEAM_COLLECTION")
 	PlayerCollection = os.Getenv("PLAYER_COLLECTION")
 	IndexCollection = os.Getenv("INDEX_COLLECTION")
+	MatchTeamCollection = os.Getenv("MATCH_TEAM_COLLECTION")
+	TeamPlayerCollection = os.Getenv("TEAM_PLAYER_COLLECTION")
 
 	// Interceptor chain for attaching to the requests.
 	chain := net.MiddlewareChain{

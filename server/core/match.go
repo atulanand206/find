@@ -8,11 +8,10 @@ const (
 
 type (
 	Game struct {
-		Id         string     `json:"id" bson:"_id"`
-		Teams      []TeamMini `json:"teams" bson:"teams"`
-		QuizMaster Player     `json:"quizmaster" bson:"quizmaster"`
-		Tags       []string   `bson:"tags"`
-		Specs      Specs      `json:"specs" bson:"specs"`
+		Id         string   `json:"id" bson:"_id"`
+		QuizMaster Player   `json:"quizmaster" bson:"quizmaster"`
+		Tags       []string `bson:"tags"`
+		Specs      Specs    `json:"specs" bson:"specs"`
 	}
 
 	Specs struct {
@@ -23,22 +22,29 @@ type (
 		Points    int `json:"points"`
 	}
 
-	TeamMini struct {
-		Id    string `json:"id" bson:"_id"`
-		Name  string `json:"name" bson:"name"`
-		Score int    `json:"score" bson:"score"`
+	Team struct {
+		Id     string `json:"id" bson:"_id"`
+		QuizId string `json:"quiz_id" bson:"quiz_id"`
+		Name   string `json:"name" bson:"name"`
+		Score  int    `json:"score" bson:"score"`
 	}
 
-	Team struct {
-		Id      string   `json:"id" bson:"_id"`
-		Name    string   `json:"name" bson:"name"`
-		Players []Player `json:"players" bson:"players"`
+	TeamRoster struct {
+		Id      string   `json:"id"`
+		Name    string   `json:"name"`
+		Players []Player `json:"players"`
+		Score   int      `json:"score" bson:"score"`
 	}
 
 	Player struct {
 		Id    string `json:"id,omitempty" bson:"_id"`
 		Name  string `json:"name,omitempty" bson:"name"`
 		Email string `json:"email,omitempty" bson:"email"`
+	}
+
+	TeamPlayer struct {
+		TeamId   string `json:"team_id" bson:"team_id"`
+		PlayerId string `json:"player_id" bson:"player_id"`
 	}
 
 	Index struct {
@@ -105,8 +111,9 @@ type (
 	}
 
 	EnterGameResponse struct {
-		Quiz  Game   `json:"quiz"`
-		Teams []Team `json:"teams"`
+		Quiz         Game         `json:"quiz"`
+		Roster       []TeamRoster `json:"teams"`
+		PlayerTeamId string       `json:"player_team_id"`
 	}
 
 	CreateGameRequest struct {
@@ -119,10 +126,10 @@ type (
 	}
 
 	StartGameResponse struct {
-		QuizId   string   `json:"quiz_id"`
-		Teams    []Team   `json:"teams"`
-		Question Question `json:"question"`
-		Snapshot Snapshot `json:"snapshot"`
+		QuizId   string       `json:"quiz_id"`
+		Roster   []TeamRoster `json:"teams"`
+		Question Question     `json:"question"`
+		Snapshot Snapshot     `json:"snapshot"`
 	}
 
 	GameSnapRequest struct {
