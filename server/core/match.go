@@ -43,7 +43,13 @@ type (
 		Email string `json:"email,omitempty" bson:"email"`
 	}
 
+	TeamPlayerRequest struct {
+		TeamId   string `json:"team_id" bson:"team_id"`
+		PlayerId string `json:"player_id" bson:"player_id"`
+	}
+
 	TeamPlayer struct {
+		Id       string `json:"id" bson:"_id"`
 		TeamId   string `json:"team_id" bson:"team_id"`
 		PlayerId string `json:"player_id" bson:"player_id"`
 	}

@@ -9,10 +9,6 @@ func FindTeamVacancy(match Game, teams []Team, teamPlayers []TeamPlayer) (teamId
 		err = errors.New(Err_PlayersFullInTeam)
 		return
 	}
-	if len(teamPlayers) < len(teams) {
-		teamId = teams[len(teamPlayers)].Id
-		return
-	}
 	mp := make(map[string]int)
 	for _, v := range teamPlayers {
 		if mp[v.TeamId] == 0 {
@@ -21,8 +17,15 @@ func FindTeamVacancy(match Game, teams []Team, teamPlayers []TeamPlayer) (teamId
 			mp[v.TeamId] = mp[v.TeamId] + 1
 		}
 	}
+	var x = match.Specs.Players
+	for _, v := range mp {
+		if v < x {
+			x = v
+			return
+		}
+	}
 	for k, v := range mp {
-		if v < match.Specs.Players {
+		if v == x {
 			teamId = k
 			return
 		}
@@ -67,5 +70,19 @@ func TeamIdForPlayer(teamPlayers []TeamPlayer, player Player) (teamId string) {
 			return
 		}
 	}
+	return
+}
+
+func DeletePlayerLiveSession(playerId string, hub *Hub) (err error) {
+	playerTeams, err := FindPlayerTeams(playerId)
+	teams, err := FindTPs(playerTeams)
+	matches, err := FindActiveTeamMatches(teams)
+	allTeams, err := FindTeamsMatches(matches)
+	allTps, err := FindTeamPlayers(allTeams)
+	tpIds := make([]string, 0)
+	for _, v := range allTps {
+		tpIds = append(tpIds, v.Id)
+	}
+	err = DeleteTeamPlayers(tpIds)
 	return
 }

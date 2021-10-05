@@ -101,7 +101,7 @@ func CreateTeams(teams []Team) (err error) {
 	return
 }
 
-func CreateTeamPlayer(team TeamPlayer) (err error) {
+func CreateTeamPlayer(team TeamPlayerRequest) (err error) {
 	requestDto, err := mongo.Document(team)
 	if err != nil {
 		return
@@ -126,7 +126,7 @@ func UpdateMatch(match Game) (err error) {
 	return
 }
 
-func DeletePlayerLiveSession(playerId string) (err error) {
-	_, err = mongo.Delete(Database, TeamPlayerCollection, bson.M{"player_id": playerId})
+func DeleteTeamPlayers(ids []string) (err error) {
+	_, err = mongo.Delete(Database, TeamPlayerCollection, bson.M{"_id": bson.M{"$in": ids}})
 	return
 }

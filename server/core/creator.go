@@ -63,7 +63,7 @@ func InitNewPlayer(playerRequest Player) (player Player) {
 	return
 }
 
-func InitTeamPlayer(teamId string, player Player) (teamPlayer TeamPlayer) {
+func InitTeamPlayer(teamId string, player Player) (teamPlayer TeamPlayerRequest) {
 	teamPlayer.TeamId = teamId
 	teamPlayer.PlayerId = player.Id
 	return

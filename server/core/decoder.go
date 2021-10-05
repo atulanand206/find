@@ -58,6 +58,18 @@ func DecodeSnapshot(document *mg.SingleResult) (snapshot Snapshot, err error) {
 	return
 }
 
+func DecodeMatches(cursor *mg.Cursor) (games []Game, err error) {
+	for cursor.Next(context.Background()) {
+		var game Game
+		err = cursor.Decode(&game)
+		if err != nil {
+			return
+		}
+		games = append(games, game)
+	}
+	return
+}
+
 func DecodeIndexes(cursor *mg.Cursor) (indexes []Index, err error) {
 	for cursor.Next(context.Background()) {
 		var index Index

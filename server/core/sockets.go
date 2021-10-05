@@ -78,16 +78,13 @@ func (c *Client) ReadPump() {
 			}
 			break
 		}
-		message, err = HandleMessages(message, c)
-		if err != nil {
+		if err = HandleMessages(message, c); err != nil {
 			log.Printf("error: %v", err)
 		}
-		message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
-		c.hub.broadcast <- message
 	}
 }
 
-func HandleMessages(input []byte, client *Client) (output []byte, err error) {
+func HandleMessages(input []byte, client *Client) (err error) {
 	request, err := DecodeWebSocketRequest(input)
 	if err != nil {
 		return
@@ -96,11 +93,17 @@ func HandleMessages(input []byte, client *Client) (output []byte, err error) {
 	if err != nil {
 		return
 	}
-	output, err = json.Marshal(response)
+	client.Broadcast(response)
+	return
+}
+
+func (c *Client) Broadcast(response WebsocketMessage) {
+	output, err := json.Marshal(response)
 	if err != nil {
 		return
 	}
-	return
+	message := bytes.TrimSpace(bytes.Replace(output, newline, space, -1))
+	c.hub.broadcast <- message
 }
 
 func Handle(request WebsocketMessage, client *Client) (response WebsocketMessage, err error) {

@@ -16,6 +16,8 @@ const (
 	SCORE
 	Over
 	Extend
+	ACTIVE
+	S_ACTIVE
 	S_GAME
 	S_PLAYER
 	S_START
@@ -45,6 +47,8 @@ func (action Action) String() string {
 		"SCORE",
 		"over",
 		"extend",
+		"ACTIVE",
+		"S_ACTIVE",
 		"S_GAME",
 		"S_PLAYER",
 		"S_START",

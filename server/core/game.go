@@ -5,6 +5,14 @@ import (
 	"math"
 )
 
+func GenerateActiveQuizResponse() (matches []Game, err error) {
+	matches, err = FindActiveMatches()
+	if err != nil {
+		err = errors.New(Err_MatchNotPresent)
+	}
+	return
+}
+
 func GenerateBeginGameResponse(player Player) (res Player, err error) {
 	res, err = FindOrCreatePlayer(player)
 	if err != nil {

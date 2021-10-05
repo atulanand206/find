@@ -8,6 +8,8 @@ import (
 func HandleWSMessage(msg WebsocketMessage) (res WebsocketMessage, err error) {
 	fmt.Println(msg)
 	switch msg.Action {
+	case ACTIVE.String():
+		res, err = OnActive()
 	case SPECS.String():
 		res, err = OnCreate(msg.Content)
 	case JOIN.String():
@@ -45,6 +47,17 @@ func OnBegin(content string) (res Player, err error) {
 		return
 	}
 	res = response
+	return
+}
+
+func OnActive() (res WebsocketMessage, err error) {
+	response, err := GenerateActiveQuizResponse()
+	if err != nil {
+		res = InitWebSocketMessage(Failure, err.Error())
+		return
+	}
+
+	res = WebSocketsResponse(S_ACTIVE, response)
 	return
 }
 

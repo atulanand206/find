@@ -85,6 +85,21 @@ func FindQuestionsFromIndexes(indexes []Index, limit int64) (questions []Questio
 	return
 }
 
+func FindActiveMatches() (matches []Game, err error) {
+	findOptions := &options.FindOptions{}
+	sort := bson.D{}
+	sort = append(sort, bson.E{Key: "quizmaster.name", Value: 1})
+	findOptions.SetSort(sort)
+	cursor, err := mongo.Find(Database, MatchCollection,
+		bson.M{"active": true}, findOptions)
+
+	if err != nil {
+		return
+	}
+	matches, err = DecodeMatches(cursor)
+	return
+}
+
 func FindTeams(match Game) (teams []Team, err error) {
 	findOptions := &options.FindOptions{}
 	sort := bson.D{}
@@ -92,6 +107,25 @@ func FindTeams(match Game) (teams []Team, err error) {
 	findOptions.SetSort(sort)
 	cursor, err := mongo.Find(Database, TeamCollection,
 		bson.M{"quiz_id": match.Id}, findOptions)
+
+	if err != nil {
+		return
+	}
+	teams, err = DecodeTeams(cursor)
+	return
+}
+
+func FindTeamsMatches(match []Game) (teams []Team, err error) {
+	matchIds := make([]string, 0)
+	for _, v := range match {
+		matchIds = append(matchIds, v.Id)
+	}
+	findOptions := &options.FindOptions{}
+	sort := bson.D{}
+	sort = append(sort, bson.E{Key: "name", Value: -1})
+	findOptions.SetSort(sort)
+	cursor, err := mongo.Find(Database, TeamCollection,
+		bson.M{"quiz_id": bson.M{"$in": matchIds}}, findOptions)
 
 	if err != nil {
 		return
@@ -115,6 +149,36 @@ func FindPlayers(teamPlayers []TeamPlayer) (players []Player, err error) {
 	return
 }
 
+func FindTPs(teamPlayers []TeamPlayer) (teams []Team, err error) {
+	teamIds := make([]string, 0)
+	for _, v := range teamPlayers {
+		teamIds = append(teamIds, v.TeamId)
+	}
+	findOptions := &options.FindOptions{}
+	cursor, err := mongo.Find(Database, TeamCollection,
+		bson.M{"_id": bson.M{"$in": teamIds}}, findOptions)
+	if err != nil {
+		return
+	}
+	teams, err = DecodeTeams(cursor)
+	return
+}
+
+func FindActiveTeamMatches(teams []Team) (matches []Game, err error) {
+	matchIds := make([]string, 0)
+	for _, v := range teams {
+		matchIds = append(matchIds, v.QuizId)
+	}
+	findOptions := &options.FindOptions{}
+	cursor, err := mongo.Find(Database, MatchCollection,
+		bson.M{"_id": bson.M{"$in": matchIds}, "active": true}, findOptions)
+	if err != nil {
+		return
+	}
+	matches, err = DecodeMatches(cursor)
+	return
+}
+
 func FindTeamPlayers(teams []Team) (teamPlayers []TeamPlayer, err error) {
 	teamIds := make([]string, 0)
 	for _, v := range teams {
@@ -126,6 +190,25 @@ func FindTeamPlayers(teams []Team) (teamPlayers []TeamPlayer, err error) {
 	findOptions.SetSort(sort)
 	cursor, err := mongo.Find(Database, TeamPlayerCollection,
 		bson.M{"team_id": bson.M{"$in": teamIds}}, findOptions)
+	if err != nil {
+		return
+	}
+	teamPlayers, err = DecodeTeamPlayers(cursor)
+	return
+}
+
+func FindIds(teamPlayers []TeamPlayer) (playerIds []string) {
+	playerIds = make([]string, 0)
+	for _, v := range teamPlayers {
+		playerIds = append(playerIds, v.PlayerId)
+	}
+	return
+}
+
+func FindPlayerTeams(playerId string) (teamPlayers []TeamPlayer, err error) {
+	findOptions := &options.FindOptions{}
+	cursor, err := mongo.Find(Database, TeamPlayerCollection,
+		bson.M{"player_id": bson.M{"$in": playerId}}, findOptions)
 	if err != nil {
 		return
 	}

@@ -36,7 +36,7 @@ func (h *Hub) Run() {
 			h.clients[client] = true
 		case client := <-h.unregister:
 			if _, ok := h.clients[client]; ok {
-				DeletePlayerLiveSession(h.livePlayerIds[client])
+				DeletePlayerLiveSession(h.livePlayerIds[client], h)
 				delete(h.livePlayerIds, client)
 				delete(h.clients, client)
 				close(client.send)
