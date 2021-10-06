@@ -1,4 +1,4 @@
-# github.com/atulanand206/go-mongo v0.0.9
+# github.com/atulanand206/go-mongo v0.1.0
 ## explicit; go 1.15
 github.com/atulanand206/go-mongo
 # github.com/atulanand206/go-network v0.1.5
@@ -51,6 +51,9 @@ github.com/klauspost/compress/huff0
 github.com/klauspost/compress/snappy
 github.com/klauspost/compress/zstd
 github.com/klauspost/compress/zstd/internal/xxhash
+# github.com/matoous/go-nanoid/v2 v2.0.0
+## explicit; go 1.15
+github.com/matoous/go-nanoid/v2
 # github.com/pkg/errors v0.9.1
 ## explicit
 github.com/pkg/errors

@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	gonanoid "github.com/matoous/go-nanoid/v2"
 )
 
 func InitNewIndex(tag string) (index Index) {
@@ -41,7 +42,8 @@ func InitNewMatch(quizmaster Player, specs Specs) (match Game) {
 	match.Specs = specs
 	match.Specs.Points = 16
 	match.Specs.Rounds = 2
-	match.Id = id(match)
+	id, _ := gonanoid.New(8)
+	match.Id = id
 	return
 }
 

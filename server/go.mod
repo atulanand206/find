@@ -3,7 +3,7 @@ module github.com/atulanand206/find/server
 go 1.17
 
 require (
-	github.com/atulanand206/go-mongo v0.0.9
+	github.com/atulanand206/go-mongo v0.1.0
 	github.com/atulanand206/go-network v0.1.5
 	github.com/aws/aws-sdk-go v1.34.28 // indirect
 	github.com/dgrijalva/jwt-go/v4 v4.0.0-preview1 // indirect
@@ -14,6 +14,7 @@ require (
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/joho/godotenv v1.3.0
 	github.com/klauspost/compress v1.9.5 // indirect
+	github.com/matoous/go-nanoid/v2 v2.0.0
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.0.2 // indirect
