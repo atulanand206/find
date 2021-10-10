@@ -3,6 +3,7 @@ package core
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -55,6 +56,8 @@ type Client struct {
 
 	// Buffered channel of outbound messages.
 	send chan []byte
+
+	playerId string
 }
 
 // readPump pumps messages from the websocket connection to the hub.
@@ -78,18 +81,18 @@ func (c *Client) ReadPump() {
 			}
 			break
 		}
-		if err = HandleMessages(message, c); err != nil {
+		if err = c.HandleMessages(message); err != nil {
 			log.Printf("error: %v", err)
 		}
 	}
 }
 
-func HandleMessages(input []byte, client *Client) (err error) {
+func (client *Client) HandleMessages(input []byte) (err error) {
 	request, err := DecodeWebSocketRequest(input)
 	if err != nil {
 		return
 	}
-	response, err := Handle(request, client)
+	response, err := client.Handle(request)
 	if err != nil {
 		return
 	}
@@ -97,37 +100,38 @@ func HandleMessages(input []byte, client *Client) (err error) {
 	return
 }
 
-func (c *Client) Broadcast(response WebsocketMessage) {
+func (client *Client) Broadcast(response WebsocketMessage) {
 	output, err := json.Marshal(response)
 	if err != nil {
 		return
 	}
 	message := bytes.TrimSpace(bytes.Replace(output, newline, space, -1))
-	c.hub.broadcast <- message
+	client.hub.broadcast <- message
 }
 
-func Handle(request WebsocketMessage, client *Client) (response WebsocketMessage, err error) {
-	if request.Action == BEGIN.String() {
-		response = createPlayer(request, client)
-		return
-	}
-
-	response, err = HandleWSMessage(request)
-	return
+func (client *Client) setPlayerId(playerId string) {
+	client.hub.livePlayerIds[playerId] = client
+	client.playerId = playerId
 }
 
-func createPlayer(request WebsocketMessage, client *Client) (response WebsocketMessage) {
-	player, er := OnBegin(request.Content)
+func (client *Client) deletePlayerId(playerId string) {
+	delete(client.hub.livePlayerIds, playerId)
+}
 
-	client.hub.livePlayerIds[client] = player.Id
+func (client *Client) addToTag(tag string, playerId string) {
+	client.hub.tags[tag][client.hub.livePlayerIds[playerId]] = true
+}
 
-	resBytes, er := json.Marshal(player)
-	if er != nil {
-		response = InitWebSocketMessageFailure()
+func (client *Client) removeFromTag(tag string, playerId string) {
+	delete(client.hub.tags[tag], client.hub.livePlayerIds[playerId])
+}
+
+func (client *Client) sendToTag(tag string, msg WebsocketMessage) {
+	for k := range client.hub.tags[tag] {
+		if _, ok := client.hub.clients[k]; ok {
+			fmt.Printf("ok: %v\n", ok)
+		}
 	}
-
-	response = InitWebSocketMessage(S_PLAYER, string(resBytes))
-	return
 }
 
 // writePump pumps messages from the hub to the websocket connection.

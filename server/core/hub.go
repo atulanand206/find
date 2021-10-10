@@ -1,5 +1,7 @@
 package core
 
+import "fmt"
+
 // Hub maintains the set of active clients and broadcasts messages to the
 // clients.
 type Hub struct {
@@ -7,7 +9,9 @@ type Hub struct {
 	clients map[*Client]bool
 
 	// Registered livePlayerIds.
-	livePlayerIds map[*Client]string
+	livePlayerIds map[string]*Client
+
+	tags map[string]map[*Client]bool
 
 	// Inbound messages from the clients.
 	broadcast chan []byte
@@ -25,7 +29,8 @@ func NewHub() *Hub {
 		register:      make(chan *Client),
 		unregister:    make(chan *Client),
 		clients:       make(map[*Client]bool),
-		livePlayerIds: make(map[*Client]string),
+		livePlayerIds: make(map[string]*Client),
+		tags:          make(map[string]map[*Client]bool),
 	}
 }
 
@@ -33,11 +38,12 @@ func (h *Hub) Run() {
 	for {
 		select {
 		case client := <-h.register:
+			fmt.Println(client)
 			h.clients[client] = true
 		case client := <-h.unregister:
 			if _, ok := h.clients[client]; ok {
-				DeletePlayerLiveSession(h.livePlayerIds[client], h)
-				delete(h.livePlayerIds, client)
+				// DeletePlayerLiveSession(h.livePlayerIds[client], h)
+				// delete(h.livePlayerIds, client)
 				delete(h.clients, client)
 				close(client.send)
 			}

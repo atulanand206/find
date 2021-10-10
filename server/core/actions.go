@@ -5,13 +5,20 @@ import (
 	"fmt"
 )
 
-func HandleWSMessage(msg WebsocketMessage) (res WebsocketMessage, err error) {
+func (client *Client) Handle(request WebsocketMessage) (response WebsocketMessage, err error) {
+	response, err = client.HandleWSMessage(request)
+	return
+}
+
+func (client *Client) HandleWSMessage(msg WebsocketMessage) (res WebsocketMessage, err error) {
 	fmt.Println(msg)
 	switch msg.Action {
+	case BEGIN.String():
+		res, err = client.OnBegin(msg.Content)
 	case ACTIVE.String():
 		res, err = OnActive()
 	case SPECS.String():
-		res, err = OnCreate(msg.Content)
+		res, err = client.OnCreate(msg.Content)
 	case JOIN.String():
 		res, err = OnJoin(msg.Content)
 	case WATCH.String():
@@ -34,19 +41,27 @@ func HandleWSMessage(msg WebsocketMessage) (res WebsocketMessage, err error) {
 	return
 }
 
-func OnBegin(content string) (res Player, err error) {
+func (client *Client) OnBegin(content string) (res WebsocketMessage, err error) {
 	request, err := DecodePlayerJsonString(content)
 	if err != nil {
-		// res = InitWebSocketMessageFailure()
+		res = InitWebSocketMessageFailure()
 		return
 	}
 
-	response, err := GenerateBeginGameResponse(request)
+	player, err := GenerateBeginGameResponse(request)
 	if err != nil {
-		// res = InitWebSocketMessage(Failure, err.Error())
+		res = InitWebSocketMessage(Failure, err.Error())
 		return
 	}
-	res = response
+
+	client.setPlayerId(player.Id)
+	resBytes, er := json.Marshal(player)
+	if er != nil {
+		res = InitWebSocketMessageFailure()
+	}
+
+	res = InitWebSocketMessage(S_PLAYER, string(resBytes))
+
 	return
 }
 
@@ -61,7 +76,7 @@ func OnActive() (res WebsocketMessage, err error) {
 	return
 }
 
-func OnCreate(content string) (res WebsocketMessage, err error) {
+func (client *Client) OnCreate(content string) (res WebsocketMessage, err error) {
 	request, err := DecodeCreateGameRequestJsonString(content)
 	if err != nil {
 		res = InitWebSocketMessageFailure()
