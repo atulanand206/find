@@ -106,6 +106,18 @@ func DecodeSnapshots(cursor *mg.Cursor) (snapshots []Snapshot, err error) {
 	return
 }
 
+func DecodeSubscribers(cursor *mg.Cursor) (subscribers []Subscriber, err error) {
+	for cursor.Next(context.Background()) {
+		var subscriber Subscriber
+		err = cursor.Decode(&subscriber)
+		if err != nil {
+			return
+		}
+		subscribers = append(subscribers, subscriber)
+	}
+	return
+}
+
 func DecodeTeams(cursor *mg.Cursor) (teams []Team, err error) {
 	for cursor.Next(context.Background()) {
 		var team Team

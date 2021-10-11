@@ -255,3 +255,16 @@ func FindQuestionSnapshots(matchId string, questionId string) (snapshot []Snapsh
 	snapshot, err = DecodeSnapshots(cursor)
 	return
 }
+
+func (db DB) FindSubscribers(tag string) (subscribers []Subscriber, err error) {
+	findOptions := &options.FindOptions{}
+	sort := bson.D{}
+	findOptions.SetSort(sort)
+	cursor, err := mongo.Find(Database, SubscriberCollection,
+		bson.M{"tag": tag}, findOptions)
+	if err != nil {
+		return
+	}
+	subscribers, err = DecodeSubscribers(cursor)
+	return
+}

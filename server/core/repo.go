@@ -73,16 +73,7 @@ func TeamIdForPlayer(teamPlayers []TeamPlayer, player Player) (teamId string) {
 	return
 }
 
-func DeletePlayerLiveSession(playerId string, hub *Hub) (err error) {
-	playerTeams, err := FindPlayerTeams(playerId)
-	teams, err := FindTPs(playerTeams)
-	matches, err := FindActiveTeamMatches(teams)
-	allTeams, err := FindTeamsMatches(matches)
-	allTps, err := FindTeamPlayers(allTeams)
-	tpIds := make([]string, 0)
-	for _, v := range allTps {
-		tpIds = append(tpIds, v.Id)
-	}
-	err = DeleteTeamPlayers(tpIds)
+func DeletePlayerLiveSession(playerId string) (err error) {
+	err = Db.DeleteSubscriber(playerId)
 	return
 }

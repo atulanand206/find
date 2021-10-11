@@ -1,5 +1,17 @@
 package core
 
+import (
+	"fmt"
+	"net/http"
+)
+
+type ErrorMessageCreator struct{}
+
+type ErrorMessage struct {
+	msg  string
+	code int
+}
+
 const (
 	Err_RequestNotDecoded = "Request can't be decoded."
 
@@ -38,4 +50,17 @@ const (
 
 	Err_SocketRequestFailed = "Sockets request failed by the server."
 	Err_PlayerAlreadyInGame = "Player already present in the game."
+
+	Err_SubscriberNotPresent = "Match with the given info does not exist."
 )
+
+func (creator ErrorMessageCreator) NotCreated(entity string, data interface{}) (errorMsg ErrorMessage) {
+	errorMsg.code = http.StatusNotAcceptable
+	errorMsg.msg = fmt.Sprintf("Unable to create %s %v", entity, data)
+	return
+}
+
+func (creator ErrorMessageCreator) SubscriberNotCreated(v interface{}) (errorMsg ErrorMessage) {
+	errorMsg = creator.NotCreated("subscriber", v)
+	return
+}

@@ -3,6 +3,8 @@ github.com/atulanand206/go-mongo v0.0.9 h1:MxNQi7bdyOhFvzQ4Cwl5BamJT2wuQi09mor3p
 github.com/atulanand206/go-mongo v0.0.9/go.mod h1:K49Bi+77bBhceP035yLuQTzFEjtkrozY6tFHnSCmOak=
 github.com/atulanand206/go-mongo v0.1.0 h1:3FAiMaobMweofxNtx02WQF6M8t2mrRBS9OZd/skx3ek=
 github.com/atulanand206/go-mongo v0.1.0/go.mod h1:K49Bi+77bBhceP035yLuQTzFEjtkrozY6tFHnSCmOak=
+github.com/atulanand206/go-mongo v0.1.1 h1:f/M+gv6EGBqiTeKfVCvt7iAFl/W2E2VPGlXEqdEeD/E=
+github.com/atulanand206/go-mongo v0.1.1/go.mod h1:K49Bi+77bBhceP035yLuQTzFEjtkrozY6tFHnSCmOak=
 github.com/atulanand206/go-network v0.1.5 h1:x0uPbklmrVA1SpP5XFhE9u5kC41lsbdrvZSsXFfLbTo=
 github.com/atulanand206/go-network v0.1.5/go.mod h1:3APhuP4lZa7fB3oaBp1c/IsR2bZ4u1GoWPtOGRPTC6E=
 github.com/aws/aws-sdk-go v1.34.28 h1:sscPpn/Ns3i0F4HPEWAVcwdIRaZZCuL7llJ2/60yPIk=

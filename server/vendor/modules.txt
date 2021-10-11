@@ -1,4 +1,4 @@
-# github.com/atulanand206/go-mongo v0.1.0
+# github.com/atulanand206/go-mongo v0.1.1
 ## explicit; go 1.15
 github.com/atulanand206/go-mongo
 # github.com/atulanand206/go-network v0.1.5

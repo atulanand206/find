@@ -3,7 +3,6 @@ package core
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -92,46 +91,26 @@ func (client *Client) HandleMessages(input []byte) (err error) {
 	if err != nil {
 		return
 	}
-	response, err := client.Handle(request)
+	response, targets, err := client.Handle(request)
 	if err != nil {
 		return
 	}
-	client.Broadcast(response)
+	client.Broadcast(response, targets)
 	return
 }
 
-func (client *Client) Broadcast(response WebsocketMessage) {
+func (client *Client) Broadcast(response WebsocketMessage, targets map[string]bool) {
 	output, err := json.Marshal(response)
 	if err != nil {
 		return
 	}
 	message := bytes.TrimSpace(bytes.Replace(output, newline, space, -1))
-	client.hub.broadcast <- message
+	client.hub.broadcast <- Message{msg: message, targets: targets}
 }
 
 func (client *Client) setPlayerId(playerId string) {
-	client.hub.livePlayerIds[playerId] = client
 	client.playerId = playerId
-}
-
-func (client *Client) deletePlayerId(playerId string) {
-	delete(client.hub.livePlayerIds, playerId)
-}
-
-func (client *Client) addToTag(tag string, playerId string) {
-	client.hub.tags[tag][client.hub.livePlayerIds[playerId]] = true
-}
-
-func (client *Client) removeFromTag(tag string, playerId string) {
-	delete(client.hub.tags[tag], client.hub.livePlayerIds[playerId])
-}
-
-func (client *Client) sendToTag(tag string, msg WebsocketMessage) {
-	for k := range client.hub.tags[tag] {
-		if _, ok := client.hub.clients[k]; ok {
-			fmt.Printf("ok: %v\n", ok)
-		}
-	}
+	client.hub.livePlayerIds[playerId] = client
 }
 
 // writePump pumps messages from the hub to the websocket connection.

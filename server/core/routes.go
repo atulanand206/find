@@ -26,8 +26,12 @@ var (
 	PlayerCollection     string
 	MatchTeamCollection  string
 	TeamPlayerCollection string
+	SubscriberCollection string
 
-	hub *Hub
+	hub             *Hub
+	Db              DB
+	InstanceCreator Creator
+	ErrorCreator    ErrorMessageCreator
 )
 
 // Add handlers and interceptors to the endpoints.
@@ -42,6 +46,7 @@ func Routes() *http.ServeMux {
 	IndexCollection = os.Getenv("INDEX_COLLECTION")
 	MatchTeamCollection = os.Getenv("MATCH_TEAM_COLLECTION")
 	TeamPlayerCollection = os.Getenv("TEAM_PLAYER_COLLECTION")
+	SubscriberCollection = os.Getenv("SUBSCRIBER_COLLECTION")
 
 	// Interceptor chain for attaching to the requests.
 	chain := net.MiddlewareChain{
@@ -53,6 +58,10 @@ func Routes() *http.ServeMux {
 	putChain := chain.Add(net.CorsInterceptor(http.MethodPut))
 	// Interceptor chain with only POST method.
 	postChain := chain.Add(net.CorsInterceptor(http.MethodPost))
+
+	Db = DB{}
+	InstanceCreator = Creator{}
+	ErrorCreator = ErrorMessageCreator{}
 
 	router := http.NewServeMux()
 

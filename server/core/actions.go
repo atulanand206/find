@@ -5,12 +5,12 @@ import (
 	"fmt"
 )
 
-func (client *Client) Handle(request WebsocketMessage) (response WebsocketMessage, err error) {
-	response, err = client.HandleWSMessage(request)
+func (client *Client) Handle(request WebsocketMessage) (response WebsocketMessage, targets map[string]bool, err error) {
+	response, targets, err = client.HandleWSMessage(request)
 	return
 }
 
-func (client *Client) HandleWSMessage(msg WebsocketMessage) (res WebsocketMessage, err error) {
+func (client *Client) HandleWSMessage(msg WebsocketMessage) (res WebsocketMessage, targets map[string]bool, err error) {
 	fmt.Println(msg)
 	switch msg.Action {
 	case BEGIN.String():

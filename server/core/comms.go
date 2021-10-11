@@ -63,3 +63,19 @@ func (action Action) String() string {
 		"failure",
 	}[action]
 }
+
+type Role int
+
+const (
+	QUIZMASTER Role = iota
+	PLAYER
+	AUDIENCE
+)
+
+func (role Role) String() string {
+	return []string{
+		"QUIZMASTER",
+		"PLAYER",
+		"AUDIENCE",
+	}[role]
+}

@@ -2,6 +2,7 @@ package core
 
 import (
 	"errors"
+	"fmt"
 	"math"
 )
 
@@ -33,6 +34,12 @@ func GenerateCreateGameResponse(request CreateGameRequest) (response EnterGameRe
 	quiz := InitNewMatch(player, request.Specs)
 	if err = CreateMatch(quiz); err != nil {
 		err = errors.New(Err_MatchNotCreated)
+	}
+
+	subscriber := InstanceCreator.InitSubscriber(quiz, player, QUIZMASTER.String())
+	err = Db.CreateSubscriber(subscriber)
+	if err != nil {
+		err = errors.New(fmt.Sprint(ErrorCreator.SubscriberNotCreated(subscriber)))
 	}
 
 	teams := InitNewTeams(quiz)
@@ -110,6 +117,12 @@ func GenerateEnterGameResponse(enterGameRequest EnterGameRequest) (response Ente
 		return
 	}
 
+	subscriber := InstanceCreator.InitSubscriber(match, player, PLAYER.String())
+	err = Db.CreateSubscriber(subscriber)
+	if err != nil {
+		err = errors.New(fmt.Sprint(ErrorCreator.SubscriberNotCreated(subscriber)))
+	}
+
 	teams, err = FindTeams(match)
 	if err != nil {
 		err = errors.New(Err_TeamsNotPresentInMatch)
@@ -132,7 +145,7 @@ func GenerateEnterGameResponse(enterGameRequest EnterGameRequest) (response Ente
 }
 
 func GenerateWatchGameResponse(enterGameRequest EnterGameRequest) (response EnterGameResponse, err error) {
-	_, err = FindPlayer(enterGameRequest.Person.Email)
+	audience, err := FindPlayer(enterGameRequest.Person.Email)
 	if err != nil {
 		err = errors.New(err.Error())
 		return
@@ -168,6 +181,12 @@ func GenerateWatchGameResponse(enterGameRequest EnterGameRequest) (response Ente
 			err = errors.New(Err_SnapshotNotPresent)
 			return
 		}
+	}
+
+	subscriber := InstanceCreator.InitSubscriber(match, audience, AUDIENCE.String())
+	err = Db.CreateSubscriber(subscriber)
+	if err != nil {
+		err = errors.New(fmt.Sprint(ErrorCreator.SubscriberNotCreated(subscriber)))
 	}
 
 	response = InitEnterGameResponse(match, teams, teamPlayers, players, "", snapshot)

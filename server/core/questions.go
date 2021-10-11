@@ -44,12 +44,12 @@ func HandlerSeedQuestions(w http.ResponseWriter, r *http.Request) {
 	filePath = os.Getenv("SEED_FILES_PATH")
 
 	var err error
-	if err = DropQuestionsCollections(); err != nil {
+	if err = Db.DropCollections(); err != nil {
 		http.Error(w, Err_CollectionsNotDropped, http.StatusInternalServerError)
 		return
 	}
 
-	if err = CreateQuestionsCollections(); err != nil {
+	if err = Db.CreateCollections(); err != nil {
 		http.Error(w, Err_CollectionsNotCreated, http.StatusInternalServerError)
 		return
 	}

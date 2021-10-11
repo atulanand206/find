@@ -8,6 +8,8 @@ import (
 	gonanoid "github.com/matoous/go-nanoid/v2"
 )
 
+type Creator struct{}
+
 func InitNewIndex(tag string) (index Index) {
 	index.Tag = tag
 	index.Id = id(index)
@@ -62,6 +64,14 @@ func InitNewPlayer(playerRequest Player) (player Player) {
 	player.Name = playerRequest.Name
 	player.Email = playerRequest.Email
 	player.Id = playerRequest.Id
+	return
+}
+
+func (creator Creator) InitSubscriber(game Game, player Player, role string) (subscriber Subscriber) {
+	subscriber.Tag = game.Id
+	subscriber.PlayerId = player.Id
+	subscriber.Role = role
+	subscriber.Active = true
 	return
 }
 

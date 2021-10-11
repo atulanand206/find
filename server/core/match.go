@@ -160,4 +160,11 @@ type (
 		QuizId    string     `json:"quiz_id"`
 		Snapshots []Snapshot `json:"snapshots"`
 	}
+
+	Subscriber struct {
+		Tag      string `json:"tag" bson:"tag"`
+		PlayerId string `json:"playerId" bson:"playerId"`
+		Role     string `json:"role" bson:"role"`
+		Active   bool   `json:"active" bson:"active"`
+	}
 )

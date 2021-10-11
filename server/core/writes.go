@@ -4,19 +4,77 @@ import (
 	"github.com/atulanand206/go-mongo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func QuestionsCollections() []string {
-	return []string{IndexCollection, QuestionCollection, AnswerCollection, TeamCollection}
+type DB struct{}
+
+func (db DB) PlayersCollections() []string {
+	return []string{TeamCollection, SubscriberCollection}
 }
 
-func CreateQuestionsCollections() (err error) {
-	err = mongo.CreateCollections(Database, QuestionsCollections())
+func (db DB) QuestionsCollections() []string {
+	return []string{IndexCollection, QuestionCollection, AnswerCollection}
+}
+
+func (db DB) CreateCollections() (err error) {
+	err = mongo.CreateCollections(Database, db.QuestionsCollections())
 	return
 }
 
-func DropQuestionsCollections() (err error) {
-	err = mongo.DropCollections(Database, QuestionsCollections())
+func (db DB) DropCollections() (err error) {
+	err = mongo.DropCollections(Database, db.PlayersCollections())
+	return
+}
+
+type Schemas struct{}
+
+func (schemas Schemas) Subscriber() (jsonSchema bson.M) {
+	return bson.M{
+		"bsonType": "object",
+		"required": []string{"tag, playerId, role"},
+		"properties": bson.M{
+			"tag": bson.M{
+				"bsonType":    "string",
+				"description": "subscriber must have a tag assigned.",
+			},
+			"playerId": bson.M{
+				"bsonType":  "string",
+				"describer": "subscriber must have a valid player id.",
+			},
+			"role": bson.M{
+				"bsonType":  "string",
+				"describer": "subscriber must have a role assigned.",
+			},
+		},
+	}
+}
+
+func (db DB) CreateSubscriberCollection() (err error) {
+	err = mongo.CreateCollection(Database, SubscriberCollection,
+		options.CreateCollection().SetValidator(bson.M{
+			"$jsonSchema": Schemas{}.Subscriber(),
+		}))
+	return
+}
+
+func (db DB) Init() (err error) {
+	if err = db.DropCollections(); err != nil {
+		return
+	}
+	if err = db.CreateSubscriberCollection(); err != nil {
+		return
+	}
+
+	return
+}
+
+func (db DB) Create(request interface{}, collection string) (err error) {
+	requestDto, err := mongo.Document(request)
+	if err != nil {
+		return
+	}
+	_, err = mongo.Write(Database, collection, *requestDto)
 	return
 }
 
@@ -110,6 +168,11 @@ func CreateTeamPlayer(team TeamPlayerRequest) (err error) {
 	return
 }
 
+func (db DB) CreateSubscriber(subscriber Subscriber) (err error) {
+	err = db.Create(subscriber, SubscriberCollection)
+	return
+}
+
 func UpdateMatchQuestions(match Game, question Question) (err error) {
 	match.Tags = append(match.Tags, question.Tag)
 	match.Active = true
@@ -128,5 +191,20 @@ func UpdateMatch(match Game) (err error) {
 
 func DeleteTeamPlayers(ids []string) (err error) {
 	_, err = mongo.Delete(Database, TeamPlayerCollection, bson.M{"_id": bson.M{"$in": ids}})
+	return
+}
+
+func (db DB) DeleteSubscribers(tag string, playerIds []string) (err error) {
+	_, err = mongo.Delete(Database, TeamPlayerCollection, bson.M{
+		"tag":      tag,
+		"playerId": bson.M{"$in": playerIds},
+		"active":   true})
+	return
+}
+
+func (db DB) DeleteSubscriber(playerId string) (err error) {
+	_, err = mongo.Delete(Database, TeamPlayerCollection, bson.M{
+		"playerId": playerId,
+		"active":   true})
 	return
 }
