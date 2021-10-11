@@ -17,6 +17,8 @@ type (
 	}
 )
 
+type WebsocketMessageCreator struct{}
+
 var (
 	newline = []byte{'\n'}
 	space   = []byte{' '}
@@ -80,32 +82,32 @@ func (c *Client) ReadPump() {
 			}
 			break
 		}
-		if err = c.HandleMessages(message); err != nil {
+		if err = CommsHub.HandleMessages(message, c); err != nil {
 			log.Printf("error: %v", err)
 		}
 	}
 }
 
-func (client *Client) HandleMessages(input []byte) (err error) {
+func (hub *Hub) HandleMessages(input []byte, fromClient *Client) (err error) {
 	request, err := DecodeWebSocketRequest(input)
 	if err != nil {
 		return
 	}
-	response, targets, err := client.Handle(request)
+	response, targets, err := hub.Handle(request, fromClient)
 	if err != nil {
 		return
 	}
-	client.Broadcast(response, targets)
+	hub.Broadcast(response, targets)
 	return
 }
 
-func (client *Client) Broadcast(response WebsocketMessage, targets map[string]bool) {
+func (hub *Hub) Broadcast(response WebsocketMessage, targets map[string]bool) {
 	output, err := json.Marshal(response)
 	if err != nil {
 		return
 	}
 	message := bytes.TrimSpace(bytes.Replace(output, newline, space, -1))
-	client.hub.broadcast <- Message{msg: message, targets: targets}
+	hub.broadcast <- Message{msg: message, targets: targets}
 }
 
 func (client *Client) setPlayerId(playerId string) {

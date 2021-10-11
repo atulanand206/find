@@ -18,20 +18,20 @@ func HandlerAddQuestion(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	index, err := FindIndexForTag(requestBody.Tag)
+	index, err := Db.FindIndexForTag(requestBody.Tag)
 	if err != nil {
 		http.Error(w, Err_IndexNotPresent, http.StatusInternalServerError)
 		return
 	}
 
 	question := InitNewQuestion(index, requestBody.Question)
-	if err = CreateQuestion(question); err != nil {
+	if err = Db.CreateQuestion(question); err != nil {
 		http.Error(w, Err_QuestionNotCreated, http.StatusInternalServerError)
 		return
 	}
 
 	answer := InitNewAnswer(question, requestBody.Question)
-	if err = CreateAnswer(answer); err != nil {
+	if err = Db.CreateAnswer(answer); err != nil {
 		http.Error(w, Err_AnswerNotCreated, http.StatusInternalServerError)
 		return
 	}
@@ -60,17 +60,17 @@ func HandlerSeedQuestions(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err = SeedIndexes(indexes); err != nil {
+	if err = Db.SeedIndexes(indexes); err != nil {
 		http.Error(w, Err_IndexNotSeeded, http.StatusInternalServerError)
 		return
 	}
 
-	if err = SeedQuestions(questions); err != nil {
+	if err = Db.SeedQuestions(questions); err != nil {
 		http.Error(w, Err_QuestionsNotSeeded, http.StatusInternalServerError)
 		return
 	}
 
-	if err = SeedAnswers(answers); err != nil {
+	if err = Db.SeedAnswers(answers); err != nil {
 		http.Error(w, Err_AnswersNotSeeded, http.StatusInternalServerError)
 		return
 	}

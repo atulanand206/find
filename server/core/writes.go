@@ -78,7 +78,7 @@ func (db DB) Create(request interface{}, collection string) (err error) {
 	return
 }
 
-func SeedIndexes(indexes []Index) (err error) {
+func (db DB) SeedIndexes(indexes []Index) (err error) {
 	var indexesDto []interface{}
 	for _, t := range indexes {
 		indexesDto = append(indexesDto, t)
@@ -87,7 +87,7 @@ func SeedIndexes(indexes []Index) (err error) {
 	return err
 }
 
-func CreateQuestion(question Question) (err error) {
+func (db DB) CreateQuestion(question Question) (err error) {
 	requestDto, err := mongo.Document(question)
 	if err != nil {
 		return
@@ -96,7 +96,7 @@ func CreateQuestion(question Question) (err error) {
 	return
 }
 
-func SeedQuestions(questions []Question) (err error) {
+func (db DB) SeedQuestions(questions []Question) (err error) {
 	var questionsDto []interface{}
 	for _, t := range questions {
 		questionsDto = append(questionsDto, t)
@@ -105,7 +105,7 @@ func SeedQuestions(questions []Question) (err error) {
 	return err
 }
 
-func CreateAnswer(answer Answer) (err error) {
+func (db DB) CreateAnswer(answer Answer) (err error) {
 	requestDto, err := mongo.Document(answer)
 	if err != nil {
 		return
@@ -114,7 +114,7 @@ func CreateAnswer(answer Answer) (err error) {
 	return
 }
 
-func SeedAnswers(answers []Answer) (err error) {
+func (db DB) SeedAnswers(answers []Answer) (err error) {
 	var answersDto []interface{}
 	for _, answer := range answers {
 		answersDto = append(answersDto, answer)
@@ -123,34 +123,7 @@ func SeedAnswers(answers []Answer) (err error) {
 	return err
 }
 
-func CreateSnapshot(snapshot Snapshot) (err error) {
-	requestDto, err := mongo.Document(snapshot)
-	if err != nil {
-		return
-	}
-	_, err = mongo.Write(Database, SnapshotCollection, *requestDto)
-	return
-}
-
-func CreatePlayer(player Player) (err error) {
-	requestDto, err := mongo.Document(player)
-	if err != nil {
-		return
-	}
-	_, err = mongo.Write(Database, PlayerCollection, *requestDto)
-	return
-}
-
-func CreateMatch(match Game) (err error) {
-	requestDto, err := mongo.Document(match)
-	if err != nil {
-		return
-	}
-	_, err = mongo.Write(Database, MatchCollection, *requestDto)
-	return
-}
-
-func CreateTeams(teams []Team) (err error) {
+func (db DB) CreateTeams(teams []Team) (err error) {
 	var teamsDto []interface{}
 	for _, t := range teams {
 		teamsDto = append(teamsDto, t)
@@ -159,28 +132,33 @@ func CreateTeams(teams []Team) (err error) {
 	return
 }
 
-func CreateTeamPlayer(team TeamPlayerRequest) (err error) {
-	requestDto, err := mongo.Document(team)
-	if err != nil {
-		return
-	}
-	_, err = mongo.Write(Database, TeamPlayerCollection, *requestDto)
-	return
+func (db DB) CreateSnapshot(snapshot Snapshot) error {
+	return db.Create(snapshot, SnapshotCollection)
 }
 
-func (db DB) CreateSubscriber(subscriber Subscriber) (err error) {
-	err = db.Create(subscriber, SubscriberCollection)
-	return
+func (db DB) CreatePlayer(player Player) error {
+	return db.Create(player, PlayerCollection)
 }
 
-func UpdateMatchQuestions(match Game, question Question) (err error) {
+func (db DB) CreateMatch(match Game) error {
+	return db.Create(match, MatchCollection)
+}
+
+func (db DB) CreateTeamPlayer(team TeamPlayerRequest) error {
+	return db.Create(team, TeamPlayerCollection)
+}
+
+func (db DB) CreateSubscriber(subscriber Subscriber) error {
+	return db.Create(subscriber, SubscriberCollection)
+}
+
+func (db DB) UpdateMatchQuestions(match Game, question Question) error {
 	match.Tags = append(match.Tags, question.Tag)
 	match.Active = true
-	err = UpdateMatch(match)
-	return
+	return db.UpdateMatch(match)
 }
 
-func UpdateMatch(match Game) (err error) {
+func (db DB) UpdateMatch(match Game) (err error) {
 	requestDto, err := mongo.Document(match)
 	if err != nil {
 		return
@@ -189,7 +167,7 @@ func UpdateMatch(match Game) (err error) {
 	return
 }
 
-func DeleteTeamPlayers(ids []string) (err error) {
+func (db DB) DeleteTeamPlayers(ids []string) (err error) {
 	_, err = mongo.Delete(Database, TeamPlayerCollection, bson.M{"_id": bson.M{"$in": ids}})
 	return
 }
@@ -203,7 +181,7 @@ func (db DB) DeleteSubscribers(tag string, playerIds []string) (err error) {
 }
 
 func (db DB) DeleteSubscriber(playerId string) (err error) {
-	_, err = mongo.Delete(Database, TeamPlayerCollection, bson.M{
+	_, err = mongo.Delete(Database, SubscriberCollection, bson.M{
 		"playerId": playerId,
 		"active":   true})
 	return

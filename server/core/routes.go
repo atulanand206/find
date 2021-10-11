@@ -28,9 +28,12 @@ var (
 	TeamPlayerCollection string
 	SubscriberCollection string
 
-	hub             *Hub
+	CommsHub        *Hub
+	Repo            Repository
+	Controller      Service
 	Db              DB
 	InstanceCreator Creator
+	MessageCreator  WebsocketMessageCreator
 	ErrorCreator    ErrorMessageCreator
 )
 
@@ -60,7 +63,15 @@ func Routes() *http.ServeMux {
 	postChain := chain.Add(net.CorsInterceptor(http.MethodPost))
 
 	Db = DB{}
+	Repo = Repository{db: Db}
+	Controller = Service{
+		matchService:      MatchService{db: Db},
+		teamService:       TeamService{db: Db},
+		playerService:     PlayerService{db: Db},
+		subscriberService: SubscriberService{db: Db},
+	}
 	InstanceCreator = Creator{}
+	MessageCreator = WebsocketMessageCreator{}
 	ErrorCreator = ErrorMessageCreator{}
 
 	router := http.NewServeMux()
@@ -69,10 +80,10 @@ func Routes() *http.ServeMux {
 	router.HandleFunc("/questions/seed", putChain.Handler(HandlerSeedQuestions))
 
 	// Register the websocket connection hub.
-	hub = NewHub()
-	go hub.Run()
+	CommsHub = NewHub()
+	go CommsHub.Run()
 	router.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
-		ServeWebsocket(hub, w, r)
+		ServeWebsocket(CommsHub, w, r)
 	})
 	return router
 }

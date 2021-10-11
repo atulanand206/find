@@ -91,7 +91,7 @@ func InitAddQuestionResponse(question Question, answer Answer) (response AddQues
 	return
 }
 
-func InitEnterGameResponse(match Game, teams []Team, teamPlayers []TeamPlayer, players []Player, playerTeamId string, snapshot Snapshot) (response EnterGameResponse) {
+func (creator Creator) InitEnterGameResponse(match Game, teams []Team, teamPlayers []TeamPlayer, players []Player, playerTeamId string, snapshot Snapshot) (response EnterGameResponse) {
 	response.Quiz = match
 	response.Roster = TableRoster(teams, teamPlayers, players)
 	response.PlayerTeamId = playerTeamId
@@ -129,12 +129,12 @@ func InitSnapshotDtoF(quizId string,
 	return
 }
 
-func InitWebSocketMessageFailure() (response WebsocketMessage) {
-	response = InitWebSocketMessage(Failure, Err_SocketRequestFailed)
+func (creator WebsocketMessageCreator) InitWebSocketMessageFailure() (response WebsocketMessage) {
+	response = creator.InitWebSocketMessage(Failure, Err_SocketRequestFailed)
 	return
 }
 
-func InitWebSocketMessage(action Action, content string) (response WebsocketMessage) {
+func (creator WebsocketMessageCreator) InitWebSocketMessage(action Action, content string) (response WebsocketMessage) {
 	response.Action = action.String()
 	response.Content = content
 	return

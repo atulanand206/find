@@ -163,7 +163,7 @@ type (
 
 	Subscriber struct {
 		Tag      string `json:"tag" bson:"tag"`
-		PlayerId string `json:"playerId" bson:"playerId"`
+		PlayerId string `json:"playerId" bson:"player_id"`
 		Role     string `json:"role" bson:"role"`
 		Active   bool   `json:"active" bson:"active"`
 	}
