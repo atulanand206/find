@@ -67,17 +67,11 @@ func InitNewPlayer(playerRequest Player) (player Player) {
 	return
 }
 
-func (creator Creator) InitSubscriber(game Game, player Player, role string) (subscriber Subscriber) {
-	subscriber.Tag = game.Id
+func (creator Creator) InitSubscriber(tag string, player Player, role string) (subscriber Subscriber) {
+	subscriber.Tag = tag
 	subscriber.PlayerId = player.Id
 	subscriber.Role = role
 	subscriber.Active = true
-	return
-}
-
-func InitTeamPlayer(teamId string, player Player) (teamPlayer TeamPlayerRequest) {
-	teamPlayer.TeamId = teamId
-	teamPlayer.PlayerId = player.Id
 	return
 }
 
@@ -91,7 +85,7 @@ func InitAddQuestionResponse(question Question, answer Answer) (response AddQues
 	return
 }
 
-func (creator Creator) InitEnterGameResponse(match Game, teams []Team, teamPlayers []TeamPlayer, players []Player, playerTeamId string, snapshot Snapshot) (response EnterGameResponse) {
+func (creator Creator) InitEnterGameResponse(match Game, teams []Team, teamPlayers []Subscriber, players []Player, playerTeamId string, snapshot Snapshot) (response EnterGameResponse) {
 	response.Quiz = match
 	response.Roster = TableRoster(teams, teamPlayers, players)
 	response.PlayerTeamId = playerTeamId
@@ -99,7 +93,7 @@ func (creator Creator) InitEnterGameResponse(match Game, teams []Team, teamPlaye
 	return
 }
 
-func InitStartGameResponse(quizId string, teams []Team, teamPlayers []TeamPlayer, players []Player, question Question, snapshot Snapshot) (response StartGameResponse) {
+func InitStartGameResponse(quizId string, teams []Team, teamPlayers []Subscriber, players []Player, question Question, snapshot Snapshot) (response StartGameResponse) {
 	response.QuizId = quizId
 	response.Roster = TableRoster(teams, teamPlayers, players)
 	response.Snapshot = snapshot

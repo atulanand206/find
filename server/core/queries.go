@@ -1,8 +1,6 @@
 package core
 
 import (
-	"fmt"
-
 	"github.com/atulanand206/go-mongo"
 	"github.com/xorcare/pointer"
 	"go.mongodb.org/mongo-driver/bson"
@@ -134,7 +132,7 @@ func (db DB) FindTeamsMatches(match []Game) (teams []Team, err error) {
 	return
 }
 
-func (db DB) FindPlayers(teamPlayers []TeamPlayer) (players []Player, err error) {
+func (db DB) FindPlayers(teamPlayers []Subscriber) (players []Player, err error) {
 	playerIds := make([]string, 0)
 	for _, v := range teamPlayers {
 		playerIds = append(playerIds, v.PlayerId)
@@ -149,10 +147,10 @@ func (db DB) FindPlayers(teamPlayers []TeamPlayer) (players []Player, err error)
 	return
 }
 
-func (db DB) FindTPs(teamPlayers []TeamPlayer) (teams []Team, err error) {
+func (db DB) FindTPs(teamPlayers []Subscriber) (teams []Team, err error) {
 	teamIds := make([]string, 0)
 	for _, v := range teamPlayers {
-		teamIds = append(teamIds, v.TeamId)
+		teamIds = append(teamIds, v.Tag)
 	}
 	findOptions := &options.FindOptions{}
 	cursor, err := mongo.Find(Database, TeamCollection,
@@ -179,17 +177,17 @@ func (db DB) FindActiveTeamMatches(teams []Team) (matches []Game, err error) {
 	return
 }
 
-func (db DB) FindTeamPlayers(teams []Team) (teamPlayers []TeamPlayer, err error) {
+func (db DB) FindTeamPlayers(teams []Team) (teamPlayers []Subscriber, err error) {
 	teamIds := make([]string, 0)
 	for _, v := range teams {
 		teamIds = append(teamIds, v.Id)
 	}
 	findOptions := &options.FindOptions{}
 	sort := bson.D{}
-	sort = append(sort, bson.E{Key: "team_id", Value: -1})
+	sort = append(sort, bson.E{Key: "tag", Value: -1})
 	findOptions.SetSort(sort)
-	cursor, err := mongo.Find(Database, TeamPlayerCollection,
-		bson.M{"team_id": bson.M{"$in": teamIds}}, findOptions)
+	cursor, err := mongo.Find(Database, SubscriberCollection,
+		bson.M{"tag": bson.M{"$in": teamIds}}, findOptions)
 	if err != nil {
 		return
 	}
@@ -197,7 +195,7 @@ func (db DB) FindTeamPlayers(teams []Team) (teamPlayers []TeamPlayer, err error)
 	return
 }
 
-func (db DB) FindIds(teamPlayers []TeamPlayer) (playerIds []string) {
+func (db DB) FindIds(teamPlayers []Subscriber) (playerIds []string) {
 	playerIds = make([]string, 0)
 	for _, v := range teamPlayers {
 		playerIds = append(playerIds, v.PlayerId)
@@ -205,9 +203,9 @@ func (db DB) FindIds(teamPlayers []TeamPlayer) (playerIds []string) {
 	return
 }
 
-func (db DB) FindPlayerTeams(playerId string) (teamPlayers []TeamPlayer, err error) {
+func (db DB) FindPlayerTeams(playerId string) (teamPlayers []Subscriber, err error) {
 	findOptions := &options.FindOptions{}
-	cursor, err := mongo.Find(Database, TeamPlayerCollection,
+	cursor, err := mongo.Find(Database, SubscriberCollection,
 		bson.M{"player_id": bson.M{"$in": playerId}}, findOptions)
 	if err != nil {
 		return
@@ -233,12 +231,10 @@ func (db DB) FindLatestSnapshot(matchId string) (snapshot Snapshot, err error) {
 	findOptions.SetSort(sort)
 	dto := mongo.FindOne(Database, SnapshotCollection,
 		bson.M{"quiz_id": matchId}, findOptions)
-	fmt.Println(dto)
 	if err = dto.Err(); err != nil {
 		return
 	}
 	snapshot, err = DecodeSnapshot(dto)
-	fmt.Println(snapshot)
 	return
 }
 
@@ -256,12 +252,25 @@ func (db DB) FindQuestionSnapshots(matchId string, questionId string) (snapshot 
 	return
 }
 
-func (db DB) FindSubscribers(tag string) (subscribers []Subscriber, err error) {
+func (db DB) FindSubscribers(tag string, role Role) (subscribers []Subscriber, err error) {
 	findOptions := &options.FindOptions{}
 	sort := bson.D{}
 	findOptions.SetSort(sort)
 	cursor, err := mongo.Find(Database, SubscriberCollection,
-		bson.M{"tag": tag}, findOptions)
+		bson.M{"tag": tag, "role": role.String()}, findOptions)
+	if err != nil {
+		return
+	}
+	subscribers, err = DecodeSubscribers(cursor)
+	return
+}
+
+func (db DB) FindSubscribersForTag(tags []string) (subscribers []Subscriber, err error) {
+	findOptions := &options.FindOptions{}
+	sort := bson.D{}
+	findOptions.SetSort(sort)
+	cursor, err := mongo.Find(Database, SubscriberCollection,
+		bson.M{"tag": bson.M{"$in": tags}}, findOptions)
 	if err != nil {
 		return
 	}
@@ -276,5 +285,18 @@ func (db DB) FindSubscriberForTagAndPlayerId(tag string, playerId string) (subsc
 		return
 	}
 	subscriber, err = DecodeSubscriber(dto)
+	return
+}
+
+func (db DB) FindSubscriptionsForPlayerId(playerId string) (subscribers []Subscriber, err error) {
+	findOptions := &options.FindOptions{}
+	sort := bson.D{}
+	findOptions.SetSort(sort)
+	cursor, err := mongo.Find(Database, SubscriberCollection,
+		bson.M{"player_id": playerId}, findOptions)
+	if err != nil {
+		return
+	}
+	subscribers, err = DecodeSubscribers(cursor)
 	return
 }

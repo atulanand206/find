@@ -16,11 +16,11 @@ type (
 	}
 
 	Specs struct {
-		Teams     int `json:"teams"`
-		Players   int `json:"players"`
-		Questions int `json:"questions"`
-		Rounds    int `json:"rounds"`
-		Points    int `json:"points"`
+		Teams     int `json:"teams" bson:"teams"`
+		Players   int `json:"players" bson:"players"`
+		Questions int `json:"questions" bson:"questions"`
+		Rounds    int `json:"rounds" bson:"rounds"`
+		Points    int `json:"points" bson:"points"`
 	}
 
 	Team struct {
@@ -30,28 +30,29 @@ type (
 		Score  int    `json:"score" bson:"score"`
 	}
 
-	TeamRoster struct {
-		Id      string   `json:"id"`
-		Name    string   `json:"name"`
-		Players []Player `json:"players"`
-		Score   int      `json:"score" bson:"score"`
-	}
-
 	Player struct {
-		Id    string `json:"id,omitempty" bson:"_id"`
-		Name  string `json:"name,omitempty" bson:"name"`
-		Email string `json:"email,omitempty" bson:"email"`
+		Id    string `json:"id" bson:"_id"`
+		Name  string `json:"name" bson:"name"`
+		Email string `json:"email" bson:"email"`
 	}
 
-	TeamPlayerRequest struct {
-		TeamId   string `json:"team_id" bson:"team_id"`
-		PlayerId string `json:"player_id" bson:"player_id"`
+	Snapshot struct {
+		QuizId     string   `json:"quiz_id" bson:"quiz_id"`
+		RoundNo    int      `json:"round_no" bson:"round_no"`
+		QuestionNo int      `json:"question_no" bson:"question_no"`
+		QuestionId string   `json:"question_id" bson:"question_id"`
+		TeamSTurn  string   `json:"team_s_turn" bson:"team_s_turn"`
+		EventType  string   `json:"event_type" bson:"event_type"`
+		Score      int      `json:"score" bson:"score"`
+		Timestamp  string   `json:"timestamp" bson:"timestamp"`
+		Content    []string `json:"content" bson:"content"`
 	}
 
-	TeamPlayer struct {
-		Id       string `json:"id" bson:"_id"`
-		TeamId   string `json:"team_id" bson:"team_id"`
+	Subscriber struct {
+		Tag      string `json:"tag" bson:"tag"`
 		PlayerId string `json:"player_id" bson:"player_id"`
+		Role     string `json:"role" bson:"role"`
+		Active   bool   `json:"active" bson:"active"`
 	}
 
 	Index struct {
@@ -59,21 +60,8 @@ type (
 		Tag string `json:"tag" bson:"tag"`
 	}
 
-	IndexWrapper struct {
-		Indexes []Index `json:"indexes" bson:"indexes"`
-	}
-
 	IndexStore struct {
 		Indexes []string `json:"indexes" bson:"indexes"`
-	}
-
-	QuestionBank struct {
-		Questions []NewQuestion `json:"questions" bson:"questions"`
-	}
-
-	NewQuestion struct {
-		Statements []string `json:"statements"`
-		Answer     []string `json:"answer"`
 	}
 
 	Question struct {
@@ -89,16 +77,13 @@ type (
 		Hint       []string `json:"hints" bson:"hints"`
 	}
 
-	Snapshot struct {
-		QuizId     string   `json:"quiz_id" bson:"quiz_id"`
-		RoundNo    int      `json:"round_no" bson:"round_no"`
-		QuestionNo int      `json:"question_no" bson:"question_no"`
-		QuestionId string   `json:"question_id" bson:"question_id"`
-		TeamSTurn  string   `json:"team_s_turn" bson:"team_s_turn"`
-		EventType  string   `json:"event_type" bson:"event_type"`
-		Score      int      `json:"score" bson:"score"`
-		Timestamp  string   `json:"timestamp" bson:"timestamp"`
-		Content    []string `json:"content" bson:"content"`
+	QuestionBank struct {
+		Questions []NewQuestion `json:"questions"`
+	}
+
+	NewQuestion struct {
+		Statements []string `json:"statements"`
+		Answer     []string `json:"answer"`
 	}
 
 	AddQuestionRequest struct {
@@ -115,6 +100,13 @@ type (
 		Person Player `json:"person"`
 		QuizId string `json:"quiz_id"`
 		TeamId string `json:"team_id"`
+	}
+
+	TeamRoster struct {
+		Id      string   `json:"id"`
+		Name    string   `json:"name"`
+		Players []Player `json:"players"`
+		Score   int      `json:"score" bson:"score"`
 	}
 
 	EnterGameResponse struct {
@@ -159,12 +151,5 @@ type (
 	ScoreResponse struct {
 		QuizId    string     `json:"quiz_id"`
 		Snapshots []Snapshot `json:"snapshots"`
-	}
-
-	Subscriber struct {
-		Tag      string `json:"tag" bson:"tag"`
-		PlayerId string `json:"playerId" bson:"player_id"`
-		Role     string `json:"role" bson:"role"`
-		Active   bool   `json:"active" bson:"active"`
 	}
 )

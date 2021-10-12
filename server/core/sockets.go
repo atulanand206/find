@@ -61,6 +61,10 @@ type Client struct {
 	playerId string
 }
 
+func (client *Client) setPlayerId(playerId string) {
+	client.playerId = playerId
+}
+
 // readPump pumps messages from the websocket connection to the hub.
 //
 // The application runs readPump in a per-connection goroutine. The application
@@ -108,11 +112,6 @@ func (hub *Hub) Broadcast(response WebsocketMessage, targets map[string]bool) {
 	}
 	message := bytes.TrimSpace(bytes.Replace(output, newline, space, -1))
 	hub.broadcast <- Message{msg: message, targets: targets}
-}
-
-func (client *Client) setPlayerId(playerId string) {
-	client.playerId = playerId
-	client.hub.livePlayerIds[playerId] = client
 }
 
 // writePump pumps messages from the hub to the websocket connection.

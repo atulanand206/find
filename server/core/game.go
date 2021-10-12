@@ -37,7 +37,7 @@ func (service Service) GenerateCreateGameResponse(request CreateGameRequest) (re
 		return
 	}
 
-	return service.subscriberService.subscribeAndRespond(quiz, teams, []TeamPlayer{}, []Player{}, "", player, Snapshot{}, QUIZMASTER)
+	return service.subscriberService.subscribeAndRespond(quiz, teams, []Subscriber{}, []Player{}, "", player, Snapshot{}, QUIZMASTER)
 }
 
 func (service Service) GenerateEnterGameResponse(enterGameRequest EnterGameRequest) (response EnterGameResponse, err error) {
@@ -59,7 +59,7 @@ func (service Service) GenerateEnterGameResponse(enterGameRequest EnterGameReque
 		return service.subscriberService.subscribeAndRespond(match, teams, teamPlayers, players, service.teamService.TeamIdForPlayer(teamPlayers, player), player, snapshot, PLAYER)
 	}
 
-	_, err = service.teamService.FindAndFillTeamVacancy(match, teams, teamPlayers, player)
+	_, err = service.teamService.FindAndFillTeamVacancy(match, teams, player)
 	if err != nil {
 		return
 	}

@@ -38,7 +38,7 @@ func (schemas Schemas) Subscriber() (jsonSchema bson.M) {
 				"bsonType":    "string",
 				"description": "subscriber must have a tag assigned.",
 			},
-			"playerId": bson.M{
+			"player_id": bson.M{
 				"bsonType":  "string",
 				"describer": "subscriber must have a valid player id.",
 			},
@@ -144,10 +144,6 @@ func (db DB) CreateMatch(match Game) error {
 	return db.Create(match, MatchCollection)
 }
 
-func (db DB) CreateTeamPlayer(team TeamPlayerRequest) error {
-	return db.Create(team, TeamPlayerCollection)
-}
-
 func (db DB) CreateSubscriber(subscriber Subscriber) error {
 	return db.Create(subscriber, SubscriberCollection)
 }
@@ -167,22 +163,9 @@ func (db DB) UpdateMatch(match Game) (err error) {
 	return
 }
 
-func (db DB) DeleteTeamPlayers(ids []string) (err error) {
-	_, err = mongo.Delete(Database, TeamPlayerCollection, bson.M{"_id": bson.M{"$in": ids}})
-	return
-}
-
-func (db DB) DeleteSubscribers(tag string, playerIds []string) (err error) {
-	_, err = mongo.Delete(Database, TeamPlayerCollection, bson.M{
-		"tag":      tag,
-		"playerId": bson.M{"$in": playerIds},
-		"active":   true})
-	return
-}
-
 func (db DB) DeleteSubscriber(playerId string) (err error) {
 	_, err = mongo.Delete(Database, SubscriberCollection, bson.M{
-		"playerId": playerId,
-		"active":   true})
+		"player_id": playerId,
+		"active":    true})
 	return
 }

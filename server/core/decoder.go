@@ -149,9 +149,9 @@ func DecodePlayers(cursor *mg.Cursor) (players []Player, err error) {
 	return
 }
 
-func DecodeTeamPlayers(cursor *mg.Cursor) (teamPlayers []TeamPlayer, err error) {
+func DecodeTeamPlayers(cursor *mg.Cursor) (teamPlayers []Subscriber, err error) {
 	for cursor.Next(context.Background()) {
-		var teamPlayer TeamPlayer
+		var teamPlayer Subscriber
 		err = cursor.Decode(&teamPlayer)
 		if err != nil {
 			return

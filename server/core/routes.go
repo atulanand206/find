@@ -25,7 +25,6 @@ var (
 	// Instance variable to store the DB Player Collection name.
 	PlayerCollection     string
 	MatchTeamCollection  string
-	TeamPlayerCollection string
 	SubscriberCollection string
 
 	CommsHub        *Hub
@@ -48,7 +47,6 @@ func Routes() *http.ServeMux {
 	PlayerCollection = os.Getenv("PLAYER_COLLECTION")
 	IndexCollection = os.Getenv("INDEX_COLLECTION")
 	MatchTeamCollection = os.Getenv("MATCH_TEAM_COLLECTION")
-	TeamPlayerCollection = os.Getenv("TEAM_PLAYER_COLLECTION")
 	SubscriberCollection = os.Getenv("SUBSCRIBER_COLLECTION")
 
 	// Interceptor chain for attaching to the requests.
@@ -64,12 +62,15 @@ func Routes() *http.ServeMux {
 
 	Db = DB{}
 	Repo = Repository{db: Db}
+
+	subscriberService := SubscriberService{db: Db}
 	Controller = Service{
 		matchService:      MatchService{db: Db},
-		teamService:       TeamService{db: Db},
+		teamService:       TeamService{db: Db, subscriberService: subscriberService},
 		playerService:     PlayerService{db: Db},
-		subscriberService: SubscriberService{db: Db},
+		subscriberService: subscriberService,
 	}
+
 	InstanceCreator = Creator{}
 	MessageCreator = WebsocketMessageCreator{}
 	ErrorCreator = ErrorMessageCreator{}

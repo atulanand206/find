@@ -14,6 +14,7 @@ const (
 	NEXT
 	REVEAL
 	SCORE
+	S_REFRESH
 	Over
 	Extend
 	ACTIVE
@@ -45,6 +46,7 @@ func (action Action) String() string {
 		"NEXT",
 		"REVEAL",
 		"SCORE",
+		"S_REFRESH",
 		"over",
 		"extend",
 		"ACTIVE",
@@ -70,6 +72,7 @@ const (
 	QUIZMASTER Role = iota
 	PLAYER
 	AUDIENCE
+	TEAM
 )
 
 func (role Role) String() string {
@@ -77,5 +80,6 @@ func (role Role) String() string {
 		"QUIZMASTER",
 		"PLAYER",
 		"AUDIENCE",
+		"TEAM",
 	}[role]
 }

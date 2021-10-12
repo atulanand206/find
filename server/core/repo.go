@@ -23,11 +23,13 @@ type PlayerService struct {
 
 type TeamService struct {
 	db DB
+
+	subscriberService SubscriberService
 }
 
-func (service SubscriberService) subscribeAndRespond(match Game, teams []Team, teamPlayers []TeamPlayer,
+func (service SubscriberService) subscribeAndRespond(match Game, teams []Team, teamPlayers []Subscriber,
 	players []Player, playerTeamId string, player Player, snapshot Snapshot, role Role) (response EnterGameResponse, err error) {
-	_, err = service.FindOrCreateSubscriber(match, player, role)
+	_, err = service.FindOrCreateSubscriber(match.Id, player, role)
 	if err != nil {
 		return
 	}
@@ -36,10 +38,10 @@ func (service SubscriberService) subscribeAndRespond(match Game, teams []Team, t
 	return
 }
 
-func (service SubscriberService) FindOrCreateSubscriber(match Game, audience Player, role Role) (subscriber Subscriber, err error) {
-	subscriber, err = service.db.FindSubscriberForTagAndPlayerId(match.Id, audience.Id)
+func (service SubscriberService) FindOrCreateSubscriber(tag string, audience Player, role Role) (subscriber Subscriber, err error) {
+	subscriber, err = service.db.FindSubscriberForTagAndPlayerId(tag, audience.Id)
 	if err != nil {
-		subscriber = InstanceCreator.InitSubscriber(match, audience, role.String())
+		subscriber = InstanceCreator.InitSubscriber(tag, audience, role.String())
 		err = service.db.CreateSubscriber(subscriber)
 		if err != nil {
 			err = errors.New(fmt.Sprint(ErrorCreator.SubscriberNotCreated(subscriber)))
@@ -48,7 +50,11 @@ func (service SubscriberService) FindOrCreateSubscriber(match Game, audience Pla
 	return
 }
 
-func (service MatchService) FindMatchFull(matchId string) (match Game, teams []Team, teamPlayers []TeamPlayer, players []Player, snapshot Snapshot, err error) {
+func (service SubscriberService) FindSubscribersForTag(tag string, role Role) (subscribers []Subscriber, err error) {
+	return service.db.FindSubscribers(tag, role)
+}
+
+func (service MatchService) FindMatchFull(matchId string) (match Game, teams []Team, teamPlayers []Subscriber, players []Player, snapshot Snapshot, err error) {
 	match, err = service.db.FindMatch(matchId)
 	if err != nil {
 		err = errors.New(Err_MatchNotPresent)
@@ -120,8 +126,24 @@ func (service PlayerService) FindPlayerByEmail(email string) (player Player, err
 	return
 }
 
-func (service PlayerService) DeletePlayerLiveSession(playerId string) error {
-	return service.db.DeleteSubscriber(playerId)
+func (service PlayerService) DeletePlayerLiveSession(playerId string) (res WebsocketMessage, targets map[string]bool, err error) {
+	subscribers, err := service.db.FindSubscriptionsForPlayerId(playerId)
+	tags := make([]string, 0)
+	for _, subscriber := range subscribers {
+		tags = append(tags, subscriber.Tag)
+	}
+
+	subscribers, err = service.db.FindSubscribersForTag(tags)
+	targets = make(map[string]bool)
+	for _, subscriber := range subscribers {
+		if playerId != subscriber.PlayerId {
+			targets[subscriber.PlayerId] = true
+		}
+	}
+
+	res = MessageCreator.InitWebSocketMessage(S_REFRESH, "Player dropped. Please refresh.")
+	err = service.db.DeleteSubscriber(playerId)
+	return
 }
 
 func (service TeamService) CreateTeams(quiz Game) (teams []Team, err error) {
@@ -132,45 +154,28 @@ func (service TeamService) CreateTeams(quiz Game) (teams []Team, err error) {
 	return
 }
 
-func (service TeamService) TeamIdForPlayer(teamPlayers []TeamPlayer, player Player) (teamId string) {
+func (service TeamService) TeamIdForPlayer(teamPlayers []Subscriber, player Player) (teamId string) {
 	for _, v := range teamPlayers {
 		if v.PlayerId == player.Id {
-			teamId = v.TeamId
+			teamId = v.Tag
 			return
 		}
 	}
 	return
 }
 
-func (service TeamService) FindAndFillTeamVacancy(match Game, teams []Team, teamPlayers []TeamPlayer, player Player) (teamId string, err error) {
+func (service TeamService) FindAndFillTeamVacancy(match Game, teams []Team, player Player) (teamId string, err error) {
+	teamPlayers, err := service.subscriberService.FindSubscribersForTag(match.Id, TEAM)
+	if err != nil {
+		return
+	}
 	if len(teamPlayers) >= match.Specs.Players*match.Specs.Teams {
 		err = errors.New(Err_PlayersFullInTeam)
 		return
 	}
-	mp := make(map[string]int)
-	for _, v := range teamPlayers {
-		if mp[v.TeamId] == 0 {
-			mp[v.TeamId] = 1
-		} else {
-			mp[v.TeamId] = mp[v.TeamId] + 1
-		}
-	}
-	var x = match.Specs.Players
-	for _, v := range mp {
-		if v < x {
-			x = v
-			return
-		}
-	}
-	for k, v := range mp {
-		if v == x {
-			teamId = k
-			return
-		}
-	}
-
-	if err = service.db.CreateTeamPlayer(InitTeamPlayer(teamId, player)); err != nil {
-		err = errors.New(Err_MatchNotUpdated)
+	teamId = FindVacantTeamId(teams, match.Specs.Players)
+	_, err = service.subscriberService.FindOrCreateSubscriber(teamId, player, TEAM)
+	if err != nil {
 		return
 	}
 	return

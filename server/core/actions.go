@@ -111,7 +111,7 @@ func (client *Client) requestToJoin(content string, enter Enter) (res WebsocketM
 
 	response, err := enter(request)
 
-	subscribers, err := Db.FindSubscribers(request.QuizId)
+	subscribers, err := Controller.subscriberService.FindSubscribersForTag(request.QuizId, PLAYER)
 	for _, subscriber := range subscribers {
 		targets[subscriber.PlayerId] = true
 	}
