@@ -18,8 +18,10 @@ func (hub *Hub) Handle(msg WebsocketMessage, client *Client) (res WebsocketMessa
 		res, targets, err = client.OnJoin(msg.Content)
 	case WATCH.String():
 		res, targets, err = client.OnWatch(msg.Content)
+	case REFRESH.String():
+		res, targets, err = client.OnRefresh(msg.Content)
 	case START.String():
-		res, err = OnStart(msg.Content)
+		res, targets, err = OnStart(msg.Content)
 	case HINT.String():
 		res, err = OnHint(msg.Content)
 	case RIGHT.String():
@@ -111,7 +113,11 @@ func (client *Client) requestToJoin(content string, enter Enter) (res WebsocketM
 
 	response, err := enter(request)
 
-	subscribers, err := Controller.subscriberService.FindSubscribersForTag(request.QuizId, PLAYER)
+	subscribers, er := Controller.subscriberService.FindSubscribersForTag([]string{request.QuizId})
+	if er != nil {
+		res = MessageCreator.InitWebSocketMessageFailure()
+		return
+	}
 	for _, subscriber := range subscribers {
 		targets[subscriber.PlayerId] = true
 	}
@@ -132,7 +138,22 @@ func (client *Client) OnWatch(content string) (res WebsocketMessage, targets map
 	})
 }
 
-func OnStart(content string) (res WebsocketMessage, err error) {
+func (client *Client) OnRefresh(content string) (res WebsocketMessage, targets map[string]bool, err error) {
+	request, err := DecodeEnterGameRequestJsonString(content)
+	targets = make(map[string]bool)
+	targets[request.Person.Id] = true
+
+	if err != nil {
+		res = MessageCreator.InitWebSocketMessageFailure()
+		return
+	}
+
+	response, err := Controller.GenerateFullMatchResponse(request)
+	res = WebSocketsResponse(S_GAME, response)
+	return
+}
+
+func OnStart(content string) (res WebsocketMessage, targets map[string]bool, err error) {
 	request, err := DecodeStartGameRequestJsonString(content)
 	if err != nil {
 		res = MessageCreator.InitWebSocketMessageFailure()
@@ -143,6 +164,17 @@ func OnStart(content string) (res WebsocketMessage, err error) {
 	if err != nil {
 		res = MessageCreator.InitWebSocketMessage(Failure, err.Error())
 		return
+	}
+
+	subscribers, er := Controller.subscriberService.FindSubscribersForTag([]string{request.QuizId})
+	if er != nil {
+		res = MessageCreator.InitWebSocketMessageFailure()
+		return
+	}
+
+	targets = make(map[string]bool)
+	for _, subscriber := range subscribers {
+		targets[subscriber.PlayerId] = true
 	}
 
 	res = WebSocketsResponse(S_START, response)

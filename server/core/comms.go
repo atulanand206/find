@@ -14,6 +14,7 @@ const (
 	NEXT
 	REVEAL
 	SCORE
+	REFRESH
 	S_REFRESH
 	Over
 	Extend
@@ -46,6 +47,7 @@ func (action Action) String() string {
 		"NEXT",
 		"REVEAL",
 		"SCORE",
+		"REFRESH",
 		"S_REFRESH",
 		"over",
 		"extend",

@@ -1,6 +1,7 @@
 package core
 
 import (
+	"fmt"
 	"math/rand"
 	"time"
 )
@@ -148,22 +149,21 @@ func TableRoster(teams []Team, teamPlayers []Subscriber, players []Player) (rost
 	return
 }
 
-func FindVacantTeamId(teams []Team, playersCount int) (teamId string) {
+func (service TeamService) FindVacantTeamId(teams []Team, teamPlayers []Subscriber, playersCount int) (teamId string) {
 	mp := make(map[string]int)
 	for _, v := range teams {
-		if mp[v.Id] == 0 {
-			mp[v.Id] = 1
-		} else {
-			mp[v.Id] = mp[v.Id] + 1
-		}
+		mp[v.Id] = 0
+	}
+	for _, v := range teamPlayers {
+		mp[v.Tag] = mp[v.Tag] + 1
 	}
 	var x = playersCount
 	for _, v := range mp {
 		if v < x {
 			x = v
-			return
 		}
 	}
+	fmt.Println("fvc", teams, teamPlayers, mp, x)
 	for k, v := range mp {
 		if v == x {
 			teamId = k

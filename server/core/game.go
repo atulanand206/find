@@ -72,6 +72,21 @@ func (service Service) GenerateEnterGameResponse(enterGameRequest EnterGameReque
 	return service.subscriberService.subscribeAndRespond(match, teams, teamPlayers, players, service.teamService.TeamIdForPlayer(teamPlayers, player), player, snapshot, PLAYER)
 }
 
+func (service Service) GenerateFullMatchResponse(enterGameRequest EnterGameRequest) (response EnterGameResponse, err error) {
+	player, err := service.playerService.FindPlayerByEmail(enterGameRequest.Person.Email)
+	if err != nil {
+		return
+	}
+
+	match, teams, teamPlayers, players, snapshot, err := service.matchService.FindMatchFull(enterGameRequest.QuizId)
+	if err != nil {
+		return
+	}
+
+	response = InstanceCreator.InitEnterGameResponse(match, teams, teamPlayers, players, service.teamService.TeamIdForPlayer(teamPlayers, player), snapshot)
+	return
+}
+
 func (service Service) GenerateWatchGameResponse(enterGameRequest EnterGameRequest) (response EnterGameResponse, err error) {
 	audience, err := service.playerService.FindPlayerByEmail(enterGameRequest.Person.Email)
 	if err != nil {

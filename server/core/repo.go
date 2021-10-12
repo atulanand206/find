@@ -50,8 +50,8 @@ func (service SubscriberService) FindOrCreateSubscriber(tag string, audience Pla
 	return
 }
 
-func (service SubscriberService) FindSubscribersForTag(tag string, role Role) (subscribers []Subscriber, err error) {
-	return service.db.FindSubscribers(tag, role)
+func (service SubscriberService) FindSubscribersForTag(tags []string) (subscribers []Subscriber, err error) {
+	return service.db.FindSubscribersForTag(tags)
 }
 
 func (service MatchService) FindMatchFull(matchId string) (match Game, teams []Team, teamPlayers []Subscriber, players []Player, snapshot Snapshot, err error) {
@@ -165,7 +165,11 @@ func (service TeamService) TeamIdForPlayer(teamPlayers []Subscriber, player Play
 }
 
 func (service TeamService) FindAndFillTeamVacancy(match Game, teams []Team, player Player) (teamId string, err error) {
-	teamPlayers, err := service.subscriberService.FindSubscribersForTag(match.Id, TEAM)
+	teamIds := []string{}
+	for _, team := range teams {
+		teamIds = append(teamIds, team.Id)
+	}
+	teamPlayers, err := service.subscriberService.FindSubscribersForTag(teamIds)
 	if err != nil {
 		return
 	}
@@ -173,7 +177,7 @@ func (service TeamService) FindAndFillTeamVacancy(match Game, teams []Team, play
 		err = errors.New(Err_PlayersFullInTeam)
 		return
 	}
-	teamId = FindVacantTeamId(teams, match.Specs.Players)
+	teamId = service.FindVacantTeamId(teams, teamPlayers, match.Specs.Players)
 	_, err = service.subscriberService.FindOrCreateSubscriber(teamId, player, TEAM)
 	if err != nil {
 		return
