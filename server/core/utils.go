@@ -102,16 +102,14 @@ func NextTeam(teams []Team, teamsTurn string) (teamId string) {
 	if len(teams) == 0 {
 		return
 	}
-	for _, v := range teams {
-		if teamId != "" {
-			teamId = v.Id
-			return
-		}
+	idx := 0
+	for i, v := range teams {
 		if v.Id == teamsTurn {
-			teamId = v.Id
+			idx = i
 		}
 	}
-	teamId = teams[0].Id
+	idx = (idx + 1) % len(teams)
+	teamId = teams[idx].Id
 	return
 }
 

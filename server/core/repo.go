@@ -27,14 +27,13 @@ type TeamService struct {
 	subscriberService SubscriberService
 }
 
-func (service SubscriberService) subscribeAndRespond(match Game, teams []Team, teamPlayers []Subscriber,
-	players []Player, playerTeamId string, player Player, snapshot Snapshot, role Role) (response EnterGameResponse, err error) {
+func (service SubscriberService) subscribeAndRespond(match Game, roster []TeamRoster, player Player, snapshot Snapshot, role Role) (response EnterGameResponse, err error) {
 	_, err = service.FindOrCreateSubscriber(match.Id, player, role)
 	if err != nil {
 		return
 	}
 
-	response = InstanceCreator.InitEnterGameResponse(match, teams, teamPlayers, players, "", snapshot)
+	response = InstanceCreator.InitEnterGameResponse(match, roster, snapshot)
 	return
 }
 
@@ -54,7 +53,11 @@ func (service SubscriberService) FindSubscribersForTag(tags []string) (subscribe
 	return service.db.FindSubscribersForTag(tags)
 }
 
-func (service MatchService) FindMatchFull(matchId string) (match Game, teams []Team, teamPlayers []Subscriber, players []Player, snapshot Snapshot, err error) {
+func (service MatchService) FindMatchFull(matchId string) (
+	match Game, teams []Team,
+	teamPlayers []Subscriber, players []Player,
+	roster []TeamRoster,
+	snapshot Snapshot, err error) {
 	match, err = service.db.FindMatch(matchId)
 	if err != nil {
 		err = errors.New(Err_MatchNotPresent)
@@ -78,6 +81,7 @@ func (service MatchService) FindMatchFull(matchId string) (match Game, teams []T
 		return
 	}
 
+	roster = TableRoster(teams, teamPlayers, players)
 	if match.Active {
 		snapshot, err = service.db.FindLatestSnapshot(match.Id)
 		if err != nil {
@@ -150,16 +154,6 @@ func (service TeamService) CreateTeams(quiz Game) (teams []Team, err error) {
 	teams = InitNewTeams(quiz)
 	if err = service.db.CreateTeams(teams); err != nil {
 		err = errors.New(Err_TeamNotCreated)
-	}
-	return
-}
-
-func (service TeamService) TeamIdForPlayer(teamPlayers []Subscriber, player Player) (teamId string) {
-	for _, v := range teamPlayers {
-		if v.PlayerId == player.Id {
-			teamId = v.Tag
-			return
-		}
 	}
 	return
 }

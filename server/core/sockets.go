@@ -26,8 +26,8 @@ var (
 	clients     = make(map[*websocket.Conn]bool)
 	broadcaster = make(chan WebsocketMessage)
 	upgrader    = websocket.Upgrader{
-		ReadBufferSize:  1024,
-		WriteBufferSize: 1024,
+		ReadBufferSize:  2048,
+		WriteBufferSize: 2048,
 		CheckOrigin: func(r *http.Request) bool {
 			return true
 		},
@@ -45,7 +45,7 @@ const (
 	pingPeriod = (pongWait * 9) / 10
 
 	// Maximum message size allowed from peer.
-	maxMessageSize = 512
+	maxMessageSize = 2048
 )
 
 // Client is a middleman between the websocket connection and the hub.

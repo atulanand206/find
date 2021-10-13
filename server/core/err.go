@@ -39,6 +39,7 @@ const (
 	Err_TeamPlayersNotPresent = "Team players does not exist."
 
 	Err_MatchNotUpdated = "Match can't be updated."
+	Err_TeamNotUpdated  = "Team can't be updated."
 
 	Err_CollectionsNotDropped = "Collections can't be dropped."
 

@@ -37,15 +37,18 @@ type (
 	}
 
 	Snapshot struct {
-		QuizId     string   `json:"quiz_id" bson:"quiz_id"`
-		RoundNo    int      `json:"round_no" bson:"round_no"`
-		QuestionNo int      `json:"question_no" bson:"question_no"`
-		QuestionId string   `json:"question_id" bson:"question_id"`
-		TeamSTurn  string   `json:"team_s_turn" bson:"team_s_turn"`
-		EventType  string   `json:"event_type" bson:"event_type"`
-		Score      int      `json:"score" bson:"score"`
-		Timestamp  string   `json:"timestamp" bson:"timestamp"`
-		Content    []string `json:"content" bson:"content"`
+		QuizId     string       `json:"quiz_id" bson:"quiz_id"`
+		RoundNo    int          `json:"round_no" bson:"round_no"`
+		Roster     []TeamRoster `json:"teams" bson:"teams"`
+		TeamSTurn  string       `json:"team_s_turn" bson:"team_s_turn"`
+		QuestionNo int          `json:"question_no" bson:"question_no"`
+		QuestionId string       `json:"question_id" bson:"question_id"`
+		EventType  string       `json:"event_type" bson:"event_type"`
+		Score      int          `json:"score" bson:"score"`
+		Timestamp  string       `json:"timestamp" bson:"timestamp"`
+		Question   []string     `json:"question" bson:"question"`
+		Answer     []string     `json:"answer" bson:"answer"`
+		Hint       []string     `json:"hint" bson:"hint"`
 	}
 
 	Subscriber struct {

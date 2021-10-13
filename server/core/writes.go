@@ -163,6 +163,15 @@ func (db DB) UpdateMatch(match Game) (err error) {
 	return
 }
 
+func (db DB) UpdateTeam(team Team) (err error) {
+	requestDto, err := mongo.Document(team)
+	if err != nil {
+		return
+	}
+	_, err = mongo.Update(Database, TeamCollection, bson.M{"_id": team.Id}, bson.D{primitive.E{Key: "$set", Value: *requestDto}})
+	return
+}
+
 func (db DB) DeleteSubscriber(playerId string) (err error) {
 	_, err = mongo.Delete(Database, SubscriberCollection, bson.M{
 		"player_id": playerId,

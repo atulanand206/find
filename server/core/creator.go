@@ -2,6 +2,7 @@ package core
 
 import (
 	"fmt"
+	"math"
 	"time"
 
 	"github.com/google/uuid"
@@ -85,17 +86,16 @@ func InitAddQuestionResponse(question Question, answer Answer) (response AddQues
 	return
 }
 
-func (creator Creator) InitEnterGameResponse(match Game, teams []Team, teamPlayers []Subscriber, players []Player, playerTeamId string, snapshot Snapshot) (response EnterGameResponse) {
+func (creator Creator) InitEnterGameResponse(match Game, roster []TeamRoster, snapshot Snapshot) (response EnterGameResponse) {
 	response.Quiz = match
-	response.Roster = TableRoster(teams, teamPlayers, players)
-	response.PlayerTeamId = playerTeamId
+	response.Roster = roster
 	response.Snapshot = snapshot
 	return
 }
 
-func InitStartGameResponse(quizId string, teams []Team, teamPlayers []Subscriber, players []Player, question Question, snapshot Snapshot) (response StartGameResponse) {
+func InitStartGameResponse(quizId string, roster []TeamRoster, snapshot Snapshot) (response StartGameResponse) {
 	response.QuizId = quizId
-	response.Roster = TableRoster(teams, teamPlayers, players)
+	response.Roster = roster
 	response.Snapshot = snapshot
 	return
 }
@@ -106,20 +106,61 @@ func InitScoreResponse(request ScoreRequest, snapshots []Snapshot) (response Sco
 	return
 }
 
-func InitSnapshotDtoF(quizId string,
-	questionId string,
-	teamsTurn string, eventType string,
-	score int, questionNo int, roundNo int,
-	content []string) (response Snapshot) {
+func InitialSnapshot(quizId string, question Question, teams []TeamRoster, teamsTurn string) (response Snapshot) {
 	response.QuizId = quizId
-	response.QuestionId = questionId
+	response.QuestionId = question.Id
+	response.Roster = teams
 	response.TeamSTurn = teamsTurn
-	response.EventType = eventType
-	response.Content = content
-	response.Score = score
-	response.QuestionNo = questionNo
-	response.RoundNo = roundNo
+	response.EventType = START.String()
+	response.Question = question.Statements
+	response.Score = 0
+	response.QuestionNo = 1
+	response.RoundNo = 1
 	response.Timestamp = time.Now().String()
+	return
+}
+
+func SnapshotWithAnswer(snapshot Snapshot, answer []string, matchPoints int, teams []TeamRoster) (response Snapshot) {
+	snapshot.Answer = answer
+	snapshot.EventType = RIGHT.String()
+	snapshot.Score = ScoreAnswer(matchPoints, snapshot.RoundNo)
+	snapshot.Roster = teams
+	response = snapshot
+	return
+}
+
+func ScoreAnswer(matchPoints int, roundNo int) int {
+	return matchPoints / int(math.Pow(2, float64(roundNo)))
+}
+
+func SnapshotWithHint(snapshot Snapshot, hint []string, teams []TeamRoster) (response Snapshot) {
+	snapshot.Hint = hint
+	snapshot.Roster = teams
+	snapshot.EventType = HINT.String()
+	snapshot.Score = 0
+	response = snapshot
+	return
+}
+
+func SnapshotWithPass(snapshot Snapshot, teams []TeamRoster, team_s_turn string) (response Snapshot) {
+	snapshot.TeamSTurn = team_s_turn
+	snapshot.Roster = teams
+	snapshot.EventType = PASS.String()
+	snapshot.Score = 0
+	response = snapshot
+	return
+}
+
+func SnapshotWithNext(snapshot Snapshot, teams []TeamRoster, team_s_turn string, question Question) (response Snapshot) {
+	snapshot.TeamSTurn = team_s_turn
+	snapshot.Roster = teams
+	snapshot.EventType = NEXT.String()
+	snapshot.Score = 0
+	snapshot.RoundNo = 1
+	snapshot.Question = question.Statements
+	snapshot.QuestionNo = snapshot.QuestionNo + 1
+	snapshot.QuestionId = question.Id
+	response = snapshot
 	return
 }
 

@@ -23,15 +23,15 @@ func (hub *Hub) Handle(msg WebsocketMessage, client *Client) (res WebsocketMessa
 	case START.String():
 		res, targets, err = OnStart(msg.Content)
 	case HINT.String():
-		res, err = OnHint(msg.Content)
+		res, targets, err = OnHint(msg.Content)
 	case RIGHT.String():
-		res, err = OnRight(msg.Content)
+		res, targets, err = OnRight(msg.Content)
 	case NEXT.String():
-		res, err = OnNext(msg.Content)
+		res, targets, err = OnNext(msg.Content)
 	case PASS.String():
-		res, err = OnPass(msg.Content)
+		res, targets, err = OnPass(msg.Content)
 	case SCORE.String():
-		res, err = OnScore(msg.Content)
+		res, targets, err = OnScore(msg.Content)
 	}
 	fmt.Println(res)
 	fmt.Println()
@@ -160,7 +160,7 @@ func OnStart(content string) (res WebsocketMessage, targets map[string]bool, err
 		return
 	}
 
-	response, err := GenerateStartGameResponse(request)
+	response, err := Controller.GenerateStartGameResponse(request)
 	if err != nil {
 		res = MessageCreator.InitWebSocketMessage(Failure, err.Error())
 		return
@@ -181,85 +181,140 @@ func OnStart(content string) (res WebsocketMessage, targets map[string]bool, err
 	return
 }
 
-func OnHint(content string) (res WebsocketMessage, err error) {
+func OnHint(content string) (res WebsocketMessage, targets map[string]bool, err error) {
 	request, err := DecodeGameSnapRequestJsonString(content)
 	if err != nil {
 		res = MessageCreator.InitWebSocketMessageFailure()
 		return
 	}
 
-	response, err := GenerateQuestionHintResponse(request)
+	response, err := Controller.GenerateQuestionHintResponse(request)
 	if err != nil {
 		res = MessageCreator.InitWebSocketMessage(Failure, err.Error())
 		return
+	}
+
+	subscribers, er := Controller.subscriberService.FindSubscribersForTag([]string{request.QuizId})
+	if er != nil {
+		res = MessageCreator.InitWebSocketMessageFailure()
+		return
+	}
+
+	targets = make(map[string]bool)
+	for _, subscriber := range subscribers {
+		targets[subscriber.PlayerId] = true
 	}
 
 	res = WebSocketsResponse(S_HINT, response)
 	return
 }
 
-func OnRight(content string) (res WebsocketMessage, err error) {
+func OnRight(content string) (res WebsocketMessage, targets map[string]bool, err error) {
 	request, err := DecodeGameSnapRequestJsonString(content)
 	if err != nil {
 		res = MessageCreator.InitWebSocketMessageFailure()
 		return
 	}
 
-	response, err := GenerateQuestionAnswerResponse(request)
+	response, err := Controller.GenerateQuestionAnswerResponse(request)
 	if err != nil {
 		res = MessageCreator.InitWebSocketMessage(Failure, err.Error())
 		return
+	}
+
+	subscribers, er := Controller.subscriberService.FindSubscribersForTag([]string{request.QuizId})
+	if er != nil {
+		res = MessageCreator.InitWebSocketMessageFailure()
+		return
+	}
+
+	targets = make(map[string]bool)
+	for _, subscriber := range subscribers {
+		targets[subscriber.PlayerId] = true
 	}
 
 	res = WebSocketsResponse(S_RIGHT, response)
 	return
 }
 
-func OnNext(content string) (res WebsocketMessage, err error) {
+func OnNext(content string) (res WebsocketMessage, targets map[string]bool, err error) {
 	request, err := DecodeGameSnapRequestJsonString(content)
 	if err != nil {
 		res = MessageCreator.InitWebSocketMessageFailure()
 		return
 	}
 
-	response, err := GenerateNextQuestionResponse(request)
+	response, err := Controller.GenerateNextQuestionResponse(request)
 	if err != nil {
 		res = MessageCreator.InitWebSocketMessage(Failure, err.Error())
 		return
+	}
+
+	subscribers, er := Controller.subscriberService.FindSubscribersForTag([]string{request.QuizId})
+	if er != nil {
+		res = MessageCreator.InitWebSocketMessageFailure()
+		return
+	}
+
+	targets = make(map[string]bool)
+	for _, subscriber := range subscribers {
+		targets[subscriber.PlayerId] = true
 	}
 
 	res = WebSocketsResponse(S_NEXT, response)
 	return
 }
 
-func OnPass(content string) (res WebsocketMessage, err error) {
+func OnPass(content string) (res WebsocketMessage, targets map[string]bool, err error) {
 	request, err := DecodeGameSnapRequestJsonString(content)
 	if err != nil {
 		res = MessageCreator.InitWebSocketMessageFailure()
 		return
 	}
 
-	response, err := GeneratePassQuestionResponse(request)
+	response, err := Controller.GeneratePassQuestionResponse(request)
 	if err != nil {
 		res = MessageCreator.InitWebSocketMessage(Failure, err.Error())
 		return
+	}
+
+	subscribers, er := Controller.subscriberService.FindSubscribersForTag([]string{request.QuizId})
+	if er != nil {
+		res = MessageCreator.InitWebSocketMessageFailure()
+		return
+	}
+
+	targets = make(map[string]bool)
+	for _, subscriber := range subscribers {
+		targets[subscriber.PlayerId] = true
 	}
 
 	res = WebSocketsResponse(S_PASS, response)
 	return
 }
 
-func OnScore(content string) (res WebsocketMessage, err error) {
+func OnScore(content string) (res WebsocketMessage, targets map[string]bool, err error) {
 	request, err := DecodeScoreRequestJsonString(content)
 	if err != nil {
 		res = MessageCreator.InitWebSocketMessageFailure()
 		return
 	}
 
-	response, err := GenerateScoreResponse(request)
+	response, err := Controller.GenerateScoreResponse(request)
 	if err != nil {
 		res = MessageCreator.InitWebSocketMessage(Failure, err.Error())
 		return
+	}
+
+	subscribers, er := Controller.subscriberService.FindSubscribersForTag([]string{request.QuizId})
+	if er != nil {
+		res = MessageCreator.InitWebSocketMessageFailure()
+		return
+	}
+
+	targets = make(map[string]bool)
+	for _, subscriber := range subscribers {
+		targets[subscriber.PlayerId] = true
 	}
 
 	res = WebSocketsResponse(S_SCORE, response)

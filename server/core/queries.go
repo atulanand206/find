@@ -184,7 +184,7 @@ func (db DB) FindTeamPlayers(teams []Team) (teamPlayers []Subscriber, err error)
 	}
 	findOptions := &options.FindOptions{}
 	sort := bson.D{}
-	sort = append(sort, bson.E{Key: "tag", Value: -1})
+	sort = append(sort, bson.E{Key: "tag", Value: 1})
 	findOptions.SetSort(sort)
 	cursor, err := mongo.Find(Database, SubscriberCollection,
 		bson.M{"tag": bson.M{"$in": teamIds}}, findOptions)
