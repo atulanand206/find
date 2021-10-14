@@ -24,7 +24,6 @@ var (
 	TeamCollection string
 	// Instance variable to store the DB Player Collection name.
 	PlayerCollection     string
-	MatchTeamCollection  string
 	SubscriberCollection string
 
 	CommsHub        *Hub
@@ -39,15 +38,14 @@ var (
 // Add handlers and interceptors to the endpoints.
 func Routes() *http.ServeMux {
 	Database = os.Getenv("GAME_DATABASE")
-	MatchCollection = os.Getenv("MATCH_COLLECTION")
-	QuestionCollection = os.Getenv("QUESTION_COLLECTION")
-	AnswerCollection = os.Getenv("ANSWER_COLLECTION")
-	SnapshotCollection = os.Getenv("SNAPSHOT_COLLECTION")
-	TeamCollection = os.Getenv("TEAM_COLLECTION")
-	PlayerCollection = os.Getenv("PLAYER_COLLECTION")
-	IndexCollection = os.Getenv("INDEX_COLLECTION")
-	MatchTeamCollection = os.Getenv("MATCH_TEAM_COLLECTION")
-	SubscriberCollection = os.Getenv("SUBSCRIBER_COLLECTION")
+	MatchCollection = "matches"
+	QuestionCollection = "questions"
+	AnswerCollection = "answers"
+	SnapshotCollection = "snapshots"
+	TeamCollection = "teams"
+	PlayerCollection = "players"
+	IndexCollection = "indexes"
+	SubscriberCollection = "subscribers"
 
 	// Interceptor chain for attaching to the requests.
 	chain := net.MiddlewareChain{
