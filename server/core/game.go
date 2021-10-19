@@ -20,7 +20,7 @@ func (service Service) GenerateBeginGameResponse(player Player) (res Player, err
 	return service.playerService.FindOrCreatePlayer(player)
 }
 
-func (service Service) GenerateCreateGameResponse(request CreateGameRequest) (response EnterGameResponse, err error) {
+func (service Service) GenerateCreateGameResponse(request CreateGameRequest) (response Snapshot, err error) {
 	player := request.Quizmaster
 	player, err = service.playerService.FindOrCreatePlayer(player)
 	if err != nil {
@@ -41,7 +41,7 @@ func (service Service) GenerateCreateGameResponse(request CreateGameRequest) (re
 	return service.subscriberService.subscribeAndRespond(quiz, roster, player, Snapshot{}, QUIZMASTER)
 }
 
-func (service Service) GenerateEnterGameResponse(enterGameRequest EnterGameRequest) (response EnterGameResponse, err error) {
+func (service Service) GenerateEnterGameResponse(enterGameRequest EnterGameRequest) (response Snapshot, err error) {
 	player, err := service.playerService.FindPlayerByEmail(enterGameRequest.Person.Email)
 	if err != nil {
 		return
@@ -73,17 +73,17 @@ func (service Service) GenerateEnterGameResponse(enterGameRequest EnterGameReque
 	return service.subscriberService.subscribeAndRespond(match, roster, player, snapshot, PLAYER)
 }
 
-func (service Service) GenerateFullMatchResponse(enterGameRequest EnterGameRequest) (response EnterGameResponse, err error) {
-	match, _, _, _, roster, snapshot, err := service.matchService.FindMatchFull(enterGameRequest.QuizId)
+func (service Service) GenerateFullMatchResponse(enterGameRequest EnterGameRequest) (response Snapshot, err error) {
+	_, _, _, _, _, snapshot, err := service.matchService.FindMatchFull(enterGameRequest.QuizId)
 	if err != nil {
 		return
 	}
 
-	response = InstanceCreator.InitEnterGameResponse(match, roster, snapshot)
+	response = snapshot
 	return
 }
 
-func (service Service) GenerateWatchGameResponse(enterGameRequest EnterGameRequest) (response EnterGameResponse, err error) {
+func (service Service) GenerateWatchGameResponse(enterGameRequest EnterGameRequest) (response Snapshot, err error) {
 	audience, err := service.playerService.FindPlayerByEmail(enterGameRequest.Person.Email)
 	if err != nil {
 		return
@@ -97,7 +97,7 @@ func (service Service) GenerateWatchGameResponse(enterGameRequest EnterGameReque
 	return service.subscriberService.subscribeAndRespond(match, roster, audience, snapshot, AUDIENCE)
 }
 
-func (service Service) GenerateStartGameResponse(startGameRequest StartGameRequest) (response StartGameResponse, err error) {
+func (service Service) GenerateStartGameResponse(startGameRequest StartGameRequest) (response Snapshot, err error) {
 	match, teams, teamPlayers, _, roster, snapshot, err := service.matchService.FindMatchFull(startGameRequest.QuizId)
 	if err != nil {
 		return
@@ -124,7 +124,7 @@ func (service Service) GenerateStartGameResponse(startGameRequest StartGameReque
 		return
 	}
 
-	response = InitStartGameResponse(match.Id, roster, snapshot)
+	response = snapshot
 	return
 }
 

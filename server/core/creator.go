@@ -86,20 +86,6 @@ func InitAddQuestionResponse(question Question, answer Answer) (response AddQues
 	return
 }
 
-func (creator Creator) InitEnterGameResponse(match Game, roster []TeamRoster, snapshot Snapshot) (response EnterGameResponse) {
-	response.Quiz = match
-	response.Roster = roster
-	response.Snapshot = snapshot
-	return
-}
-
-func InitStartGameResponse(quizId string, roster []TeamRoster, snapshot Snapshot) (response StartGameResponse) {
-	response.QuizId = quizId
-	response.Roster = roster
-	response.Snapshot = snapshot
-	return
-}
-
 func InitScoreResponse(request ScoreRequest, snapshots []Snapshot) (response ScoreResponse) {
 	response.QuizId = request.QuizId
 	response.Snapshots = snapshots

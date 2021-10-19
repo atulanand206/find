@@ -27,13 +27,13 @@ type TeamService struct {
 	subscriberService SubscriberService
 }
 
-func (service SubscriberService) subscribeAndRespond(match Game, roster []TeamRoster, player Player, snapshot Snapshot, role Role) (response EnterGameResponse, err error) {
+func (service SubscriberService) subscribeAndRespond(match Game, roster []TeamRoster, player Player, snapshot Snapshot, role Role) (response Snapshot, err error) {
 	_, err = service.FindOrCreateSubscriber(match.Id, player, role)
 	if err != nil {
 		return
 	}
 
-	response = InstanceCreator.InitEnterGameResponse(match, roster, snapshot)
+	response = snapshot
 	return
 }
 

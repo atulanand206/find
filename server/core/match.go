@@ -112,13 +112,6 @@ type (
 		Score   int      `json:"score" bson:"score"`
 	}
 
-	EnterGameResponse struct {
-		Quiz         Game         `json:"quiz"`
-		Roster       []TeamRoster `json:"teams"`
-		Snapshot     Snapshot     `json:"snapshot"`
-		PlayerTeamId string       `json:"player_team_id"`
-	}
-
 	CreateGameRequest struct {
 		Quizmaster Player `json:"quizmaster"`
 		Specs      Specs  `json:"specs"`
@@ -126,13 +119,6 @@ type (
 
 	StartGameRequest struct {
 		QuizId string `json:"quiz_id"`
-	}
-
-	StartGameResponse struct {
-		QuizId   string       `json:"quiz_id"`
-		Roster   []TeamRoster `json:"teams"`
-		Question Question     `json:"question"`
-		Snapshot Snapshot     `json:"snapshot"`
 	}
 
 	GameSnapRequest struct {

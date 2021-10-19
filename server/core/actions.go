@@ -99,7 +99,7 @@ func (client *Client) OnCreate(content string) (res WebsocketMessage, targets ma
 	return
 }
 
-type Enter func(request EnterGameRequest) (res EnterGameResponse, err error)
+type Enter func(request EnterGameRequest) (res Snapshot, err error)
 
 func (client *Client) requestToJoin(content string, enter Enter) (res WebsocketMessage, targets map[string]bool, err error) {
 	request, err := DecodeEnterGameRequestJsonString(content)
@@ -127,13 +127,13 @@ func (client *Client) requestToJoin(content string, enter Enter) (res WebsocketM
 }
 
 func (client *Client) OnJoin(content string) (res WebsocketMessage, targets map[string]bool, err error) {
-	return client.requestToJoin(content, func(request EnterGameRequest) (res EnterGameResponse, err error) {
+	return client.requestToJoin(content, func(request EnterGameRequest) (res Snapshot, err error) {
 		return Controller.GenerateEnterGameResponse(request)
 	})
 }
 
 func (client *Client) OnWatch(content string) (res WebsocketMessage, targets map[string]bool, err error) {
-	return client.requestToJoin(content, func(request EnterGameRequest) (res EnterGameResponse, err error) {
+	return client.requestToJoin(content, func(request EnterGameRequest) (res Snapshot, err error) {
 		return Controller.GenerateWatchGameResponse(request)
 	})
 }
