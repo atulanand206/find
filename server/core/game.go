@@ -2,7 +2,6 @@ package core
 
 import (
 	"errors"
-	"fmt"
 )
 
 type Service struct {
@@ -173,7 +172,6 @@ func (service Service) GenerateQuestionAnswerResponse(request GameSnapRequest) (
 	if err != nil {
 		err = errors.New(Err_TeamNotPresent)
 	}
-	fmt.Println("tttt", team, teams)
 
 	answer, err := Db.FindAnswer(request.QuestionId)
 	if err != nil {
@@ -208,7 +206,6 @@ func (service Service) GenerateNextQuestionResponse(request GameSnapRequest) (re
 	if err != nil {
 		return
 	}
-	fmt.Println("ttt", question)
 
 	if err = Db.UpdateMatchQuestions(match, question); err != nil {
 		err = errors.New(Err_MatchNotUpdated)

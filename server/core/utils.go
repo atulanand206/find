@@ -1,7 +1,6 @@
 package core
 
 import (
-	"fmt"
 	"math/rand"
 	"time"
 )
@@ -161,7 +160,6 @@ func (service TeamService) FindVacantTeamId(teams []Team, teamPlayers []Subscrib
 			x = v
 		}
 	}
-	fmt.Println("fvc", teams, teamPlayers, mp, x)
 	for k, v := range mp {
 		if v == x {
 			teamId = k
