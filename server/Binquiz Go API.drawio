@@ -119,10 +119,10 @@
                     </mxGeometry>
                 </mxCell>
                 <mxCell id="27" value="Send Player&lt;br&gt;id, name, email" style="verticalAlign=top;align=center;spacingTop=8;spacingLeft=2;spacingRight=12;shape=cube;size=10;direction=south;fontStyle=4;html=1;" vertex="1" parent="1">
-                    <mxGeometry x="970" y="760" width="180" height="50" as="geometry"/>
+                    <mxGeometry x="760" y="760" width="180" height="50" as="geometry"/>
                 </mxCell>
                 <mxCell id="28" value="Send Game&lt;br&gt;action, snapshot" style="verticalAlign=top;align=center;spacingTop=8;spacingLeft=2;spacingRight=12;shape=cube;size=10;direction=south;fontStyle=4;html=1;" vertex="1" parent="1">
-                    <mxGeometry x="970" y="1080" width="180" height="50" as="geometry"/>
+                    <mxGeometry x="760" y="820" width="180" height="530" as="geometry"/>
                 </mxCell>
                 <mxCell id="29" value="Validate Player" style="verticalAlign=top;align=center;spacingTop=8;spacingLeft=2;spacingRight=12;shape=cube;size=10;direction=south;fontStyle=4;html=1;" vertex="1" parent="1">
                     <mxGeometry x="-560" y="760" width="180" height="50" as="geometry"/>
@@ -131,37 +131,37 @@
                     <mxGeometry x="-560" y="820" width="180" height="50" as="geometry"/>
                 </mxCell>
                 <mxCell id="35" value="Request" style="html=1;" vertex="1" parent="1">
-                    <mxGeometry x="-880" y="1040" width="80" height="40" as="geometry"/>
+                    <mxGeometry x="-1000" y="1000" width="80" height="40" as="geometry"/>
                 </mxCell>
                 <mxCell id="36" value="PLAYER" style="html=1;" vertex="1" parent="1">
-                    <mxGeometry x="-680" y="760" width="80" height="40" as="geometry"/>
+                    <mxGeometry x="-880" y="760" width="80" height="40" as="geometry"/>
                 </mxCell>
                 <mxCell id="37" value="SPECS" style="html=1;" vertex="1" parent="1">
-                    <mxGeometry x="-680" y="820" width="80" height="40" as="geometry"/>
+                    <mxGeometry x="-880" y="820" width="80" height="40" as="geometry"/>
                 </mxCell>
                 <mxCell id="38" value="JOIN" style="html=1;" vertex="1" parent="1">
-                    <mxGeometry x="-680" y="880" width="80" height="40" as="geometry"/>
+                    <mxGeometry x="-880" y="880" width="80" height="40" as="geometry"/>
                 </mxCell>
                 <mxCell id="40" value="WATCH" style="html=1;" vertex="1" parent="1">
-                    <mxGeometry x="-680" y="940" width="80" height="40" as="geometry"/>
+                    <mxGeometry x="-880" y="940" width="80" height="40" as="geometry"/>
                 </mxCell>
                 <mxCell id="41" value="START" style="html=1;" vertex="1" parent="1">
-                    <mxGeometry x="-680" y="1000" width="80" height="40" as="geometry"/>
+                    <mxGeometry x="-880" y="1000" width="80" height="40" as="geometry"/>
                 </mxCell>
                 <mxCell id="42" value="PASS" style="html=1;" vertex="1" parent="1">
-                    <mxGeometry x="-680" y="1060" width="80" height="40" as="geometry"/>
+                    <mxGeometry x="-880" y="1060" width="80" height="40" as="geometry"/>
                 </mxCell>
-                <mxCell id="45" value="HINT" style="html=1;" vertex="1" parent="1">
-                    <mxGeometry x="-680" y="1120" width="80" height="40" as="geometry"/>
+                <mxCell id="45" value="NEXT" style="html=1;" vertex="1" parent="1">
+                    <mxGeometry x="-880" y="1120" width="80" height="40" as="geometry"/>
                 </mxCell>
-                <mxCell id="46" value="RIGHT" style="html=1;" vertex="1" parent="1">
-                    <mxGeometry x="-680" y="1180" width="80" height="40" as="geometry"/>
+                <mxCell id="46" value="HINT" style="html=1;" vertex="1" parent="1">
+                    <mxGeometry x="-880" y="1180" width="80" height="40" as="geometry"/>
                 </mxCell>
-                <mxCell id="47" value="NEXT" style="html=1;" vertex="1" parent="1">
-                    <mxGeometry x="-680" y="1240" width="80" height="40" as="geometry"/>
+                <mxCell id="47" value="RIGHT" style="html=1;" vertex="1" parent="1">
+                    <mxGeometry x="-880" y="1240" width="80" height="40" as="geometry"/>
                 </mxCell>
                 <mxCell id="48" value="REFRESH" style="html=1;" vertex="1" parent="1">
-                    <mxGeometry x="-680" y="1300" width="80" height="40" as="geometry"/>
+                    <mxGeometry x="-880" y="1300" width="80" height="40" as="geometry"/>
                 </mxCell>
                 <mxCell id="52" value="Find Player" style="verticalAlign=top;align=center;spacingTop=8;spacingLeft=2;spacingRight=12;shape=cube;size=10;direction=south;fontStyle=4;html=1;" vertex="1" parent="1">
                     <mxGeometry x="-360" y="760" width="180" height="50" as="geometry"/>
@@ -170,46 +170,40 @@
                     <mxGeometry x="-160" y="760" width="180" height="50" as="geometry"/>
                 </mxCell>
                 <mxCell id="54" value="Find TeamRoster" style="verticalAlign=top;align=center;spacingTop=8;spacingLeft=2;spacingRight=12;shape=cube;size=10;direction=south;fontStyle=4;html=1;" vertex="1" parent="1">
-                    <mxGeometry x="-440" y="1090" width="180" height="50" as="geometry"/>
+                    <mxGeometry x="-560" y="880" width="180" height="400" as="geometry"/>
                 </mxCell>
-                <mxCell id="55" value="Add to TeamRoster" style="verticalAlign=top;align=center;spacingTop=8;spacingLeft=2;spacingRight=12;shape=cube;size=10;direction=south;fontStyle=4;html=1;" vertex="1" parent="1">
-                    <mxGeometry x="290" y="880" width="180" height="50" as="geometry"/>
-                </mxCell>
-                <mxCell id="56" value="Delete from TeamRoster" style="verticalAlign=top;align=center;spacingTop=8;spacingLeft=2;spacingRight=12;shape=cube;size=10;direction=south;fontStyle=4;html=1;" vertex="1" parent="1">
-                    <mxGeometry x="290" y="1290" width="180" height="50" as="geometry"/>
+                <mxCell id="56" value="Unsubscribe player" style="verticalAlign=top;align=center;spacingTop=8;spacingLeft=2;spacingRight=12;shape=cube;size=10;direction=south;fontStyle=4;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="50" y="1300" width="180" height="50" as="geometry"/>
                 </mxCell>
                 <mxCell id="57" value="Find Match" style="verticalAlign=top;align=center;spacingTop=8;spacingLeft=2;spacingRight=12;shape=cube;size=10;direction=south;fontStyle=4;html=1;" vertex="1" parent="1">
-                    <mxGeometry x="-440" y="1010" width="180" height="50" as="geometry"/>
+                    <mxGeometry x="-760" y="880" width="180" height="400" as="geometry"/>
                 </mxCell>
                 <mxCell id="58" value="Find Latest Snapshot" style="verticalAlign=top;align=center;spacingTop=8;spacingLeft=2;spacingRight=12;shape=cube;size=10;direction=south;fontStyle=4;html=1;" vertex="1" parent="1">
-                    <mxGeometry x="-440" y="1170" width="180" height="50" as="geometry"/>
+                    <mxGeometry x="-360" y="880" width="180" height="470" as="geometry"/>
                 </mxCell>
                 <mxCell id="61" value="Create Match" style="verticalAlign=top;align=center;spacingTop=8;spacingLeft=2;spacingRight=12;shape=cube;size=10;direction=south;fontStyle=4;html=1;" vertex="1" parent="1">
                     <mxGeometry x="-360" y="820" width="180" height="50" as="geometry"/>
                 </mxCell>
                 <mxCell id="62" value="Verify Snapshot&lt;br&gt;&lt;br&gt;Validate QuizId&lt;br&gt;Validate TeamSTurn&lt;br&gt;Validate QuestionId" style="verticalAlign=top;align=center;spacingTop=8;spacingLeft=2;spacingRight=12;shape=cube;size=10;direction=south;fontStyle=4;html=1;" vertex="1" parent="1">
-                    <mxGeometry x="-190" y="1042.5" width="180" height="135" as="geometry"/>
+                    <mxGeometry x="-160" y="990" width="180" height="290" as="geometry"/>
                 </mxCell>
-                <mxCell id="63" value="Add to Match tags" style="verticalAlign=top;align=center;spacingTop=8;spacingLeft=2;spacingRight=12;shape=cube;size=10;direction=south;fontStyle=4;html=1;" vertex="1" parent="1">
-                    <mxGeometry x="290" y="1240" width="180" height="50" as="geometry"/>
+                <mxCell id="63" value="Find Next Question &lt;br&gt;Add to Match tags" style="verticalAlign=top;align=center;spacingTop=8;spacingLeft=2;spacingRight=12;shape=cube;size=10;direction=south;fontStyle=4;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="50" y="1120" width="180" height="50" as="geometry"/>
                 </mxCell>
                 <mxCell id="64" value="Generate Next Snapshot" style="verticalAlign=top;align=center;spacingTop=8;spacingLeft=2;spacingRight=12;shape=cube;size=10;direction=south;fontStyle=4;html=1;" vertex="1" parent="1">
-                    <mxGeometry x="520" y="1080" width="180" height="50" as="geometry"/>
-                </mxCell>
-                <mxCell id="65" value="Find Next Question" style="verticalAlign=top;align=center;spacingTop=8;spacingLeft=2;spacingRight=12;shape=cube;size=10;direction=south;fontStyle=4;html=1;" vertex="1" parent="1">
-                    <mxGeometry x="50" y="1240" width="180" height="50" as="geometry"/>
+                    <mxGeometry x="520" y="820" width="180" height="460" as="geometry"/>
                 </mxCell>
                 <mxCell id="66" value="Find Answer" style="verticalAlign=top;align=center;spacingTop=8;spacingLeft=2;spacingRight=12;shape=cube;size=10;direction=south;fontStyle=4;html=1;" vertex="1" parent="1">
-                    <mxGeometry x="50" y="1150" width="180" height="50" as="geometry"/>
+                    <mxGeometry x="50" y="1180" width="180" height="105" as="geometry"/>
                 </mxCell>
                 <mxCell id="67" value="ACTIVE" style="html=1;" vertex="1" parent="1">
-                    <mxGeometry x="-680" y="700" width="80" height="40" as="geometry"/>
+                    <mxGeometry x="-880" y="700" width="80" height="40" as="geometry"/>
                 </mxCell>
                 <mxCell id="68" value="Find Matches" style="verticalAlign=top;align=center;spacingTop=8;spacingLeft=2;spacingRight=12;shape=cube;size=10;direction=south;fontStyle=4;html=1;" vertex="1" parent="1">
                     <mxGeometry x="-560" y="700" width="180" height="50" as="geometry"/>
                 </mxCell>
                 <mxCell id="69" value="Send Matches&lt;br&gt;quiz[]" style="verticalAlign=top;align=center;spacingTop=8;spacingLeft=2;spacingRight=12;shape=cube;size=10;direction=south;fontStyle=4;html=1;" vertex="1" parent="1">
-                    <mxGeometry x="970" y="700" width="180" height="50" as="geometry"/>
+                    <mxGeometry x="760" y="700" width="180" height="50" as="geometry"/>
                 </mxCell>
                 <mxCell id="70" value="S_ACTIVE (quizzes)" style="html=1;verticalAlign=bottom;endArrow=block;entryX=0.977;entryY=-0.013;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.977;exitY=0.998;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="8" target="9">
                     <mxGeometry width="80" relative="1" as="geometry">
@@ -227,13 +221,16 @@
                     <mxGeometry x="-160" y="820" width="180" height="50" as="geometry"/>
                 </mxCell>
                 <mxCell id="76" value="Subscribe to quiz and team" style="verticalAlign=top;align=center;spacingTop=8;spacingLeft=2;spacingRight=12;shape=cube;size=10;direction=south;fontStyle=4;html=1;" vertex="1" parent="1">
-                    <mxGeometry x="730" y="880" width="180" height="50" as="geometry"/>
+                    <mxGeometry x="50" y="880" width="180" height="50" as="geometry"/>
                 </mxCell>
                 <mxCell id="77" value="Subscribe to quiz" style="verticalAlign=top;align=center;spacingTop=8;spacingLeft=2;spacingRight=12;shape=cube;size=10;direction=south;fontStyle=4;html=1;" vertex="1" parent="1">
-                    <mxGeometry x="730" y="940" width="180" height="50" as="geometry"/>
+                    <mxGeometry x="50" y="940" width="180" height="50" as="geometry"/>
                 </mxCell>
                 <mxCell id="78" value="Subscribe to quiz" style="verticalAlign=top;align=center;spacingTop=8;spacingLeft=2;spacingRight=12;shape=cube;size=10;direction=south;fontStyle=4;html=1;" vertex="1" parent="1">
-                    <mxGeometry x="730" y="820" width="180" height="50" as="geometry"/>
+                    <mxGeometry x="50" y="820" width="180" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="80" value="Find Next Teams Turn" style="verticalAlign=top;align=center;spacingTop=8;spacingLeft=2;spacingRight=12;shape=cube;size=10;direction=south;fontStyle=4;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="280" y="1060" width="180" height="109" as="geometry"/>
                 </mxCell>
             </root>
         </mxGraphModel>
