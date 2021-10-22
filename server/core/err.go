@@ -65,3 +65,9 @@ func (creator ErrorMessageCreator) SubscriberNotCreated(v interface{}) (errorMsg
 	errorMsg = creator.NotCreated("subscriber", v)
 	return
 }
+
+func (creator ErrorMessageCreator) RequestInvalid() (errorMsg ErrorMessage) {
+	errorMsg.msg = "request invalid."
+	errorMsg.code = http.StatusBadRequest
+	return
+}

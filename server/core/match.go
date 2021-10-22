@@ -141,4 +141,14 @@ type (
 		QuizId    string     `json:"quiz_id"`
 		Snapshots []Snapshot `json:"snapshots"`
 	}
+
+	Request struct {
+		Action     string `json:"action"`
+		Specs      Specs  `json:"specs,omitempty"`
+		Person     Player `json:"person,omitempty"`
+		QuizId     string `json:"quiz_id,omitempty"`
+		TeamId     string `json:"team_id,omitempty"`
+		TeamSTurn  string `json:"team_s_turn,omitempty"`
+		QuestionId string `json:"question_id,omitempty"`
+	}
 )

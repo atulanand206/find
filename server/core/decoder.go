@@ -44,6 +44,13 @@ func DecodePlayerJsonString(content string) (player Player, err error) {
 	return
 }
 
+func DecodeRequestJsonString(content string) (request Request, err error) {
+	if err = json.Unmarshal([]byte(content), &request); err != nil {
+		return
+	}
+	return
+}
+
 func DecodeAnswer(document *mg.SingleResult) (answer Answer, err error) {
 	if err = document.Decode(&answer); err != nil {
 		return

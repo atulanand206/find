@@ -29,6 +29,7 @@ var (
 	CommsHub        *Hub
 	Repo            Repository
 	Controller      Service
+	Targe           Target
 	Db              DB
 	InstanceCreator Creator
 	MessageCreator  WebsocketMessageCreator
@@ -60,13 +61,15 @@ func Routes() *http.ServeMux {
 
 	Db = DB{}
 	Repo = Repository{db: Db}
-
-	subscriberService := SubscriberService{db: Db}
+	Targe = Target{}
+	subscriberService := SubscriberService{db: Db, target: Targe}
+	validator := Validator{}
 	Controller = Service{
 		matchService:      MatchService{db: Db},
 		teamService:       TeamService{db: Db, subscriberService: subscriberService},
 		playerService:     PlayerService{db: Db},
 		subscriberService: subscriberService,
+		validator:         validator,
 	}
 
 	InstanceCreator = Creator{}

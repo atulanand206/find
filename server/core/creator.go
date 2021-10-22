@@ -1,6 +1,7 @@
 package core
 
 import (
+	"encoding/json"
 	"fmt"
 	"math"
 	"time"
@@ -86,8 +87,8 @@ func InitAddQuestionResponse(question Question, answer Answer) (response AddQues
 	return
 }
 
-func InitScoreResponse(request ScoreRequest, snapshots []Snapshot) (response ScoreResponse) {
-	response.QuizId = request.QuizId
+func InitScoreResponse(quizId string, snapshots []Snapshot) (response ScoreResponse) {
+	response.QuizId = quizId
 	response.Snapshots = snapshots
 	return
 }
@@ -158,5 +159,15 @@ func (creator WebsocketMessageCreator) InitWebSocketMessageFailure() (response W
 func (creator WebsocketMessageCreator) InitWebSocketMessage(action Action, content string) (response WebsocketMessage) {
 	response.Action = action.String()
 	response.Content = content
+	return
+}
+
+func (creator WebsocketMessageCreator) WebSocketsResponse(action Action, v interface{}) (res WebsocketMessage) {
+	resBytes, err := json.Marshal(v)
+	if err != nil {
+		res = MessageCreator.InitWebSocketMessageFailure()
+		return
+	}
+	res = MessageCreator.InitWebSocketMessage(action, string(resBytes))
 	return
 }

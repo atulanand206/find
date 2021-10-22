@@ -15,6 +15,8 @@ type MatchService struct {
 
 type SubscriberService struct {
 	db DB
+
+	target Target
 }
 
 type PlayerService struct {
@@ -25,6 +27,23 @@ type TeamService struct {
 	db DB
 
 	subscriberService SubscriberService
+}
+
+func (service SubscriberService) selfResponse(quizId string, action Action, response interface{}) (res WebsocketMessage, targets map[string]bool) {
+	res = MessageCreator.WebSocketsResponse(action, response)
+	targets = Controller.subscriberService.target.TargetSelf(quizId)
+	return
+}
+
+func (service SubscriberService) quizResponse(quizId string, response Snapshot) (res WebsocketMessage, targets map[string]bool) {
+	subscribers, er := Controller.subscriberService.FindSubscribersForTag([]string{quizId})
+	if er != nil {
+		res = MessageCreator.InitWebSocketMessageFailure()
+		return
+	}
+	targets = Controller.subscriberService.target.TargetQuiz(quizId, subscribers)
+	res = MessageCreator.WebSocketsResponse(S_GAME, response)
+	return
 }
 
 func (service SubscriberService) subscribeAndRespond(match Game, roster []TeamRoster, player Player, snapshot Snapshot, role Role) (response Snapshot, err error) {
