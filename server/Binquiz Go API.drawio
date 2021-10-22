@@ -259,6 +259,12 @@
                 <mxCell id="93" value="Send DELETE request" style="html=1;" vertex="1" parent="1">
                     <mxGeometry x="-480" y="200" width="160" height="40" as="geometry"/>
                 </mxCell>
+                <mxCell id="94" value="Self" style="verticalAlign=top;align=center;spacingTop=8;spacingLeft=2;spacingRight=12;shape=cube;size=10;direction=south;fontStyle=4;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="960" y="700" width="180" height="160" as="geometry"/>
+                </mxCell>
+                <mxCell id="97" value="Quiz" style="verticalAlign=top;align=center;spacingTop=8;spacingLeft=2;spacingRight=12;shape=cube;size=10;direction=south;fontStyle=4;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="960" y="880" width="180" height="530" as="geometry"/>
+                </mxCell>
             </root>
         </mxGraphModel>
     </diagram>
