@@ -49,6 +49,7 @@ type (
 		Question   []string     `json:"question" bson:"question"`
 		Answer     []string     `json:"answer" bson:"answer"`
 		Hint       []string     `json:"hint" bson:"hint"`
+		CanPass    bool         `json:"can_pass"`
 	}
 
 	Subscriber struct {
@@ -148,7 +149,6 @@ type (
 		Person     Player `json:"person,omitempty"`
 		QuizId     string `json:"quiz_id,omitempty"`
 		TeamId     string `json:"team_id,omitempty"`
-		TeamSTurn  string `json:"team_s_turn,omitempty"`
 		QuestionId string `json:"question_id,omitempty"`
 	}
 

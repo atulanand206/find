@@ -60,9 +60,9 @@ func Routes() *http.ServeMux {
 
 	Db = DB{}
 	questionService := QuestionService{db: Db}
-	snapshotService := SnapshotService{db: Db}
 	Targe = Target{}
 	subscriberService := SubscriberService{db: Db, target: Targe}
+	snapshotService := SnapshotService{db: Db}
 	validator := Validator{}
 	Controller = Service{
 		matchService:      MatchService{db: Db},

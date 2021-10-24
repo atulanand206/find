@@ -45,7 +45,8 @@ const (
 
 	Err_QuizmasterCantPlay     = "quizmaster can't join the match as a player"
 	Err_WaitingForPlayers      = "waiting for more players to join"
-	Err_QuestionsNotLeft       = "no remaining question in the quiz"
+	Err_RoundNotLeft           = "no round remain in the question"
+	Err_QuestionsNotLeft       = "no question remain in the quiz"
 	Err_TeamsNotPresentInMatch = "teams not present in the match"
 	Err_PlayersFullInTeam      = "players already full in the team"
 

@@ -253,7 +253,7 @@ func (service Service) GenerateNextQuestionResponse(request Request) (response S
 		return
 	}
 
-	snapshot, err = service.snapshotService.SnapshotNext(snapshot, roster, question, request.TeamSTurn)
+	snapshot, err = service.snapshotService.SnapshotNext(snapshot, roster, question, snapshot.TeamSTurn)
 	if err != nil {
 		return
 	}
@@ -263,12 +263,12 @@ func (service Service) GenerateNextQuestionResponse(request Request) (response S
 }
 
 func (service Service) GeneratePassQuestionResponse(request Request) (response Snapshot, err error) {
-	_, _, _, _, roster, snapshot, err := service.matchService.FindMatchFull(request.QuizId)
+	match, _, _, _, roster, snapshot, err := service.matchService.FindMatchFull(request.QuizId)
 	if err != nil {
 		return
 	}
 
-	snapshot, err = service.snapshotService.SnapshotPass(snapshot, roster, request.TeamSTurn)
+	snapshot, err = service.snapshotService.SnapshotPass(snapshot, roster, snapshot.TeamSTurn, snapshot.RoundNo, match.Specs)
 	if err != nil {
 		return
 	}
@@ -278,7 +278,7 @@ func (service Service) GeneratePassQuestionResponse(request Request) (response S
 }
 
 func (service Service) GenerateScoreResponse(request Request) (response ScoreResponse, err error) {
-	snapshots, err := Db.FindSnapshots(request.QuizId)
+	snapshots, err := Db.FindSnapshotsForMatch(request.QuizId)
 	if err != nil {
 		err = errors.New(Err_SnapshotNotPresent)
 		return

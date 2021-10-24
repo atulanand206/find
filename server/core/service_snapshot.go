@@ -80,9 +80,24 @@ func (service SnapshotService) SnapshotNext(snapshot Snapshot, roster []TeamRost
 	return
 }
 
-func (service SnapshotService) SnapshotPass(snapshot Snapshot, roster []TeamRoster, teamsTurn string) (response Snapshot, err error) {
-	teamsTurn = NextTeam(roster, teamsTurn)
-	snapshot = SnapshotWithPass(snapshot, roster, teamsTurn)
+func (service SnapshotService) SnapshotPass(snapshot Snapshot, roster []TeamRoster, teamsTurn string, roundNo int, specs Specs) (response Snapshot, err error) {
+	snapshots, err := service.db.FindSnapshotsForQuestion(snapshot.QuizId, snapshot.QuestionId, PASS.String())
+	if err != nil {
+		return
+	}
+
+	if len(snapshots) > 0 {
+		if roundNo == specs.Rounds && len(snapshots)%specs.Teams == 0 {
+			snapshot.CanPass = false
+		}
+		if (len(snapshots)+1)%specs.Teams == 0 {
+			teamsTurn = NextTeam(roster, teamsTurn)
+			roundNo++
+		}
+	} else {
+		teamsTurn = NextTeam(roster, teamsTurn)
+	}
+	snapshot = SnapshotWithPass(snapshot, roster, teamsTurn, roundNo)
 	err = service.CreateSnapshot(snapshot)
 	if err != nil {
 		return

@@ -214,9 +214,19 @@ func (db DB) FindPlayerTeams(playerId string) (teamPlayers []Subscriber, err err
 	return
 }
 
-func (db DB) FindSnapshots(matchId string) (snapshots []Snapshot, err error) {
+func (db DB) FindSnapshotsForMatch(matchId string) (snapshots []Snapshot, err error) {
 	cursor, err := mongo.Find(Database, SnapshotCollection,
 		bson.M{"quiz_id": matchId}, &options.FindOptions{})
+	if err != nil {
+		return
+	}
+	snapshots, err = DecodeSnapshots(cursor)
+	return
+}
+
+func (db DB) FindSnapshotsForQuestion(quizId string, questionId string, eventType string) (snapshots []Snapshot, err error) {
+	cursor, err := mongo.Find(Database, SnapshotCollection,
+		bson.M{"quiz_id": quizId, "question_id": questionId, "event_type": eventType}, &options.FindOptions{})
 	if err != nil {
 		return
 	}

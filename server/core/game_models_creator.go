@@ -100,6 +100,7 @@ func InitialSnapshot(quizId string, teams []TeamRoster) (response Snapshot) {
 	response.Score = 0
 	response.QuestionNo = 0
 	response.RoundNo = 0
+	response.CanPass = false
 	response.Timestamp = time.Now().String()
 	return
 }
@@ -107,6 +108,7 @@ func InitialSnapshot(quizId string, teams []TeamRoster) (response Snapshot) {
 func SnapshotWithJoinPlayer(snapshot Snapshot, teams []TeamRoster) (response Snapshot) {
 	snapshot.Roster = teams
 	snapshot.EventType = JOIN.String()
+	snapshot.Timestamp = time.Now().String()
 	response = snapshot
 	return
 }
@@ -114,6 +116,7 @@ func SnapshotWithJoinPlayer(snapshot Snapshot, teams []TeamRoster) (response Sna
 func SnapshotWithDropPlayer(snapshot Snapshot, teams []TeamRoster) (response Snapshot) {
 	snapshot.Roster = teams
 	snapshot.EventType = DROP.String()
+	snapshot.Timestamp = time.Now().String()
 	response = snapshot
 	return
 }
@@ -127,6 +130,7 @@ func SnapshotWithStart(snapshot Snapshot, teams []TeamRoster, question Question,
 	snapshot.Score = 0
 	snapshot.QuestionNo = 1
 	snapshot.RoundNo = 1
+	snapshot.CanPass = true
 	snapshot.Timestamp = time.Now().String()
 	response = snapshot
 	return
@@ -137,6 +141,7 @@ func SnapshotWithAnswer(snapshot Snapshot, answer []string, matchPoints int, tea
 	snapshot.EventType = RIGHT.String()
 	snapshot.Score = ScoreAnswer(matchPoints, snapshot.RoundNo)
 	snapshot.Roster = teams
+	snapshot.Timestamp = time.Now().String()
 	response = snapshot
 	return
 }
@@ -150,15 +155,18 @@ func SnapshotWithHint(snapshot Snapshot, hint []string, teams []TeamRoster) (res
 	snapshot.Roster = teams
 	snapshot.EventType = HINT.String()
 	snapshot.Score = 0
+	snapshot.Timestamp = time.Now().String()
 	response = snapshot
 	return
 }
 
-func SnapshotWithPass(snapshot Snapshot, teams []TeamRoster, team_s_turn string) (response Snapshot) {
+func SnapshotWithPass(snapshot Snapshot, teams []TeamRoster, team_s_turn string, roundNo int) (response Snapshot) {
 	snapshot.TeamSTurn = team_s_turn
 	snapshot.Roster = teams
 	snapshot.EventType = PASS.String()
+	snapshot.RoundNo = roundNo
 	snapshot.Score = 0
+	snapshot.Timestamp = time.Now().String()
 	response = snapshot
 	return
 }
@@ -172,6 +180,8 @@ func SnapshotWithNext(snapshot Snapshot, teams []TeamRoster, team_s_turn string,
 	snapshot.Question = question.Statements
 	snapshot.QuestionNo = snapshot.QuestionNo + 1
 	snapshot.QuestionId = question.Id
+	snapshot.CanPass = true
+	snapshot.Timestamp = time.Now().String()
 	response = snapshot
 	return
 }
