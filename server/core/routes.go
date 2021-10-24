@@ -27,7 +27,6 @@ var (
 	SubscriberCollection string
 
 	CommsHub        *Hub
-	Repo            Repository
 	Controller      Service
 	Targe           Target
 	Db              DB
@@ -60,7 +59,7 @@ func Routes() *http.ServeMux {
 	postChain := chain.Add(net.CorsInterceptor(http.MethodPost))
 
 	Db = DB{}
-	Repo = Repository{db: Db}
+	questionService := QuestionService{db: Db}
 	Targe = Target{}
 	subscriberService := SubscriberService{db: Db, target: Targe}
 	validator := Validator{}
@@ -69,6 +68,7 @@ func Routes() *http.ServeMux {
 		teamService:       TeamService{db: Db, subscriberService: subscriberService},
 		playerService:     PlayerService{db: Db},
 		subscriberService: subscriberService,
+		questionService:   questionService,
 		validator:         validator,
 	}
 

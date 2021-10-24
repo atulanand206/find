@@ -1,0 +1,265 @@
+package core
+
+import (
+	"errors"
+)
+
+type Service struct {
+	matchService      MatchService
+	subscriberService SubscriberService
+	playerService     PlayerService
+	teamService       TeamService
+	questionService   QuestionService
+	validator         Validator
+}
+
+func (service Service) GenerateActiveQuizResponse() (matches []Game, err error) {
+	return service.matchService.FindActiveMatches()
+}
+
+func (service Service) GenerateGameResponse(request Request) (response Snapshot, err error) {
+
+	return
+}
+
+func (service Service) GenerateBeginGameResponse(player Player) (res Player, err error) {
+	return service.playerService.FindOrCreatePlayer(player)
+}
+
+func (service Service) GenerateCreateGameResponse(quizmaster Player, specs Specs) (response GameResponse, err error) {
+	player := quizmaster
+	player, err = service.playerService.FindOrCreatePlayer(player)
+	if err != nil {
+		return
+	}
+
+	quiz, err := service.matchService.CreateMatch(player, specs)
+	if err != nil {
+		return
+	}
+
+	teams, err := service.teamService.CreateTeams(quiz)
+	if err != nil {
+		return
+	}
+
+	roster := TableRoster(teams, []Subscriber{}, []Player{})
+	snapshot := InitialSnapshot(quiz.Id, roster)
+
+	return service.subscriberService.subscribeAndRespond(quiz, player, snapshot, QUIZMASTER)
+}
+
+func (service Service) GenerateEnterGameResponse(request Request) (response GameResponse, err error) {
+	player, err := service.playerService.FindPlayerByEmail(request.Person.Email)
+	if err != nil {
+		return
+	}
+
+	match, teams, teamPlayers, _, _, snapshot, err := service.matchService.FindMatchFull(request.QuizId)
+	if err != nil {
+		return
+	}
+
+	if IsQuizMasterInMatch(match, player) {
+		return service.subscriberService.subscribeAndRespond(match, player, snapshot, QUIZMASTER)
+	}
+
+	if IsPlayerInTeams(teamPlayers, player) {
+		return service.subscriberService.subscribeAndRespond(match, player, snapshot, PLAYER)
+	}
+
+	_, err = service.teamService.FindAndFillTeamVacancy(match, teams, player)
+	if err != nil {
+		return
+	}
+
+	match, _, _, _, _, snapshot, err = service.matchService.FindMatchFull(request.QuizId)
+	if err != nil {
+		return
+	}
+
+	return service.subscriberService.subscribeAndRespond(match, player, snapshot, PLAYER)
+}
+
+func (service Service) GenerateFullMatchResponse(quizId string) (response Snapshot, err error) {
+	_, _, _, _, _, snapshot, err := service.matchService.FindMatchFull(quizId)
+	if err != nil {
+		return
+	}
+
+	response = snapshot
+	return
+}
+
+func (service Service) GenerateWatchGameResponse(request Request) (response GameResponse, err error) {
+	audience, err := service.playerService.FindPlayerByEmail(request.Person.Email)
+	if err != nil {
+		return
+	}
+
+	match, _, _, _, _, snapshot, err := service.matchService.FindMatchFull(request.QuizId)
+	if err != nil {
+		return
+	}
+
+	return service.subscriberService.subscribeAndRespond(match, audience, snapshot, AUDIENCE)
+}
+
+func (service Service) GenerateStartGameResponse(request Request) (response Snapshot, err error) {
+	match, teams, teamPlayers, _, _, snapshot, err := service.matchService.FindMatchFull(request.QuizId)
+	if err != nil {
+		return
+	}
+
+	if result := MatchFull(match, teamPlayers); !result {
+		err = errors.New(Err_WaitingForPlayers)
+		return
+	}
+
+	question, err := service.questionService.FindQuestionForMatch(match)
+	if err != nil {
+		return
+	}
+
+	if err = Db.UpdateMatchQuestions(match, question); err != nil {
+		err = errors.New(Err_MatchNotUpdated)
+		return
+	}
+
+	snapshot = SnapshotWithStart(snapshot, question, teams[0].Id)
+	if err = Db.CreateSnapshot(snapshot); err != nil {
+		err = errors.New(Err_SnapshotNotCreated)
+		return
+	}
+
+	response = snapshot
+	return
+}
+
+func (service Service) GenerateQuestionHintResponse(request Request) (response Snapshot, err error) {
+	_, _, _, _, roster, snapshot, err := service.matchService.FindMatchFull(request.QuizId)
+	if err != nil {
+		return
+	}
+
+	answer, err := Db.FindAnswer(request.QuestionId)
+	if err != nil {
+		err = errors.New(Err_QuestionNotPresent)
+		return
+	}
+
+	snapshot = SnapshotWithHint(snapshot, answer.Hint, roster)
+	if err = Db.CreateSnapshot(snapshot); err != nil {
+		err = errors.New(Err_SnapshotNotCreated)
+		return
+	}
+
+	response = snapshot
+	return
+}
+
+func (service Service) GenerateQuestionAnswerResponse(request Request) (response Snapshot, err error) {
+	match, teams, teamPlayers, players, _, snapshot, err := service.matchService.FindMatchFull(request.QuizId)
+	if err != nil {
+		return
+	}
+
+	teamId := snapshot.TeamSTurn
+	var team Team
+	for _, tm := range teams {
+		if tm.Id == teamId {
+			team = tm
+		}
+	}
+	team.Score += ScoreAnswer(match.Specs.Points, snapshot.RoundNo)
+
+	err = service.teamService.db.UpdateTeam(team)
+	if err != nil {
+		err = errors.New(Err_TeamNotUpdated)
+		return
+	}
+
+	teams, err = service.teamService.db.FindTeams(match)
+	if err != nil {
+		err = errors.New(Err_TeamNotPresent)
+		return
+	}
+
+	answer, err := Db.FindAnswer(request.QuestionId)
+	if err != nil {
+		err = errors.New(Err_QuestionNotPresent)
+		return
+	}
+
+	roster := TableRoster(teams, teamPlayers, players)
+
+	snapshot = SnapshotWithAnswer(snapshot, answer.Answer, match.Specs.Points, roster)
+	if err = Db.CreateSnapshot(snapshot); err != nil {
+		err = errors.New(Err_SnapshotNotCreated)
+		return
+	}
+
+	response = snapshot
+	return
+}
+
+func (service Service) GenerateNextQuestionResponse(request Request) (response Snapshot, err error) {
+
+	match, teams, _, _, roster, snapshot, err := service.matchService.FindMatchFull(request.QuizId)
+	if err != nil {
+		return
+	}
+
+	if !QuestionCanBeAdded(match) {
+		err = errors.New(Err_QuestionsNotLeft)
+		return
+	}
+
+	question, err := service.questionService.FindQuestionForMatch(match)
+	if err != nil {
+		return
+	}
+
+	if err = Db.UpdateMatchQuestions(match, question); err != nil {
+		err = errors.New(Err_MatchNotUpdated)
+		return
+	}
+
+	teamsTurn := NextTeam(teams, request.TeamSTurn)
+	snapshot = SnapshotWithNext(snapshot, roster, teamsTurn, question)
+	if err = Db.CreateSnapshot(snapshot); err != nil {
+		err = errors.New(Err_SnapshotNotCreated)
+		return
+	}
+
+	response = snapshot
+	return
+}
+
+func (service Service) GeneratePassQuestionResponse(request Request) (response Snapshot, err error) {
+	_, teams, _, _, roster, snapshot, err := service.matchService.FindMatchFull(request.QuizId)
+	if err != nil {
+		return
+	}
+
+	teamsTurn := NextTeam(teams, request.TeamSTurn)
+	snapshot = SnapshotWithPass(snapshot, roster, teamsTurn)
+	if err = Db.CreateSnapshot(snapshot); err != nil {
+		err = errors.New(Err_SnapshotNotCreated)
+		return
+	}
+
+	response = snapshot
+	return
+}
+
+func (service Service) GenerateScoreResponse(request Request) (response ScoreResponse, err error) {
+	snapshots, err := Db.FindSnapshots(request.QuizId)
+	if err != nil {
+		err = errors.New(Err_SnapshotNotPresent)
+		return
+	}
+
+	response = InitScoreResponse(request.QuizId, snapshots)
+	return
+}
