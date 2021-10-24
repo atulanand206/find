@@ -77,7 +77,7 @@ func (client *Client) OnCreate(request Request) (res WebsocketMessage, targets m
 		return
 	}
 
-	res, targets = Controller.subscriberService.selfResponse(request.Person.Id, S_GAME, response)
+	res, targets = Controller.subscriberService.selfResponse(request.Person.Id, S_JOIN, response)
 	return
 }
 
@@ -124,7 +124,7 @@ func (client *Client) OnStart(request Request) (res WebsocketMessage, targets ma
 		return
 	}
 
-	res, targets = Controller.subscriberService.quizResponse(request.QuizId, response)
+	res, targets = Controller.subscriberService.quizResponse(request.Action, request.QuizId, response)
 	return
 }
 
@@ -135,7 +135,7 @@ func (client *Client) OnHint(request Request) (res WebsocketMessage, targets map
 		return
 	}
 
-	res, targets = Controller.subscriberService.quizResponse(request.QuizId, response)
+	res, targets = Controller.subscriberService.quizResponse(request.Action, request.QuizId, response)
 	return
 }
 
@@ -146,7 +146,7 @@ func (client *Client) OnRight(request Request) (res WebsocketMessage, targets ma
 		return
 	}
 
-	res, targets = Controller.subscriberService.quizResponse(request.QuizId, response)
+	res, targets = Controller.subscriberService.quizResponse(request.Action, request.QuizId, response)
 	return
 }
 
@@ -157,7 +157,7 @@ func (client *Client) OnNext(request Request) (res WebsocketMessage, targets map
 		return
 	}
 
-	res, targets = Controller.subscriberService.quizResponse(request.QuizId, response)
+	res, targets = Controller.subscriberService.quizResponse(request.Action, request.QuizId, response)
 	return
 }
 
@@ -168,7 +168,7 @@ func (client *Client) OnPass(request Request) (res WebsocketMessage, targets map
 		return
 	}
 
-	res, targets = Controller.subscriberService.quizResponse(request.QuizId, response)
+	res, targets = Controller.subscriberService.quizResponse(request.Action, request.QuizId, response)
 	return
 }
 

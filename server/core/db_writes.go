@@ -23,7 +23,7 @@ func (db DB) CreateCollections() (err error) {
 }
 
 func (db DB) DropCollections() (err error) {
-	err = mongo.DropCollections(Database, db.PlayersCollections())
+	err = mongo.DropCollections(Database, db.QuestionsCollections())
 	return
 }
 

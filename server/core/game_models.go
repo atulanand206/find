@@ -157,3 +157,8 @@ type (
 		Snapshot Snapshot `json:"snapshot"`
 	}
 )
+
+type SnapshotResponse struct {
+	Action   string   `json:"action"`
+	Snapshot Snapshot `json:"snapshot"`
+}

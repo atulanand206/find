@@ -23,6 +23,7 @@ const (
 	ACTIVE
 	S_ACTIVE
 	S_GAME
+	S_JOIN
 	S_PLAYER
 	S_START
 	S_HINT
@@ -58,6 +59,7 @@ func (action Action) String() string {
 		"ACTIVE",
 		"S_ACTIVE",
 		"S_GAME",
+		"S_JOIN",
 		"S_PLAYER",
 		"S_START",
 		"S_HINT",

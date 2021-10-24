@@ -66,10 +66,33 @@ func (service Service) GenerateEnterGameResponse(request Request) (response Game
 	}
 
 	if IsQuizMasterInMatch(match, player) {
+		match, _, _, _, roster, snapshot, er := service.matchService.FindMatchFull(request.QuizId)
+		if er != nil {
+			err = er
+			return
+		}
+
+		snapshot, er = service.snapshotService.SnapshotJoin(snapshot, roster)
+		if er != nil {
+			err = er
+			return
+		}
+
 		return service.subscriberService.subscribeAndRespond(match, player, snapshot, QUIZMASTER)
 	}
 
 	if IsPlayerInTeams(teamPlayers, player) {
+		match, _, _, _, roster, snapshot, er := service.matchService.FindMatchFull(request.QuizId)
+		if er != nil {
+			err = er
+			return
+		}
+
+		snapshot, er = service.snapshotService.SnapshotJoin(snapshot, roster)
+		if er != nil {
+			err = er
+			return
+		}
 		return service.subscriberService.subscribeAndRespond(match, player, snapshot, PLAYER)
 	}
 
@@ -167,7 +190,7 @@ func (service Service) GenerateQuestionHintResponse(request Request) (response S
 }
 
 func (service Service) GenerateQuestionAnswerResponse(request Request) (response Snapshot, err error) {
-	match, teams, teamPlayers, players, _, snapshot, err := service.matchService.FindMatchFull(request.QuizId)
+	match, teams, _, _, _, snapshot, err := service.matchService.FindMatchFull(request.QuizId)
 	if err != nil {
 		return
 	}
@@ -179,17 +202,12 @@ func (service Service) GenerateQuestionAnswerResponse(request Request) (response
 			team = tm
 		}
 	}
-	team.Score += ScoreAnswer(match.Specs.Points, snapshot.RoundNo)
+	points := match.Specs.Points
+	team.Score += ScoreAnswer(points, snapshot.RoundNo)
 
 	err = service.teamService.db.UpdateTeam(team)
 	if err != nil {
 		err = errors.New(Err_TeamNotUpdated)
-		return
-	}
-
-	teams, err = service.teamService.db.FindTeams(match)
-	if err != nil {
-		err = errors.New(Err_TeamNotPresent)
 		return
 	}
 
@@ -199,8 +217,12 @@ func (service Service) GenerateQuestionAnswerResponse(request Request) (response
 		return
 	}
 
-	roster := TableRoster(teams, teamPlayers, players)
-	snapshot, err = service.snapshotService.SnapshotAnswer(snapshot, roster, answer, match.Specs.Points)
+	_, _, _, _, roster, _, err := service.matchService.FindMatchFull(request.QuizId)
+	if err != nil {
+		return
+	}
+
+	snapshot, err = service.snapshotService.SnapshotAnswer(snapshot, roster, answer, points)
 	if err != nil {
 		return
 	}

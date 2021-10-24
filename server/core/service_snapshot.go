@@ -1,6 +1,8 @@
 package core
 
-import "errors"
+import (
+	"errors"
+)
 
 type SnapshotService struct {
 	db DB

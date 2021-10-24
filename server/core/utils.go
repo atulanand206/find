@@ -113,7 +113,7 @@ func NextTeam(teams []TeamRoster, teamsTurn string) (teamId string) {
 }
 
 func MatchFull(match Game, teamPlayers []Subscriber) (result bool) {
-	return len(teamPlayers) < match.Specs.Players*match.Specs.Teams
+	return len(teamPlayers) == match.Specs.Players*match.Specs.Teams
 }
 
 func QuestionCanBeAdded(match Game) (result bool) {

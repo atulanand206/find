@@ -24,18 +24,18 @@ func (service SubscriberService) joinResponse(quizId string, response GameRespon
 		return
 	}
 	targets = Controller.subscriberService.target.TargetQuiz(quizId, subscribers)
-	res = MessageCreator.WebSocketsResponse(S_GAME, response)
+	res = MessageCreator.WebSocketsResponse(S_JOIN, response)
 	return
 }
 
-func (service SubscriberService) quizResponse(quizId string, response Snapshot) (res WebsocketMessage, targets map[string]bool) {
+func (service SubscriberService) quizResponse(action string, quizId string, response Snapshot) (res WebsocketMessage, targets map[string]bool) {
 	subscribers, er := Controller.subscriberService.FindSubscribersForTag([]string{quizId})
 	if er != nil {
 		res = MessageCreator.InitWebSocketMessageFailure()
 		return
 	}
 	targets = Controller.subscriberService.target.TargetQuiz(quizId, subscribers)
-	res = MessageCreator.WebSocketsResponse(S_GAME, response)
+	res = MessageCreator.WebSocketsResponse(S_GAME, &SnapshotResponse{Action: action, Snapshot: response})
 	return
 }
 
