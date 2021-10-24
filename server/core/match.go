@@ -151,4 +151,9 @@ type (
 		TeamSTurn  string `json:"team_s_turn,omitempty"`
 		QuestionId string `json:"question_id,omitempty"`
 	}
+
+	GameResponse struct {
+		Quiz     Game     `json:"quiz"`
+		Snapshot Snapshot `json:"snapshot"`
+	}
 )

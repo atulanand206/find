@@ -35,6 +35,17 @@ func (service SubscriberService) selfResponse(quizId string, action Action, resp
 	return
 }
 
+func (service SubscriberService) joinResponse(quizId string, response GameResponse) (res WebsocketMessage, targets map[string]bool) {
+	subscribers, er := Controller.subscriberService.FindSubscribersForTag([]string{quizId})
+	if er != nil {
+		res = MessageCreator.InitWebSocketMessageFailure()
+		return
+	}
+	targets = Controller.subscriberService.target.TargetQuiz(quizId, subscribers)
+	res = MessageCreator.WebSocketsResponse(S_GAME, response)
+	return
+}
+
 func (service SubscriberService) quizResponse(quizId string, response Snapshot) (res WebsocketMessage, targets map[string]bool) {
 	subscribers, er := Controller.subscriberService.FindSubscribersForTag([]string{quizId})
 	if er != nil {
@@ -46,13 +57,13 @@ func (service SubscriberService) quizResponse(quizId string, response Snapshot) 
 	return
 }
 
-func (service SubscriberService) subscribeAndRespond(match Game, roster []TeamRoster, player Player, snapshot Snapshot, role Role) (response Snapshot, err error) {
+func (service SubscriberService) subscribeAndRespond(match Game, roster []TeamRoster, player Player, snapshot Snapshot, role Role) (response GameResponse, err error) {
 	_, err = service.FindOrCreateSubscriber(match.Id, player, role)
 	if err != nil {
 		return
 	}
 
-	response = snapshot
+	response = GameResponse{Quiz: match, Snapshot: snapshot}
 	return
 }
 

@@ -20,7 +20,7 @@ func (service Service) GenerateBeginGameResponse(player Player) (res Player, err
 	return service.playerService.FindOrCreatePlayer(player)
 }
 
-func (service Service) GenerateCreateGameResponse(quizmaster Player, specs Specs) (response Snapshot, err error) {
+func (service Service) GenerateCreateGameResponse(quizmaster Player, specs Specs) (response GameResponse, err error) {
 	player := quizmaster
 	player, err = service.playerService.FindOrCreatePlayer(player)
 	if err != nil {
@@ -42,7 +42,7 @@ func (service Service) GenerateCreateGameResponse(quizmaster Player, specs Specs
 	return service.subscriberService.subscribeAndRespond(quiz, roster, player, snapshot, QUIZMASTER)
 }
 
-func (service Service) GenerateEnterGameResponse(request Request) (response Snapshot, err error) {
+func (service Service) GenerateEnterGameResponse(request Request) (response GameResponse, err error) {
 	player, err := service.playerService.FindPlayerByEmail(request.Person.Email)
 	if err != nil {
 		return
@@ -84,7 +84,7 @@ func (service Service) GenerateFullMatchResponse(quizId string) (response Snapsh
 	return
 }
 
-func (service Service) GenerateWatchGameResponse(request Request) (response Snapshot, err error) {
+func (service Service) GenerateWatchGameResponse(request Request) (response GameResponse, err error) {
 	audience, err := service.playerService.FindPlayerByEmail(request.Person.Email)
 	if err != nil {
 		return

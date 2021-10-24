@@ -88,7 +88,7 @@ func (client *Client) OnCreate(request Request) (res WebsocketMessage, targets m
 	return
 }
 
-type Enter func(request Request) (res Snapshot, err error)
+type Enter func(request Request) (res GameResponse, err error)
 
 func (client *Client) requestToJoin(request Request, enter Enter) (res WebsocketMessage, targets map[string]bool, err error) {
 	response, err := enter(request)
@@ -97,18 +97,18 @@ func (client *Client) requestToJoin(request Request, enter Enter) (res Websocket
 		return
 	}
 
-	res, targets = Controller.subscriberService.quizResponse(request.QuizId, response)
+	res, targets = Controller.subscriberService.joinResponse(request.QuizId, response)
 	return
 }
 
 func (client *Client) OnJoin(content Request) (res WebsocketMessage, targets map[string]bool, err error) {
-	return client.requestToJoin(content, func(request Request) (res Snapshot, err error) {
+	return client.requestToJoin(content, func(request Request) (res GameResponse, err error) {
 		return Controller.GenerateEnterGameResponse(request)
 	})
 }
 
 func (client *Client) OnWatch(content Request) (res WebsocketMessage, targets map[string]bool, err error) {
-	return client.requestToJoin(content, func(request Request) (res Snapshot, err error) {
+	return client.requestToJoin(content, func(request Request) (res GameResponse, err error) {
 		return Controller.GenerateWatchGameResponse(request)
 	})
 }
