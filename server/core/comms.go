@@ -7,6 +7,7 @@ const (
 	SPECS
 	JOIN
 	WATCH
+	CREATE
 	START
 	HINT
 	RIGHT
@@ -40,6 +41,7 @@ func (action Action) String() string {
 		"SPECS",
 		"JOIN",
 		"WATCH",
+		"CREATE",
 		"START",
 		"HINT",
 		"RIGHT",

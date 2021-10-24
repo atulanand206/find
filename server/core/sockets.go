@@ -23,9 +23,7 @@ var (
 	newline = []byte{'\n'}
 	space   = []byte{' '}
 
-	clients     = make(map[*websocket.Conn]bool)
-	broadcaster = make(chan WebsocketMessage)
-	upgrader    = websocket.Upgrader{
+	upgrader = websocket.Upgrader{
 		ReadBufferSize:  2048,
 		WriteBufferSize: 2048,
 		CheckOrigin: func(r *http.Request) bool {

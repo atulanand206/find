@@ -19,7 +19,7 @@ func (validator Validator) ValidateCreateQuizRequest(request Request) (err error
 
 func (validator Validator) ValidateRefeshQuizRequest(request Request) (err error) {
 	if len(request.QuizId) != 0 {
-		err = errors.New("request invalid.")
+		err = errors.New("request invalid")
 	}
 	return
 }

@@ -93,7 +93,17 @@ func InitScoreResponse(quizId string, snapshots []Snapshot) (response ScoreRespo
 	return
 }
 
-func InitialSnapshot(quizId string, question Question, teams []TeamRoster, teamsTurn string) (response Snapshot) {
+func InitialSnapshot(quizId string) (response Snapshot) {
+	response.QuizId = quizId
+	response.EventType = CREATE.String()
+	response.Score = 0
+	response.QuestionNo = 1
+	response.RoundNo = 1
+	response.Timestamp = time.Now().String()
+	return
+}
+
+func InitialSnapshotStart(quizId string, question Question, teams []TeamRoster, teamsTurn string) (response Snapshot) {
 	response.QuizId = quizId
 	response.QuestionId = question.Id
 	response.Roster = teams

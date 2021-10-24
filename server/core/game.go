@@ -37,8 +37,9 @@ func (service Service) GenerateCreateGameResponse(quizmaster Player, specs Specs
 		return
 	}
 	roster := TableRoster(teams, []Subscriber{}, []Player{})
+	snapshot := InitialSnapshot(quiz.Id)
 
-	return service.subscriberService.subscribeAndRespond(quiz, roster, player, Snapshot{}, QUIZMASTER)
+	return service.subscriberService.subscribeAndRespond(quiz, roster, player, snapshot, QUIZMASTER)
 }
 
 func (service Service) GenerateEnterGameResponse(request Request) (response Snapshot, err error) {
@@ -65,7 +66,7 @@ func (service Service) GenerateEnterGameResponse(request Request) (response Snap
 		return
 	}
 
-	match, teams, teamPlayers, _, roster, snapshot, err = service.matchService.FindMatchFull(request.QuizId)
+	match, _, _, _, roster, snapshot, err = service.matchService.FindMatchFull(request.QuizId)
 	if err != nil {
 		return
 	}
@@ -118,7 +119,7 @@ func (service Service) GenerateStartGameResponse(request Request) (response Snap
 		return
 	}
 
-	snapshot = InitialSnapshot(match.Id, question, roster, teams[0].Id)
+	snapshot = InitialSnapshotStart(match.Id, question, roster, teams[0].Id)
 	if err = Db.CreateSnapshot(snapshot); err != nil {
 		err = errors.New(Err_SnapshotNotCreated)
 		return
@@ -137,6 +138,7 @@ func (service Service) GenerateQuestionHintResponse(request Request) (response S
 	answer, err := Db.FindAnswer(request.QuestionId)
 	if err != nil {
 		err = errors.New(Err_QuestionNotPresent)
+		return
 	}
 
 	snapshot = SnapshotWithHint(snapshot, answer.Hint, roster)
@@ -150,7 +152,7 @@ func (service Service) GenerateQuestionHintResponse(request Request) (response S
 }
 
 func (service Service) GenerateQuestionAnswerResponse(request Request) (response Snapshot, err error) {
-	match, teams, teamPlayers, players, roster, snapshot, err := service.matchService.FindMatchFull(request.QuizId)
+	match, teams, teamPlayers, players, _, snapshot, err := service.matchService.FindMatchFull(request.QuizId)
 	if err != nil {
 		return
 	}
@@ -167,19 +169,22 @@ func (service Service) GenerateQuestionAnswerResponse(request Request) (response
 	err = service.teamService.db.UpdateTeam(team)
 	if err != nil {
 		err = errors.New(Err_TeamNotUpdated)
+		return
 	}
 
 	teams, err = service.teamService.db.FindTeams(match)
 	if err != nil {
 		err = errors.New(Err_TeamNotPresent)
+		return
 	}
 
 	answer, err := Db.FindAnswer(request.QuestionId)
 	if err != nil {
 		err = errors.New(Err_QuestionNotPresent)
+		return
 	}
 
-	roster = TableRoster(teams, teamPlayers, players)
+	roster := TableRoster(teams, teamPlayers, players)
 
 	snapshot = SnapshotWithAnswer(snapshot, answer.Answer, match.Specs.Points, roster)
 	if err = Db.CreateSnapshot(snapshot); err != nil {

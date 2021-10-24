@@ -13,51 +13,51 @@ type ErrorMessage struct {
 }
 
 const (
-	Err_RequestNotDecoded = "Request can't be decoded."
+	Err_RequestNotDecoded = "request can't be decoded"
 
-	Err_CollectionsNotCreated  = "Collections can't be created."
-	Err_DeckDtosNotCreated     = "Deck dtos can't be created."
-	Err_MatchRequestNotCreated = "New match request can't be created."
-	Err_MatchNotCreated        = "New match can't be created."
-	Err_TeamNotCreated         = "Team can't be created."
-	Err_PlayerNotCreated       = "Player can't be created."
-	Err_QuestionNotCreated     = "Question can't be created."
-	Err_AnswerNotCreated       = "Answer can't be created."
-	Err_SnapshotNotCreated     = "Snapshot can't be created."
+	Err_CollectionsNotCreated  = "collections can't be created"
+	Err_DeckDtosNotCreated     = "deck dtos can't be created"
+	Err_MatchRequestNotCreated = "new match request can't be created"
+	Err_MatchNotCreated        = "new match can't be created"
+	Err_TeamNotCreated         = "team can't be created"
+	Err_PlayerNotCreated       = "player can't be created"
+	Err_QuestionNotCreated     = "question can't be created"
+	Err_AnswerNotCreated       = "answer can't be created"
+	Err_SnapshotNotCreated     = "snapshot can't be created"
 
-	Err_IndexNotSeeded     = "Index can't be seeded."
-	Err_QuestionsNotSeeded = "Questions can't be seeded."
-	Err_AnswersNotSeeded   = "Answers can't be seeded."
+	Err_IndexNotSeeded     = "index can't be seeded"
+	Err_QuestionsNotSeeded = "questions can't be seeded"
+	Err_AnswersNotSeeded   = "answers can't be seeded"
 
-	Err_IndexNotPresent       = "Index does not exist."
-	Err_MatchNotPresent       = "Match with the given info does not exist."
-	Err_SnapshotNotPresent    = "Snapshot with the given info does not exist."
-	Err_PlayerNotPresent      = "Player with the given info does not exist."
-	Err_QuestionNotPresent    = "Question does not exist."
-	Err_AnswerNotPresent      = "Answer does not exist."
-	Err_TeamNotPresent        = "Team does not exist."
-	Err_TeamPlayersNotPresent = "Team players does not exist."
+	Err_IndexNotPresent       = "index does not exist"
+	Err_MatchNotPresent       = "match with the given info does not exist"
+	Err_SnapshotNotPresent    = "snapshot with the given info does not exist"
+	Err_PlayerNotPresent      = "player with the given info does not exist"
+	Err_QuestionNotPresent    = "question does not exist"
+	Err_AnswerNotPresent      = "answer does not exist"
+	Err_TeamNotPresent        = "team does not exist"
+	Err_TeamPlayersNotPresent = "team players does not exist"
 
-	Err_MatchNotUpdated = "Match can't be updated."
-	Err_TeamNotUpdated  = "Team can't be updated."
+	Err_MatchNotUpdated = "match can't be updated"
+	Err_TeamNotUpdated  = "team can't be updated"
 
-	Err_CollectionsNotDropped = "Collections can't be dropped."
+	Err_CollectionsNotDropped = "collections can't be dropped"
 
-	Err_QuizmasterCantPlay     = "Quizmaster can't join the match as a player."
-	Err_WaitingForPlayers      = "Waiting for more players to join."
-	Err_QuestionsNotLeft       = "No remaining question in the quiz."
-	Err_TeamsNotPresentInMatch = "Teams not present in the match."
-	Err_PlayersFullInTeam      = "Players already full in the team."
+	Err_QuizmasterCantPlay     = "quizmaster can't join the match as a player"
+	Err_WaitingForPlayers      = "waiting for more players to join"
+	Err_QuestionsNotLeft       = "no remaining question in the quiz"
+	Err_TeamsNotPresentInMatch = "teams not present in the match"
+	Err_PlayersFullInTeam      = "players already full in the team"
 
-	Err_SocketRequestFailed = "Sockets request failed by the server."
-	Err_PlayerAlreadyInGame = "Player already present in the game."
+	Err_SocketRequestFailed = "sockets request failed by the server"
+	Err_PlayerAlreadyInGame = "player already present in the game"
 
-	Err_SubscriberNotPresent = "Match with the given info does not exist."
+	Err_SubscriberNotPresent = "match with the given info does not exist"
 )
 
 func (creator ErrorMessageCreator) NotCreated(entity string, data interface{}) (errorMsg ErrorMessage) {
 	errorMsg.code = http.StatusNotAcceptable
-	errorMsg.msg = fmt.Sprintf("Unable to create %s %v", entity, data)
+	errorMsg.msg = fmt.Sprintf("unable to create %s %v", entity, data)
 	return
 }
 
@@ -67,7 +67,7 @@ func (creator ErrorMessageCreator) SubscriberNotCreated(v interface{}) (errorMsg
 }
 
 func (creator ErrorMessageCreator) RequestInvalid() (errorMsg ErrorMessage) {
-	errorMsg.msg = "request invalid."
+	errorMsg.msg = "request invalid"
 	errorMsg.code = http.StatusBadRequest
 	return
 }

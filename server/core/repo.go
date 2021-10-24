@@ -86,6 +86,7 @@ func (service MatchService) FindMatchFull(matchId string) (
 	teams, err = service.db.FindTeams(match)
 	if err != nil {
 		err = errors.New(Err_TeamsNotPresentInMatch)
+		return
 	}
 
 	teamPlayers, err = service.db.FindTeamPlayers(teams)
@@ -151,12 +152,22 @@ func (service PlayerService) FindPlayerByEmail(email string) (player Player, err
 
 func (service PlayerService) DeletePlayerLiveSession(playerId string) (res WebsocketMessage, targets map[string]bool, err error) {
 	subscribers, err := service.db.FindSubscriptionsForPlayerId(playerId)
+	if err != nil {
+		err = errors.New(err.Error())
+		return
+	}
+
 	tags := make([]string, 0)
 	for _, subscriber := range subscribers {
 		tags = append(tags, subscriber.Tag)
 	}
 
 	subscribers, err = service.db.FindSubscribersForTag(tags)
+	if err != nil {
+		err = errors.New(err.Error())
+		return
+	}
+
 	targets = make(map[string]bool)
 	for _, subscriber := range subscribers {
 		if playerId != subscriber.PlayerId {
