@@ -27,33 +27,3 @@ func (service PlayerService) FindPlayerByEmail(email string) (player Player, err
 
 	return
 }
-
-func (service PlayerService) DeletePlayerLiveSession(playerId string) (res WebsocketMessage, targets map[string]bool, err error) {
-	subscribers, err := service.db.FindSubscriptionsForPlayerId(playerId)
-	if err != nil {
-		err = errors.New(err.Error())
-		return
-	}
-
-	tags := make([]string, 0)
-	for _, subscriber := range subscribers {
-		tags = append(tags, subscriber.Tag)
-	}
-
-	subscribers, err = service.db.FindSubscribersForTag(tags)
-	if err != nil {
-		err = errors.New(err.Error())
-		return
-	}
-
-	targets = make(map[string]bool)
-	for _, subscriber := range subscribers {
-		if playerId != subscriber.PlayerId {
-			targets[subscriber.PlayerId] = true
-		}
-	}
-
-	res = MessageCreator.InitWebSocketMessage(S_REFRESH, "Player dropped. Please refresh.")
-	err = service.db.DeleteSubscriber(playerId)
-	return
-}

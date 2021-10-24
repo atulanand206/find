@@ -104,15 +104,31 @@ func InitialSnapshot(quizId string, teams []TeamRoster) (response Snapshot) {
 	return
 }
 
-func SnapshotWithStart(snapshot Snapshot, question Question, teamsTurn string) (response Snapshot) {
-	response.QuestionId = question.Id
-	response.TeamSTurn = teamsTurn
-	response.EventType = START.String()
-	response.Question = question.Statements
-	response.Score = 0
-	response.QuestionNo = 1
-	response.RoundNo = 1
-	response.Timestamp = time.Now().String()
+func SnapshotWithJoinPlayer(snapshot Snapshot, teams []TeamRoster) (response Snapshot) {
+	snapshot.Roster = teams
+	snapshot.EventType = JOIN.String()
+	response = snapshot
+	return
+}
+
+func SnapshotWithDropPlayer(snapshot Snapshot, teams []TeamRoster) (response Snapshot) {
+	snapshot.Roster = teams
+	snapshot.EventType = DROP.String()
+	response = snapshot
+	return
+}
+
+func SnapshotWithStart(snapshot Snapshot, teams []TeamRoster, question Question, teamsTurn string) (response Snapshot) {
+	snapshot.QuestionId = question.Id
+	snapshot.Roster = teams
+	snapshot.TeamSTurn = teamsTurn
+	snapshot.EventType = START.String()
+	snapshot.Question = question.Statements
+	snapshot.Score = 0
+	snapshot.QuestionNo = 1
+	snapshot.RoundNo = 1
+	snapshot.Timestamp = time.Now().String()
+	response = snapshot
 	return
 }
 

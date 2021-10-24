@@ -2,6 +2,7 @@ package core
 
 import (
 	"errors"
+	"fmt"
 )
 
 type Service struct {
@@ -10,6 +11,7 @@ type Service struct {
 	playerService     PlayerService
 	teamService       TeamService
 	questionService   QuestionService
+	snapshotService   SnapshotService
 	validator         Validator
 }
 
@@ -43,8 +45,11 @@ func (service Service) GenerateCreateGameResponse(quizmaster Player, specs Specs
 		return
 	}
 
-	roster := TableRoster(teams, []Subscriber{}, []Player{})
-	snapshot := InitialSnapshot(quiz.Id, roster)
+	snapshot, err := service.snapshotService.InitialSnapshot(quiz.Id, teams)
+	if err != nil {
+		return
+	}
+	fmt.Println(snapshot)
 
 	return service.subscriberService.subscribeAndRespond(quiz, player, snapshot, QUIZMASTER)
 }
@@ -73,7 +78,12 @@ func (service Service) GenerateEnterGameResponse(request Request) (response Game
 		return
 	}
 
-	match, _, _, _, _, snapshot, err = service.matchService.FindMatchFull(request.QuizId)
+	match, _, _, _, roster, snapshot, err := service.matchService.FindMatchFull(request.QuizId)
+	if err != nil {
+		return
+	}
+
+	snapshot, err = service.snapshotService.SnapshotJoin(snapshot, roster)
 	if err != nil {
 		return
 	}
@@ -106,7 +116,7 @@ func (service Service) GenerateWatchGameResponse(request Request) (response Game
 }
 
 func (service Service) GenerateStartGameResponse(request Request) (response Snapshot, err error) {
-	match, teams, teamPlayers, _, _, snapshot, err := service.matchService.FindMatchFull(request.QuizId)
+	match, teams, teamPlayers, _, roster, snapshot, err := service.matchService.FindMatchFull(request.QuizId)
 	if err != nil {
 		return
 	}
@@ -126,9 +136,8 @@ func (service Service) GenerateStartGameResponse(request Request) (response Snap
 		return
 	}
 
-	snapshot = SnapshotWithStart(snapshot, question, teams[0].Id)
-	if err = Db.CreateSnapshot(snapshot); err != nil {
-		err = errors.New(Err_SnapshotNotCreated)
+	snapshot, err = service.snapshotService.SnapshotStart(snapshot, roster, question, teams[0].Id)
+	if err != nil {
 		return
 	}
 
@@ -148,9 +157,8 @@ func (service Service) GenerateQuestionHintResponse(request Request) (response S
 		return
 	}
 
-	snapshot = SnapshotWithHint(snapshot, answer.Hint, roster)
-	if err = Db.CreateSnapshot(snapshot); err != nil {
-		err = errors.New(Err_SnapshotNotCreated)
+	snapshot, err = service.snapshotService.SnapshotHint(snapshot, roster, answer.Hint)
+	if err != nil {
 		return
 	}
 
@@ -192,10 +200,8 @@ func (service Service) GenerateQuestionAnswerResponse(request Request) (response
 	}
 
 	roster := TableRoster(teams, teamPlayers, players)
-
-	snapshot = SnapshotWithAnswer(snapshot, answer.Answer, match.Specs.Points, roster)
-	if err = Db.CreateSnapshot(snapshot); err != nil {
-		err = errors.New(Err_SnapshotNotCreated)
+	snapshot, err = service.snapshotService.SnapshotAnswer(snapshot, roster, answer, match.Specs.Points)
+	if err != nil {
 		return
 	}
 
@@ -205,7 +211,7 @@ func (service Service) GenerateQuestionAnswerResponse(request Request) (response
 
 func (service Service) GenerateNextQuestionResponse(request Request) (response Snapshot, err error) {
 
-	match, teams, _, _, roster, snapshot, err := service.matchService.FindMatchFull(request.QuizId)
+	match, _, _, _, roster, snapshot, err := service.matchService.FindMatchFull(request.QuizId)
 	if err != nil {
 		return
 	}
@@ -225,10 +231,8 @@ func (service Service) GenerateNextQuestionResponse(request Request) (response S
 		return
 	}
 
-	teamsTurn := NextTeam(teams, request.TeamSTurn)
-	snapshot = SnapshotWithNext(snapshot, roster, teamsTurn, question)
-	if err = Db.CreateSnapshot(snapshot); err != nil {
-		err = errors.New(Err_SnapshotNotCreated)
+	snapshot, err = service.snapshotService.SnapshotNext(snapshot, roster, question, request.TeamSTurn)
+	if err != nil {
 		return
 	}
 
@@ -237,15 +241,13 @@ func (service Service) GenerateNextQuestionResponse(request Request) (response S
 }
 
 func (service Service) GeneratePassQuestionResponse(request Request) (response Snapshot, err error) {
-	_, teams, _, _, roster, snapshot, err := service.matchService.FindMatchFull(request.QuizId)
+	_, _, _, _, roster, snapshot, err := service.matchService.FindMatchFull(request.QuizId)
 	if err != nil {
 		return
 	}
 
-	teamsTurn := NextTeam(teams, request.TeamSTurn)
-	snapshot = SnapshotWithPass(snapshot, roster, teamsTurn)
-	if err = Db.CreateSnapshot(snapshot); err != nil {
-		err = errors.New(Err_SnapshotNotCreated)
+	snapshot, err = service.snapshotService.SnapshotPass(snapshot, roster, request.TeamSTurn)
+	if err != nil {
 		return
 	}
 
@@ -261,5 +263,35 @@ func (service Service) GenerateScoreResponse(request Request) (response ScoreRes
 	}
 
 	response = InitScoreResponse(request.QuizId, snapshots)
+	return
+}
+
+func (service Service) DeletePlayerLiveSession(playerId string) (res WebsocketMessage, targets map[string]bool, err error) {
+	subscribers, err := service.subscriberService.db.FindSubscriptionsForPlayerId(playerId)
+	if err != nil {
+		err = errors.New(err.Error())
+		return
+	}
+
+	tags := make([]string, 0)
+	for _, subscriber := range subscribers {
+		tags = append(tags, subscriber.Tag)
+	}
+
+	subscribers, err = service.subscriberService.db.FindSubscribersForTag(tags)
+	if err != nil {
+		err = errors.New(err.Error())
+		return
+	}
+
+	targets = make(map[string]bool)
+	for _, subscriber := range subscribers {
+		if playerId != subscriber.PlayerId {
+			targets[subscriber.PlayerId] = true
+		}
+	}
+
+	res = MessageCreator.InitWebSocketMessage(S_REFRESH, "Player dropped. Please refresh.")
+	err = service.subscriberService.db.DeleteSubscriber(playerId)
 	return
 }

@@ -38,12 +38,10 @@ func (service MatchService) FindMatchFull(matchId string) (
 	}
 
 	roster = TableRoster(teams, teamPlayers, players)
-	if match.Active {
-		snapshot, err = service.db.FindLatestSnapshot(match.Id)
-		if err != nil {
-			err = errors.New(Err_SnapshotNotPresent)
-			return
-		}
+	snapshot, err = service.db.FindLatestSnapshot(match.Id)
+	if err != nil {
+		err = errors.New(Err_SnapshotNotPresent)
+		return
 	}
 	return
 }

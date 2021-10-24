@@ -14,6 +14,7 @@ const (
 	PASS
 	NEXT
 	REVEAL
+	DROP
 	SCORE
 	REFRESH
 	S_REFRESH
@@ -48,6 +49,7 @@ func (action Action) String() string {
 		"PASS",
 		"NEXT",
 		"REVEAL",
+		"DROP",
 		"SCORE",
 		"REFRESH",
 		"S_REFRESH",

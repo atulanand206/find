@@ -96,7 +96,7 @@ func NewTeam(team Team) (result bool) {
 	return team.Id == ""
 }
 
-func NextTeam(teams []Team, teamsTurn string) (teamId string) {
+func NextTeam(teams []TeamRoster, teamsTurn string) (teamId string) {
 	teamId = ""
 	if len(teams) == 0 {
 		return
