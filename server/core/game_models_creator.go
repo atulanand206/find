@@ -142,6 +142,7 @@ func SnapshotWithAnswer(snapshot Snapshot, answer []string, matchPoints int, tea
 	snapshot.Score = ScoreAnswer(matchPoints, snapshot.RoundNo)
 	snapshot.Roster = teams
 	snapshot.Timestamp = time.Now().String()
+	snapshot.CanPass = false
 	response = snapshot
 	return
 }
