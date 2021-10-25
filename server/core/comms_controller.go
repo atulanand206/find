@@ -66,7 +66,7 @@ func (client *Client) OnBegin(request Request) (res WebsocketMessage, targets ma
 	}
 
 	client.setPlayerId(player.Id)
-	res, targets = Controller.subscriberService.selfResponse(request.Person.Id, S_PLAYER, player)
+	res, targets = Controller.subscriberService.selfResponse(player.Id, S_PLAYER, player)
 	return
 }
 
