@@ -12,4 +12,5 @@ RUN go mod download
 RUN go mod vendor
 RUN go mod verify
 RUN go build
+EXPOSE 5000
 CMD [ "go", "run", "main.go" ]
