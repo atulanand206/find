@@ -22,4 +22,5 @@ func main() {
 	// Serve the routes.
 	handler := http.HandlerFunc(routes.ServeHTTP)
 	http.ListenAndServe(":5000", handler)
+	// http.ListenAndServeTLS(":5000", "./server.crt", "./server.key", handler)
 }
