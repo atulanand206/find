@@ -91,8 +91,8 @@ type (
 	}
 
 	AddQuestionRequest struct {
-		Question NewQuestion `json:"question"`
-		Tag      string      `json:"tag"`
+		Questions []NewQuestion `json:"questions"`
+		Tag       string        `json:"tag"`
 	}
 
 	AddQuestionResponse struct {

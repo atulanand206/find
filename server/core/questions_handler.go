@@ -1,7 +1,6 @@
 package core
 
 import (
-	"encoding/json"
 	"net/http"
 	"os"
 )
@@ -18,26 +17,31 @@ func HandlerAddQuestion(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	index, err := Db.FindIndexForTag(requestBody.Tag)
-	if err != nil {
-		http.Error(w, Err_IndexNotPresent, http.StatusInternalServerError)
+	index := InitNewIndex(requestBody.Tag)
+	questions := make([]Question, 0)
+	answers := make([]Answer, 0)
+
+	for _, newQuestion := range requestBody.Questions {
+		question := InitNewQuestion(index, newQuestion)
+		questions = append(questions, question)
+
+		answers = append(answers, InitNewAnswer(question, newQuestion))
+	}
+
+	if err = Db.SeedIndexes([]Index{index}); err != nil {
+		http.Error(w, Err_IndexNotSeeded, http.StatusInternalServerError)
 		return
 	}
 
-	question := InitNewQuestion(index, requestBody.Question)
-	if err = Db.CreateQuestion(question); err != nil {
-		http.Error(w, Err_QuestionNotCreated, http.StatusInternalServerError)
+	if err = Db.SeedQuestions(questions); err != nil {
+		http.Error(w, Err_QuestionsNotSeeded, http.StatusInternalServerError)
 		return
 	}
 
-	answer := InitNewAnswer(question, requestBody.Question)
-	if err = Db.CreateAnswer(answer); err != nil {
-		http.Error(w, Err_AnswerNotCreated, http.StatusInternalServerError)
+	if err = Db.SeedAnswers(answers); err != nil {
+		http.Error(w, Err_AnswersNotSeeded, http.StatusInternalServerError)
 		return
 	}
-
-	response := InitAddQuestionResponse(question, answer)
-	json.NewEncoder(w).Encode(response)
 }
 
 func HandlerSeedQuestions(w http.ResponseWriter, r *http.Request) {

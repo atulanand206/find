@@ -42,6 +42,7 @@ func (hub *Hub) Handle(msg WebsocketMessage, client *Client) (res WebsocketMessa
 	case SCORE.String():
 		res, targets, err = client.OnScore(request)
 	}
+	fmt.Println(targets)
 	fmt.Println(res)
 	fmt.Println()
 	return
