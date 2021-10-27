@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"net/http"
 	"os"
 
@@ -21,6 +22,14 @@ func main() {
 
 	// Serve the routes.
 	handler := http.HandlerFunc(routes.ServeHTTP)
-	http.ListenAndServe(":5000", handler)
-	// http.ListenAndServeTLS(":5000", "./server.crt", "./server.key", handler)
+	port := os.Getenv("PORT")
+	cert := os.Getenv("SSL_CERT")
+	key := os.Getenv("SSL_KEY")
+	if cert == "" || key == "" {
+		log.Fatal("please add ssl certificates for successful connection.")
+	}
+	err := http.ListenAndServeTLS(":"+port, cert, key, handler)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
