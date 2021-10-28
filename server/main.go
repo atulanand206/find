@@ -26,7 +26,10 @@ func main() {
 	cert := os.Getenv("SSL_CERT")
 	key := os.Getenv("SSL_KEY")
 	if cert == "" || key == "" {
-		log.Fatal("please add ssl certificates for successful connection.")
+		err := http.ListenAndServe(":"+port, handler)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 	err := http.ListenAndServeTLS(":"+port, cert, key, handler)
 	if err != nil {

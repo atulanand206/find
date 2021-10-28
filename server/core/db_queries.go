@@ -101,7 +101,7 @@ func (db DB) FindActiveMatches() (matches []Game, err error) {
 func (db DB) FindTeams(match Game) (teams []Team, err error) {
 	findOptions := &options.FindOptions{}
 	sort := bson.D{}
-	sort = append(sort, bson.E{Key: "name", Value: -1})
+	sort = append(sort, bson.E{Key: "name", Value: 1})
 	findOptions.SetSort(sort)
 	cursor, err := mongo.Find(Database, TeamCollection,
 		bson.M{"quiz_id": match.Id}, findOptions)
@@ -120,7 +120,7 @@ func (db DB) FindTeamsMatches(match []Game) (teams []Team, err error) {
 	}
 	findOptions := &options.FindOptions{}
 	sort := bson.D{}
-	sort = append(sort, bson.E{Key: "name", Value: -1})
+	sort = append(sort, bson.E{Key: "name", Value: 1})
 	findOptions.SetSort(sort)
 	cursor, err := mongo.Find(Database, TeamCollection,
 		bson.M{"quiz_id": bson.M{"$in": matchIds}}, findOptions)
