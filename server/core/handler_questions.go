@@ -1,6 +1,8 @@
 package core
 
 import (
+	"encoding/json"
+	"errors"
 	"net/http"
 	"os"
 )
@@ -78,4 +80,14 @@ func HandlerSeedQuestions(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, Err_AnswersNotSeeded, http.StatusInternalServerError)
 		return
 	}
+}
+
+func HandlerTestAPI(w http.ResponseWriter, r *http.Request) {
+	matches, err := Controller.matchService.crud.FindActiveMatches()
+	if err != nil {
+		err = errors.New(Err_MatchNotPresent)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	json.NewEncoder(w).Encode(matches)
 }

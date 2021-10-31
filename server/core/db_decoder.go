@@ -72,6 +72,18 @@ func DecodeSubscriber(document *mg.SingleResult) (subscriber Subscriber, err err
 	return
 }
 
+func DecodePermissions(cursor *mg.Cursor) (scopes []Permission, err error) {
+	for cursor.Next(context.Background()) {
+		var scope Permission
+		err = cursor.Decode(&scope)
+		if err != nil {
+			return
+		}
+		scopes = append(scopes, scope)
+	}
+	return
+}
+
 func DecodeMatches(cursor *mg.Cursor) (games []Game, err error) {
 	for cursor.Next(context.Background()) {
 		var game Game

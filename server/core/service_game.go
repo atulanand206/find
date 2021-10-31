@@ -6,6 +6,7 @@ import (
 )
 
 type Service struct {
+	authService       AuthService
 	matchService      MatchService
 	subscriberService SubscriberService
 	playerService     PlayerService
@@ -15,17 +16,24 @@ type Service struct {
 	validator         Validator
 }
 
-func (service Service) GenerateActiveQuizResponse() (matches []Game, err error) {
-	return service.matchService.FindActiveMatches()
-}
-
 func (service Service) GenerateGameResponse(request Request) (response Snapshot, err error) {
 
 	return
 }
 
-func (service Service) GenerateBeginGameResponse(player Player) (res Player, err error) {
-	return service.playerService.FindOrCreatePlayer(player)
+func (service Service) GenerateBeginGameResponse(player Player) (res LoginResponse, err error) {
+	response, err := service.playerService.FindOrCreatePlayer(player)
+	if err != nil {
+		return
+	}
+
+	tokens, err := service.authService.GenerateTokens(response)
+	if err != nil {
+		return
+	}
+
+	res = LoginResponse{response, tokens}
+	return
 }
 
 func (service Service) GenerateCreateGameResponse(quizmaster Player, specs Specs) (response GameResponse, err error) {

@@ -26,9 +26,10 @@ var (
 	PlayerCollection     string
 	SubscriberCollection string
 
-	CommsHub        *Hub
-	Controller      Service
-	Targe           Target
+	CommsHub   *Hub
+	Controller Service
+	Targe      Target
+
 	Db              DB
 	InstanceCreator Creator
 	MessageCreator  WebsocketMessageCreator
@@ -50,24 +51,35 @@ func Routes() *http.ServeMux {
 	// Interceptor chain for attaching to the requests.
 	chain := net.MiddlewareChain{
 		net.ApplicationJsonInterceptor(),
-		// net.AuthenticationInterceptor(),
+		net.AuthenticationInterceptor(),
 	}
 
 	// Interceptor chain with only PUT method.
+	getChain := chain.Add(net.CorsInterceptor(http.MethodGet))
 	putChain := chain.Add(net.CorsInterceptor(http.MethodPut))
 	// Interceptor chain with only POST method.
 	postChain := chain.Add(net.CorsInterceptor(http.MethodPost))
 
 	Db = DB{}
-	questionService := QuestionService{crud: QuestionCrud{db: Db}}
 	Targe = Target{}
-	subscriberService := SubscriberService{crud: SubscriberCrud{db: Db}, target: Targe}
-	snapshotService := SnapshotService{crud: SnapshotCrud{db: Db}}
 	validator := Validator{}
+
+	authSvc := AuthService{}
+	matchSvc := MatchService{crud: MatchCrud{db: Db}}
+	playerSvc := PlayerService{crud: PlayerCrud{db: Db}}
+	subscriberService := SubscriberService{crud: SubscriberCrud{db: Db}, target: Targe}
+	teamSvc := TeamService{crud: TeamCrud{}, subscriberService: subscriberService}
+	snapshotService := SnapshotService{crud: SnapshotCrud{db: Db}}
+	questionService := QuestionService{crud: QuestionCrud{db: Db}}
+
+	PermissionHandler := PermissionHandler{crud: PermissionCrud{}}
+	MatchHandler := MatchHandler{matchService: matchSvc}
+
 	Controller = Service{
-		matchService:      MatchService{crud: MatchCrud{db: Db}},
-		teamService:       TeamService{crud: TeamCrud{}, subscriberService: subscriberService},
-		playerService:     PlayerService{crud: PlayerCrud{db: Db}},
+		authService:       authSvc,
+		matchService:      matchSvc,
+		teamService:       teamSvc,
+		playerService:     playerSvc,
 		subscriberService: subscriberService,
 		questionService:   questionService,
 		snapshotService:   snapshotService,
@@ -80,6 +92,12 @@ func Routes() *http.ServeMux {
 
 	router := http.NewServeMux()
 
+	router.HandleFunc("/quizzes/active", getChain.Handler(MatchHandler.HandlerActiveQuizzes))
+
+	router.HandleFunc("/permission/create", postChain.Handler(PermissionHandler.HandlerCreatePermission))
+	router.HandleFunc("/permissions", getChain.Handler(PermissionHandler.HandlerFindPermissions))
+
+	router.HandleFunc("/test", postChain.Handler(HandlerTestAPI))
 	router.HandleFunc("/question/add", postChain.Handler(HandlerAddQuestion))
 	router.HandleFunc("/questions/seed", putChain.Handler(HandlerSeedQuestions))
 

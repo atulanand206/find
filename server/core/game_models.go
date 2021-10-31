@@ -7,6 +7,10 @@ const (
 )
 
 type (
+	Permission struct {
+		PlayerId string `json:"player_id" bson:"player_id"`
+	}
+
 	Game struct {
 		Id         string   `json:"id" bson:"_id"`
 		QuizMaster Player   `json:"quizmaster" bson:"quizmaster"`
@@ -161,4 +165,14 @@ type (
 type SnapshotResponse struct {
 	Action   string   `json:"action"`
 	Snapshot Snapshot `json:"snapshot"`
+}
+
+type AuthenticationResponse struct {
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
+}
+
+type LoginResponse struct {
+	Player Player                 `json:"player"`
+	Tokens AuthenticationResponse `json:"tokens"`
 }

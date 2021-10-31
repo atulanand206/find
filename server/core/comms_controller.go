@@ -19,8 +19,6 @@ func (hub *Hub) Handle(msg WebsocketMessage, client *Client) (res WebsocketMessa
 	switch request.Action {
 	case BEGIN.String():
 		res, targets, err = client.OnBegin(request)
-	case ACTIVE.String():
-		res, targets, err = client.OnActive()
 	case SPECS.String():
 		res, targets, err = client.OnCreate(request)
 	case JOIN.String():
@@ -48,26 +46,15 @@ func (hub *Hub) Handle(msg WebsocketMessage, client *Client) (res WebsocketMessa
 	return
 }
 
-func (client *Client) OnActive() (res WebsocketMessage, targets map[string]bool, err error) {
-	response, err := Controller.GenerateActiveQuizResponse()
-	if err != nil {
-		res = MessageCreator.InitWebSocketMessage(Failure, err.Error())
-		return
-	}
-
-	res, targets = Controller.subscriberService.selfResponse(client.playerId, S_ACTIVE, response)
-	return
-}
-
 func (client *Client) OnBegin(request Request) (res WebsocketMessage, targets map[string]bool, err error) {
-	player, err := Controller.GenerateBeginGameResponse(request.Person)
+	response, err := Controller.GenerateBeginGameResponse(request.Person)
 	if err != nil {
 		res = MessageCreator.InitWebSocketMessage(Failure, err.Error())
 		return
 	}
 
-	client.setPlayerId(player.Id)
-	res, targets = Controller.subscriberService.selfResponse(player.Id, S_PLAYER, player)
+	client.setPlayerId(response.Player.Id)
+	res, targets = Controller.subscriberService.selfResponse(response.Player.Id, S_PLAYER, response)
 	return
 }
 

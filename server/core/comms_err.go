@@ -14,6 +14,7 @@ type ErrorMessage struct {
 
 const (
 	Err_RequestNotDecoded = "request can't be decoded"
+	Err_ScopeNotPresent   = "scope not present"
 
 	Err_CollectionsNotCreated  = "collections can't be created"
 	Err_DeckDtosNotCreated     = "deck dtos can't be created"
@@ -62,8 +63,29 @@ func (creator ErrorMessageCreator) NotCreated(entity string, data interface{}) (
 	return
 }
 
+func (creator ErrorMessageCreator) NotFound(entity string) (errorMsg ErrorMessage) {
+	errorMsg.code = http.StatusNotAcceptable
+	errorMsg.msg = fmt.Sprintf("unable to find %s", entity)
+	return
+}
+
 func (creator ErrorMessageCreator) SubscriberNotCreated(v interface{}) (errorMsg ErrorMessage) {
 	errorMsg = creator.NotCreated("subscriber", v)
+	return
+}
+
+func (creator ErrorMessageCreator) PermissionNotCreated(v interface{}) (errorMsg ErrorMessage) {
+	errorMsg = creator.NotCreated("permission for", v)
+	return
+}
+
+func (creator ErrorMessageCreator) PermissionsNotFound() (errorMsg ErrorMessage) {
+	errorMsg = creator.NotFound("permissions")
+	return
+}
+
+func (creator ErrorMessageCreator) ActiveMatchesNotFound() (errorMsg ErrorMessage) {
+	errorMsg = creator.NotFound("active matches")
 	return
 }
 
