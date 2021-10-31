@@ -3,14 +3,14 @@ package core
 import "errors"
 
 type PlayerService struct {
-	db DB
+	crud PlayerCrud
 }
 
 func (service PlayerService) FindOrCreatePlayer(request Player) (player Player, err error) {
-	player, err = service.db.FindPlayer(request.Email)
+	player, err = service.crud.FindPlayer(request.Email)
 	if err != nil {
 		player = InitNewPlayer(request)
-		if err = service.db.CreatePlayer(player); err != nil {
+		if err = service.crud.CreatePlayer(player); err != nil {
 			err = errors.New(Err_PlayerNotCreated)
 			return
 		}
@@ -19,7 +19,7 @@ func (service PlayerService) FindOrCreatePlayer(request Player) (player Player, 
 }
 
 func (service PlayerService) FindPlayerByEmail(email string) (player Player, err error) {
-	player, err = service.db.FindPlayer(email)
+	player, err = service.crud.FindPlayer(email)
 	if err != nil {
 		err = errors.New(err.Error())
 		return

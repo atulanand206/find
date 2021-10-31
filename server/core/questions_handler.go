@@ -28,17 +28,17 @@ func HandlerAddQuestion(w http.ResponseWriter, r *http.Request) {
 		answers = append(answers, InitNewAnswer(question, newQuestion))
 	}
 
-	if err = Db.SeedIndexes([]Index{index}); err != nil {
+	if err = Controller.questionService.crud.SeedIndexes([]Index{index}); err != nil {
 		http.Error(w, Err_IndexNotSeeded, http.StatusInternalServerError)
 		return
 	}
 
-	if err = Db.SeedQuestions(questions); err != nil {
+	if err = Controller.questionService.crud.SeedQuestions(questions); err != nil {
 		http.Error(w, Err_QuestionsNotSeeded, http.StatusInternalServerError)
 		return
 	}
 
-	if err = Db.SeedAnswers(answers); err != nil {
+	if err = Controller.questionService.crud.SeedAnswers(answers); err != nil {
 		http.Error(w, Err_AnswersNotSeeded, http.StatusInternalServerError)
 		return
 	}
@@ -64,17 +64,17 @@ func HandlerSeedQuestions(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err = Db.SeedIndexes(indexes); err != nil {
+	if err = Controller.questionService.crud.SeedIndexes(indexes); err != nil {
 		http.Error(w, Err_IndexNotSeeded, http.StatusInternalServerError)
 		return
 	}
 
-	if err = Db.SeedQuestions(questions); err != nil {
+	if err = Controller.questionService.crud.SeedQuestions(questions); err != nil {
 		http.Error(w, Err_QuestionsNotSeeded, http.StatusInternalServerError)
 		return
 	}
 
-	if err = Db.SeedAnswers(answers); err != nil {
+	if err = Controller.questionService.crud.SeedAnswers(answers); err != nil {
 		http.Error(w, Err_AnswersNotSeeded, http.StatusInternalServerError)
 		return
 	}

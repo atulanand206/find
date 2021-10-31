@@ -59,15 +59,15 @@ func Routes() *http.ServeMux {
 	postChain := chain.Add(net.CorsInterceptor(http.MethodPost))
 
 	Db = DB{}
-	questionService := QuestionService{db: Db}
+	questionService := QuestionService{crud: QuestionCrud{db: Db}}
 	Targe = Target{}
-	subscriberService := SubscriberService{db: Db, target: Targe}
-	snapshotService := SnapshotService{db: Db}
+	subscriberService := SubscriberService{crud: SubscriberCrud{db: Db}, target: Targe}
+	snapshotService := SnapshotService{crud: SnapshotCrud{db: Db}}
 	validator := Validator{}
 	Controller = Service{
-		matchService:      MatchService{db: Db},
-		teamService:       TeamService{db: Db, subscriberService: subscriberService},
-		playerService:     PlayerService{db: Db},
+		matchService:      MatchService{crud: MatchCrud{db: Db}},
+		teamService:       TeamService{crud: TeamCrud{}, subscriberService: subscriberService},
+		playerService:     PlayerService{crud: PlayerCrud{db: Db}},
 		subscriberService: subscriberService,
 		questionService:   questionService,
 		snapshotService:   snapshotService,

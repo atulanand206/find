@@ -6,7 +6,7 @@ import (
 )
 
 type SubscriberService struct {
-	db DB
+	crud SubscriberCrud
 
 	target Target
 }
@@ -50,10 +50,10 @@ func (service SubscriberService) subscribeAndRespond(match Game, player Player, 
 }
 
 func (service SubscriberService) FindOrCreateSubscriber(tag string, audience Player, role Role) (subscriber Subscriber, err error) {
-	subscriber, err = service.db.FindSubscriberForTagAndPlayerId(tag, audience.Id)
+	subscriber, err = service.crud.FindSubscriberForTagAndPlayerId(tag, audience.Id)
 	if err != nil {
 		subscriber = InstanceCreator.InitSubscriber(tag, audience, role.String())
-		err = service.db.CreateSubscriber(subscriber)
+		err = service.crud.CreateSubscriber(subscriber)
 		if err != nil {
 			err = errors.New(fmt.Sprint(ErrorCreator.SubscriberNotCreated(subscriber)))
 		}
@@ -62,5 +62,5 @@ func (service SubscriberService) FindOrCreateSubscriber(tag string, audience Pla
 }
 
 func (service SubscriberService) FindSubscribersForTag(tags []string) (subscribers []Subscriber, err error) {
-	return service.db.FindSubscribersForTag(tags)
+	return service.crud.FindSubscribersForTag(tags)
 }

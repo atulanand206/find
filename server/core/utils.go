@@ -61,7 +61,7 @@ func randomFilteredIndicesMap(indxs []Index, limit int) (mp map[Index]bool) {
 	rand.Seed(time.Now().UnixNano())
 	indexCount := len(indxs)
 	for {
-		if len(mp) < limit {
+		if len(mp) < limit && indexCount > 0 {
 			tag := indxs[rand.Intn(indexCount)]
 			mp[tag] = true
 		} else {

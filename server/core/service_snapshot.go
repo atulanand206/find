@@ -5,7 +5,7 @@ import (
 )
 
 type SnapshotService struct {
-	db DB
+	crud SnapshotCrud
 }
 
 func (service SnapshotService) InitialSnapshot(quizId string, teams []Team) (response Snapshot, err error) {
@@ -81,7 +81,7 @@ func (service SnapshotService) SnapshotNext(snapshot Snapshot, roster []TeamRost
 }
 
 func (service SnapshotService) SnapshotPass(snapshot Snapshot, roster []TeamRoster, teamsTurn string, roundNo int, specs Specs) (response Snapshot, err error) {
-	snapshots, err := service.db.FindSnapshotsForQuestion(snapshot.QuizId, snapshot.QuestionId, PASS.String())
+	snapshots, err := service.crud.FindSnapshotsForQuestion(snapshot.QuizId, snapshot.QuestionId, PASS.String())
 	if err != nil {
 		return
 	}
@@ -107,7 +107,7 @@ func (service SnapshotService) SnapshotPass(snapshot Snapshot, roster []TeamRost
 }
 
 func (service SnapshotService) CreateSnapshot(snapshot Snapshot) (err error) {
-	if err = service.db.CreateSnapshot(snapshot); err != nil {
+	if err = service.crud.CreateSnapshot(snapshot); err != nil {
 		err = errors.New(Err_SnapshotNotCreated)
 		return
 	}

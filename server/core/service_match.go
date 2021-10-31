@@ -5,40 +5,40 @@ import (
 )
 
 type MatchService struct {
-	db DB
+	crud MatchCrud
 }
 
-func (service MatchService) FindMatchFull(matchId string) (
+func (service Service) FindMatchFull(matchId string) (
 	match Game, teams []Team,
 	teamPlayers []Subscriber, players []Player,
 	roster []TeamRoster,
 	snapshot Snapshot, err error) {
-	match, err = service.db.FindMatch(matchId)
+	match, err = service.matchService.crud.FindMatch(matchId)
 	if err != nil {
 		err = errors.New(Err_MatchNotPresent)
 		return
 	}
 
-	teams, err = service.db.FindTeams(match)
+	teams, err = service.teamService.crud.FindTeams(match)
 	if err != nil {
 		err = errors.New(Err_TeamsNotPresentInMatch)
 		return
 	}
 
-	teamPlayers, err = service.db.FindTeamPlayers(teams)
+	teamPlayers, err = service.subscriberService.crud.FindTeamPlayers(teams)
 	if err != nil {
 		err = errors.New(Err_TeamsNotPresentInMatch)
 		return
 	}
 
-	players, err = service.db.FindPlayers(teamPlayers)
+	players, err = service.playerService.crud.FindPlayers(teamPlayers)
 	if err != nil {
 		err = errors.New(Err_PlayerNotPresent)
 		return
 	}
 
 	roster = TableRoster(teams, teamPlayers, players)
-	snapshot, err = service.db.FindLatestSnapshot(match.Id)
+	snapshot, err = service.snapshotService.crud.FindLatestSnapshot(match.Id)
 	if err != nil {
 		err = errors.New(Err_SnapshotNotPresent)
 		return
@@ -48,14 +48,14 @@ func (service MatchService) FindMatchFull(matchId string) (
 
 func (service MatchService) CreateMatch(player Player, specs Specs) (quiz Game, err error) {
 	quiz = InitNewMatch(player, specs)
-	if err = service.db.CreateMatch(quiz); err != nil {
+	if err = service.crud.CreateMatch(quiz); err != nil {
 		err = errors.New(Err_MatchNotCreated)
 	}
 	return
 }
 
 func (service MatchService) FindActiveMatches() (matches []Game, err error) {
-	matches, err = service.db.FindActiveMatches()
+	matches, err = service.crud.FindActiveMatches()
 	if err != nil {
 		err = errors.New(Err_MatchNotPresent)
 	}

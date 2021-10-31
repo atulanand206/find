@@ -3,14 +3,14 @@ package core
 import "errors"
 
 type TeamService struct {
-	db DB
+	crud TeamCrud
 
 	subscriberService SubscriberService
 }
 
 func (service TeamService) CreateTeams(quiz Game) (teams []Team, err error) {
 	teams = InitNewTeams(quiz)
-	if err = service.db.CreateTeams(teams); err != nil {
+	if err = service.crud.CreateTeams(teams); err != nil {
 		err = errors.New(Err_TeamNotCreated)
 	}
 	return
