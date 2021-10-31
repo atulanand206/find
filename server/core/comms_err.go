@@ -54,7 +54,7 @@ const (
 	Err_SocketRequestFailed = "sockets request failed by the server"
 	Err_PlayerAlreadyInGame = "player already present in the game"
 
-	Err_SubscriberNotPresent = "match with the given info does not exist"
+	Err_SubscriberNotPresent = "subscriber with the given info does not exist"
 )
 
 func (creator ErrorMessageCreator) NotCreated(entity string, data interface{}) (errorMsg ErrorMessage) {

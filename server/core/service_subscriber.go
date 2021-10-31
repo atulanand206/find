@@ -45,7 +45,7 @@ func (service SubscriberService) subscribeAndRespond(match Game, player Player, 
 		return
 	}
 
-	response = GameResponse{Quiz: match, Snapshot: snapshot}
+	response = GameResponse{Quiz: match, Snapshot: snapshot, Role: role.String()}
 	return
 }
 

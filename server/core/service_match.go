@@ -6,6 +6,8 @@ import (
 
 type MatchService struct {
 	crud MatchCrud
+
+	subscriberService SubscriberService
 }
 
 func (service Service) FindMatchFull(matchId string) (
@@ -54,10 +56,32 @@ func (service MatchService) CreateMatch(player Player, specs Specs) (quiz Game, 
 	return
 }
 
-func (service MatchService) FindActiveMatches() (matches []Game, err error) {
+func (service MatchService) FindActiveMatches(playerId string) (matches []Game, err error) {
 	matches, err = service.crud.FindActiveMatches()
-	if err != nil {
-		err = errors.New(Err_MatchNotPresent)
+	for ix, match := range matches {
+		if match.QuizMaster.Id == playerId {
+			match.CanJoin = true
+			matches[ix] = match
+		}
+		subscribers, err := service.subscriberService.crud.FindSubscribers(match.Id, PLAYER)
+		if err == nil {
+			match.PlayersJoined = len(subscribers)
+			if !match.CanJoin {
+				for _, subscriber := range subscribers {
+					if subscriber.PlayerId == playerId {
+						match.CanJoin = true
+						matches[ix] = match
+						break
+					}
+				}
+				if !match.CanJoin {
+					if match.Specs.Players*match.Specs.Teams > len(subscribers) {
+						match.CanJoin = true
+						matches[ix] = match
+					}
+				}
+			}
+		}
 	}
 	return
 }

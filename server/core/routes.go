@@ -65,9 +65,10 @@ func Routes() *http.ServeMux {
 	validator := Validator{}
 
 	authSvc := AuthService{}
-	matchSvc := MatchService{crud: MatchCrud{db: Db}}
-	playerSvc := PlayerService{crud: PlayerCrud{db: Db}}
+	permissionSvc := PermissionService{}
 	subscriberService := SubscriberService{crud: SubscriberCrud{db: Db}, target: Targe}
+	matchSvc := MatchService{crud: MatchCrud{db: Db}, subscriberService: subscriberService}
+	playerSvc := PlayerService{crud: PlayerCrud{db: Db}}
 	teamSvc := TeamService{crud: TeamCrud{}, subscriberService: subscriberService}
 	snapshotService := SnapshotService{crud: SnapshotCrud{db: Db}}
 	questionService := QuestionService{crud: QuestionCrud{db: Db}}
@@ -77,6 +78,7 @@ func Routes() *http.ServeMux {
 
 	Controller = Service{
 		authService:       authSvc,
+		permissionService: permissionSvc,
 		matchService:      matchSvc,
 		teamService:       teamSvc,
 		playerService:     playerSvc,
@@ -92,7 +94,7 @@ func Routes() *http.ServeMux {
 
 	router := http.NewServeMux()
 
-	router.HandleFunc("/quizzes/active", getChain.Handler(MatchHandler.HandlerActiveQuizzes))
+	router.HandleFunc("/quizzes/active", postChain.Handler(MatchHandler.HandlerActiveQuizzes))
 
 	router.HandleFunc("/permission/create", postChain.Handler(PermissionHandler.HandlerCreatePermission))
 	router.HandleFunc("/permissions", getChain.Handler(PermissionHandler.HandlerFindPermissions))

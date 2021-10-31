@@ -10,7 +10,13 @@ type MatchHandler struct {
 }
 
 func (handler MatchHandler) HandlerActiveQuizzes(w http.ResponseWriter, r *http.Request) {
-	matches, err := handler.matchService.FindActiveMatches()
+	var request CreatePermissionRequest
+	if err := DecodeJsonBody(r, &request); err != nil {
+		http.Error(w, Err_RequestNotDecoded, http.StatusInternalServerError)
+		return
+	}
+
+	matches, err := handler.matchService.FindActiveMatches(request.PlayerId)
 	if err != nil || len(matches) == 0 {
 		er := ErrorCreator.ActiveMatchesNotFound()
 		http.Error(w, er.msg, er.code)

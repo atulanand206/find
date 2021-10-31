@@ -12,19 +12,23 @@ type (
 	}
 
 	Game struct {
-		Id         string   `json:"id" bson:"_id"`
-		QuizMaster Player   `json:"quizmaster" bson:"quizmaster"`
-		Tags       []string `bson:"tags"`
-		Specs      Specs    `json:"specs" bson:"specs"`
-		Active     bool     `json:"active" bson:"active"`
+		Id            string   `json:"id" bson:"_id"`
+		Name          string   `json:"name" bson:"name"`
+		QuizMaster    Player   `json:"quizmaster" bson:"quizmaster"`
+		Tags          []string `bson:"tags"`
+		Specs         Specs    `json:"specs" bson:"specs"`
+		Active        bool     `json:"active" bson:"active"`
+		CanJoin       bool     `json:"can_join"`
+		PlayersJoined int      `json:"players_joined"`
 	}
 
 	Specs struct {
-		Teams     int `json:"teams" bson:"teams"`
-		Players   int `json:"players" bson:"players"`
-		Questions int `json:"questions" bson:"questions"`
-		Rounds    int `json:"rounds" bson:"rounds"`
-		Points    int `json:"points" bson:"points"`
+		Name      string `json:"name" bson:"name"`
+		Teams     int    `json:"teams" bson:"teams"`
+		Players   int    `json:"players" bson:"players"`
+		Questions int    `json:"questions" bson:"questions"`
+		Rounds    int    `json:"rounds" bson:"rounds"`
+		Points    int    `json:"points" bson:"points"`
 	}
 
 	Team struct {
@@ -159,6 +163,7 @@ type (
 	GameResponse struct {
 		Quiz     Game     `json:"quiz"`
 		Snapshot Snapshot `json:"snapshot"`
+		Role     string   `json:"role"`
 	}
 )
 
@@ -173,6 +178,7 @@ type AuthenticationResponse struct {
 }
 
 type LoginResponse struct {
-	Player Player                 `json:"player"`
-	Tokens AuthenticationResponse `json:"tokens"`
+	Player     Player                 `json:"player"`
+	Tokens     AuthenticationResponse `json:"tokens"`
+	Quizmaster bool                   `json:"quizmaster"`
 }

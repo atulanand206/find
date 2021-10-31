@@ -7,6 +7,7 @@ import (
 
 type Service struct {
 	authService       AuthService
+	permissionService PermissionService
 	matchService      MatchService
 	subscriberService SubscriberService
 	playerService     PlayerService
@@ -32,7 +33,8 @@ func (service Service) GenerateBeginGameResponse(player Player) (res LoginRespon
 		return
 	}
 
-	res = LoginResponse{response, tokens}
+	quizmaster := service.permissionService.HasPermissions(player.Id)
+	res = LoginResponse{response, tokens, quizmaster}
 	return
 }
 

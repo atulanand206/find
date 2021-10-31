@@ -56,7 +56,6 @@ func (crud MatchCrud) FindActiveTeamMatches(teams []Team) (matches []Game, err e
 
 func (crud MatchCrud) UpdateMatchQuestions(match Game, question Question) error {
 	match.Tags = append(match.Tags, question.Tag)
-	match.Active = true
 	return crud.UpdateMatch(match)
 }
 

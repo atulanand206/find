@@ -20,8 +20,15 @@ func (crud PermissionCrud) CreatePermission(playerId string) (err error) {
 }
 
 func (crud PermissionCrud) HasPermission(playerId string) bool {
-	item := mongo.FindOne(Database, PermissionCollection, bson.M{"player_id": playerId}, &options.FindOneOptions{})
-	return item != nil
+	cursor, err := mongo.Find(Database, PermissionCollection, bson.M{"player_id": playerId}, &options.FindOptions{})
+	if err != nil {
+		return false
+	}
+	permissions, err := DecodePermissions(cursor)
+	if err != nil || len(permissions) == 0 {
+		return false
+	}
+	return true
 }
 
 func (crud PermissionCrud) FindPermissions() (permissions []Permission, err error) {

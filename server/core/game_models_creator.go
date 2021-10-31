@@ -46,6 +46,7 @@ func InitNewMatch(quizmaster Player, specs Specs) (match Game) {
 	match.Specs = specs
 	match.Specs.Points = 16
 	match.Specs.Rounds = 2
+	match.Active = true
 	id, _ := gonanoid.New(8)
 	match.Id = id
 	return
