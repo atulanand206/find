@@ -165,7 +165,7 @@ func (service Service) GenerateStartGameResponse(request Request) (response Snap
 	}
 
 	match.Started = true
-	if err = service.matchService.crud.UpdateMatchQuestions(match, question); err != nil {
+	if _, err = service.matchService.crud.UpdateMatchQuestions(match, question); err != nil {
 		err = errors.New(Err_MatchNotUpdated)
 		return
 	}
@@ -259,7 +259,7 @@ func (service Service) GenerateNextQuestionResponse(request Request) (response S
 		return
 	}
 
-	if err = service.matchService.crud.UpdateMatchQuestions(match, question); err != nil {
+	if _, err = service.matchService.crud.UpdateMatchQuestions(match, question); err != nil {
 		err = errors.New(Err_MatchNotUpdated)
 		return
 	}
