@@ -13,14 +13,13 @@ func TestCreateAndFindTeams(t *testing.T) {
 	service := core.TeamService{}
 
 	game := testGame()
-	teams := core.InitNewTeams(game)
 	service.CreateTeams(game)
 
 	res, err := service.FindTeams(game)
 	if err != nil {
 		t.Fatalf("teams for quiz %s not found", game.Id)
 	}
-	if len(res) != len(teams) {
+	if len(res) != game.Specs.Teams {
 		t.Fatalf("teams count mismatch")
 	}
 }

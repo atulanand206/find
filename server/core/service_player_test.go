@@ -12,7 +12,7 @@ func TestCreateAndFindPlayer(t *testing.T) {
 
 	service := core.PlayerService{}
 
-	player, err := service.FindOrCreatePlayer(testPlayerWithoutId())
+	player, err := service.FindOrCreatePlayer(testPlayer())
 	if err != nil {
 		t.Fatalf("player %s not found", player.Id)
 	}
@@ -36,7 +36,7 @@ func TestFindPlayer(t *testing.T) {
 
 	crud := core.PlayerService{}
 
-	player := testPlayerWithoutId()
+	player := testPlayer()
 	player, _ = crud.FindOrCreatePlayer(player)
 	_, err := crud.FindPlayerByEmail(player.Email)
 	if err != nil {
