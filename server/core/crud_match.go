@@ -39,31 +39,17 @@ func (crud MatchCrud) FindActiveMatches() (matches []Game, err error) {
 	return
 }
 
-func (crud MatchCrud) FindActiveTeamMatches(teams []Team) (matches []Game, err error) {
-	matchIds := make([]string, 0)
-	for _, v := range teams {
-		matchIds = append(matchIds, v.QuizId)
-	}
-	findOptions := &options.FindOptions{}
-	cursor, err := mongo.Find(Database, MatchCollection,
-		bson.M{"_id": bson.M{"$in": matchIds}, "active": true}, findOptions)
-	if err != nil {
-		return
-	}
-	matches, err = DecodeMatches(cursor)
-	return
-}
-
-func (crud MatchCrud) UpdateMatchQuestions(match Game, question Question) error {
+func (crud MatchCrud) UpdateMatchQuestions(match Game, question Question) (bool, error) {
 	match.Tags = append(match.Tags, question.Tag)
 	return crud.UpdateMatch(match)
 }
 
-func (crud MatchCrud) UpdateMatch(match Game) (err error) {
+func (crud MatchCrud) UpdateMatch(match Game) (updated bool, err error) {
 	requestDto, err := mongo.Document(match)
 	if err != nil {
 		return
 	}
-	_, err = mongo.Update(Database, MatchCollection, bson.M{"_id": match.Id}, bson.D{primitive.E{Key: "$set", Value: *requestDto}})
+	res, err := mongo.Update(Database, MatchCollection, bson.M{"_id": match.Id}, bson.D{primitive.E{Key: "$set", Value: *requestDto}})
+	updated = int(res.ModifiedCount) == 1
 	return
 }
