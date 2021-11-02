@@ -13,7 +13,6 @@ type (
 
 	Game struct {
 		Id            string   `json:"id" bson:"_id"`
-		Name          string   `json:"name" bson:"name"`
 		QuizMaster    Player   `json:"quizmaster" bson:"quizmaster"`
 		Tags          []string `bson:"tags"`
 		Specs         Specs    `json:"specs" bson:"specs"`

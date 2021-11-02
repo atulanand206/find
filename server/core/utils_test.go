@@ -9,7 +9,7 @@ import (
 
 func Setup(t *testing.T) func(t *testing.T) {
 	mongo.ConfigureMongoClient("mongodb://localhost:27017")
-	core.Database = "binquiz"
+	core.Database = "binquiz-test"
 	core.MatchCollection = "matches"
 	core.QuestionCollection = "questions"
 	core.AnswerCollection = "answers"
