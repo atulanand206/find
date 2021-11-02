@@ -1,7 +1,6 @@
 package core_test
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/atulanand206/find/server/core"
@@ -86,7 +85,6 @@ func TestUpdateMatchFail(t *testing.T) {
 
 	game := testGame()
 	count, _ := crud.UpdateMatch(game)
-	fmt.Println(count)
 	if count {
 		t.Fatalf("test failed")
 	}
