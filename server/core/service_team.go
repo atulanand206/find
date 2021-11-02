@@ -16,6 +16,10 @@ func (service TeamService) CreateTeams(quiz Game) (teams []Team, err error) {
 	return
 }
 
+func (service TeamService) FindTeams(quiz Game) (teams []Team, err error) {
+	return service.crud.FindTeams(quiz)
+}
+
 func (service TeamService) FindAndFillTeamVacancy(match Game, teams []Team, player Player) (teamId string, err error) {
 	teamIds := []string{}
 	for _, team := range teams {
