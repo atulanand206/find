@@ -54,20 +54,6 @@ func TestFindPlayerFail(t *testing.T) {
 	}
 }
 
-func TestFindPlayer(t *testing.T) {
-	teardown := Setup(t)
-	defer teardown(t)
-
-	crud := core.PlayerCrud{}
-
-	player := testPlayerWithoutId()
-	player, _ = crud.FindOrCreatePlayer(player)
-	_, err := crud.FindPlayer(player.Email)
-	if err != nil {
-		t.Fatalf("test failed")
-	}
-}
-
 func TestUpdatePlayer(t *testing.T) {
 	teardown := Setup(t)
 	defer teardown(t)
