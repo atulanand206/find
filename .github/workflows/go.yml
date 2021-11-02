@@ -2,7 +2,6 @@ name: Go
 
 on:
   push:
-    branches: [ master ]
   pull_request:
     branches: [ master ]
 
@@ -21,8 +20,20 @@ jobs:
       with:
         go-version: 1.17
 
+    - name: Get
+      run: go get -d -v ./...
+      
+    - name: Mod
+      run: go mod download
+      
+    - name: Vendor
+      run: go mod vendor
+      
+    - name: Verify
+      run: go mod verify
+      
     - name: Build
-      run: go build -v ./...
+      run: go build
 
     - name: Test
       run: go test -v ./...
