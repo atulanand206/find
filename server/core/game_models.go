@@ -18,6 +18,7 @@ type (
 		Tags          []string `bson:"tags"`
 		Specs         Specs    `json:"specs" bson:"specs"`
 		Active        bool     `json:"active" bson:"active"`
+		Started       bool     `json:"started" bson:"started"`
 		CanJoin       bool     `json:"can_join"`
 		PlayersJoined int      `json:"players_joined"`
 	}

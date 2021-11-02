@@ -164,6 +164,7 @@ func (service Service) GenerateStartGameResponse(request Request) (response Snap
 		return
 	}
 
+	match.Started = true
 	if err = service.matchService.crud.UpdateMatchQuestions(match, question); err != nil {
 		err = errors.New(Err_MatchNotUpdated)
 		return
