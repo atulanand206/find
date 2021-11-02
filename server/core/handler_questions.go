@@ -19,29 +19,8 @@ func HandlerAddQuestion(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	index := InitNewIndex(requestBody.Tag)
-	questions := make([]Question, 0)
-	answers := make([]Answer, 0)
-
-	for _, newQuestion := range requestBody.Questions {
-		question := InitNewQuestion(index, newQuestion)
-		questions = append(questions, question)
-
-		answers = append(answers, InitNewAnswer(question, newQuestion))
-	}
-
-	if err = Controller.questionService.crud.SeedIndexes([]Index{index}); err != nil {
-		http.Error(w, Err_IndexNotSeeded, http.StatusInternalServerError)
-		return
-	}
-
-	if err = Controller.questionService.crud.SeedQuestions(questions); err != nil {
+	if err = Controller.questionService.AddQuestion(requestBody.Tag, requestBody.Questions); err != nil {
 		http.Error(w, Err_QuestionsNotSeeded, http.StatusInternalServerError)
-		return
-	}
-
-	if err = Controller.questionService.crud.SeedAnswers(answers); err != nil {
-		http.Error(w, Err_AnswersNotSeeded, http.StatusInternalServerError)
 		return
 	}
 }
