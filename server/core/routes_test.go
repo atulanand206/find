@@ -11,9 +11,10 @@ import (
 	"github.com/atulanand206/find/server/core"
 )
 
+var MONGO_CLIENT_ID = "mongodb://localhost:27017/"
+var GAME_DATABASE = "binquiz"
+
 func TestGetActiveQuizzes(t *testing.T) {
-	var MONGO_CLIENT_ID = "mongodb://localhost:27017/"
-	var GAME_DATABASE = "binquiz"
 	var jsonStr = []byte(`{"player_id":"104441109454181166545"}`)
 	req, err := http.NewRequest(http.MethodPost, "/quizzes/active", bytes.NewBuffer(jsonStr))
 	if err != nil {
