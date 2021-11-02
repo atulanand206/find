@@ -16,7 +16,7 @@ func (handler MatchHandler) HandlerActiveQuizzes(w http.ResponseWriter, r *http.
 		return
 	}
 
-	matches, err := handler.matchService.FindActiveMatches(request.PlayerId)
+	matches, err := handler.matchService.FindActiveMatchesForPlayer(request.PlayerId)
 	if err != nil || len(matches) == 0 {
 		er := ErrorCreator.ActiveMatchesNotFound()
 		http.Error(w, er.msg, er.code)

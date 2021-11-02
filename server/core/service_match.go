@@ -56,7 +56,7 @@ func (service MatchService) CreateMatch(player Player, specs Specs) (quiz Game, 
 	return
 }
 
-func (service MatchService) FindActiveMatches(playerId string) (matches []Game, err error) {
+func (service MatchService) FindActiveMatchesForPlayer(playerId string) (matches []Game, err error) {
 	matches, err = service.crud.FindActiveMatches()
 	for ix, match := range matches {
 		if match.QuizMaster.Id == playerId {
