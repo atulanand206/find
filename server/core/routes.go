@@ -2,8 +2,8 @@ package core
 
 import (
 	"net/http"
-	"os"
 
+	"github.com/atulanand206/go-mongo"
 	net "github.com/atulanand206/go-network"
 )
 
@@ -37,8 +37,9 @@ var (
 )
 
 // Add handlers and interceptors to the endpoints.
-func Routes() *http.ServeMux {
-	Database = os.Getenv("GAME_DATABASE")
+func Routes(mongoClientId string, database string) *http.ServeMux {
+	mongo.ConfigureMongoClient(mongoClientId)
+	Database = database
 	MatchCollection = "matches"
 	QuestionCollection = "questions"
 	AnswerCollection = "answers"
@@ -51,7 +52,7 @@ func Routes() *http.ServeMux {
 	// Interceptor chain for attaching to the requests.
 	chain := net.MiddlewareChain{
 		net.ApplicationJsonInterceptor(),
-		net.AuthenticationInterceptor(),
+		// net.AuthenticationInterceptor(),
 	}
 
 	// Interceptor chain with only PUT method.

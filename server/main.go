@@ -6,7 +6,6 @@ import (
 	"os"
 
 	"github.com/atulanand206/find/server/core"
-	"github.com/atulanand206/go-mongo"
 	"github.com/joho/godotenv"
 )
 
@@ -15,10 +14,9 @@ func main() {
 
 	// Register the MongoDB cloud atlas database.
 	mongoClientId := os.Getenv("MONGO_CLIENT_ID")
-	mongo.ConfigureMongoClient(mongoClientId)
-
+	Database := os.Getenv("GAME_DATABASE")
 	// Register the endpoints exposed from the service.
-	routes := core.Routes()
+	routes := core.Routes(mongoClientId, Database)
 
 	// Serve the routes.
 	handler := http.HandlerFunc(routes.ServeHTTP)
