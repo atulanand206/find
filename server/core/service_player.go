@@ -7,15 +7,7 @@ type PlayerService struct {
 }
 
 func (service PlayerService) FindOrCreatePlayer(request Player) (player Player, err error) {
-	player, err = service.crud.FindPlayer(request.Email)
-	if err != nil {
-		player = InitNewPlayer(request)
-		if err = service.crud.CreatePlayer(player); err != nil {
-			err = errors.New(Err_PlayerNotCreated)
-			return
-		}
-	}
-	return
+	return service.crud.FindOrCreatePlayer(request)
 }
 
 func (service PlayerService) FindPlayerByEmail(email string) (player Player, err error) {
