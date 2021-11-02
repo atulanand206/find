@@ -311,7 +311,7 @@ func (service Service) DeletePlayerLiveSession(playerId string) (res WebsocketMe
 		tags = append(tags, subscriber.Tag)
 	}
 
-	subscribers, err = service.subscriberService.crud.FindSubscribersForTag(tags)
+	subscribers, err = service.subscriberService.FindSubscribersForTag(tags)
 	if err != nil {
 		err = errors.New(err.Error())
 		return

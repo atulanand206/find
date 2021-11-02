@@ -13,28 +13,28 @@ type SubscriberService struct {
 
 func (service SubscriberService) selfResponse(quizId string, action Action, response interface{}) (res WebsocketMessage, targets map[string]bool) {
 	res = MessageCreator.WebSocketsResponse(action, response)
-	targets = Controller.subscriberService.target.TargetSelf(quizId)
+	targets = service.target.TargetSelf(quizId)
 	return
 }
 
 func (service SubscriberService) joinResponse(quizId string, response GameResponse) (res WebsocketMessage, targets map[string]bool) {
-	subscribers, er := Controller.subscriberService.FindSubscribersForTag([]string{quizId})
+	subscribers, er := service.FindSubscribersForTag([]string{quizId})
 	if er != nil {
 		res = MessageCreator.InitWebSocketMessageFailure()
 		return
 	}
-	targets = Controller.subscriberService.target.TargetQuiz(quizId, subscribers)
+	targets = service.target.TargetQuiz(quizId, subscribers)
 	res = MessageCreator.WebSocketsResponse(S_JOIN, response)
 	return
 }
 
 func (service SubscriberService) quizResponse(action string, quizId string, response Snapshot) (res WebsocketMessage, targets map[string]bool) {
-	subscribers, er := Controller.subscriberService.FindSubscribersForTag([]string{quizId})
+	subscribers, er := service.FindSubscribersForTag([]string{quizId})
 	if er != nil {
 		res = MessageCreator.InitWebSocketMessageFailure()
 		return
 	}
-	targets = Controller.subscriberService.target.TargetQuiz(quizId, subscribers)
+	targets = service.target.TargetQuiz(quizId, subscribers)
 	res = MessageCreator.WebSocketsResponse(S_GAME, &SnapshotResponse{Action: action, Snapshot: response})
 	return
 }
@@ -63,4 +63,12 @@ func (service SubscriberService) FindOrCreateSubscriber(tag string, audience Pla
 
 func (service SubscriberService) FindSubscribersForTag(tags []string) (subscribers []Subscriber, err error) {
 	return service.crud.FindSubscribersForTag(tags)
+}
+
+func (service SubscriberService) FindTeamPlayers(teams []Team) (teamPlayers []Subscriber, err error) {
+	return service.crud.FindTeamPlayers(teams)
+}
+
+func (service SubscriberService) FindSubscriptionsForPlayerId(playerId string) (subscribers []Subscriber, err error) {
+	return service.crud.FindSubscriptionsForPlayerId(playerId)
 }

@@ -40,14 +40,16 @@ func (crud SubscriberCrud) FindIds(teamPlayers []Subscriber) (playerIds []string
 	return
 }
 
-func (crud SubscriberCrud) FindPlayerTeams(playerId string) (teamPlayers []Subscriber, err error) {
+func (crud SubscriberCrud) FindSubscriptionsForPlayerId(playerId string) (subscribers []Subscriber, err error) {
 	findOptions := &options.FindOptions{}
+	sort := bson.D{}
+	findOptions.SetSort(sort)
 	cursor, err := mongo.Find(Database, SubscriberCollection,
-		bson.M{"player_id": bson.M{"$in": playerId}}, findOptions)
+		bson.M{"player_id": playerId}, findOptions)
 	if err != nil {
 		return
 	}
-	teamPlayers, err = DecodeTeamPlayers(cursor)
+	subscribers, err = DecodeSubscribers(cursor)
 	return
 }
 
@@ -84,19 +86,6 @@ func (crud SubscriberCrud) FindSubscriberForTagAndPlayerId(tag string, playerId 
 		return
 	}
 	subscriber, err = DecodeSubscriber(dto)
-	return
-}
-
-func (crud SubscriberCrud) FindSubscriptionsForPlayerId(playerId string) (subscribers []Subscriber, err error) {
-	findOptions := &options.FindOptions{}
-	sort := bson.D{}
-	findOptions.SetSort(sort)
-	cursor, err := mongo.Find(Database, SubscriberCollection,
-		bson.M{"player_id": playerId}, findOptions)
-	if err != nil {
-		return
-	}
-	subscribers, err = DecodeSubscribers(cursor)
 	return
 }
 

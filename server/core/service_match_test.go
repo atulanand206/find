@@ -12,7 +12,7 @@ func TestCreateMatch(t *testing.T) {
 
 	service := core.MatchService{}
 
-	quizmaster := testPlayer("mark@dork.com")
+	quizmaster := testPlayer()
 	specs := core.Specs{
 		Players: 1,
 	}
@@ -29,22 +29,21 @@ func TestFindActiveMatchesForPlayer(t *testing.T) {
 	teardown := Setup(t)
 	defer teardown(t)
 
-	service := core.MatchService{}
+	playerService := core.PlayerService{}
+	quizmaster, _ := playerService.FindOrCreatePlayer(testPlayer())
 
-	quizmaster := testPlayer("mark@dork.com")
-	specs := core.Specs{
-		Players: 1,
-	}
-	game, err := service.CreateMatch(quizmaster, specs)
+	matchService := core.MatchService{}
+	specs := testSpecs()
+	game, err := matchService.CreateMatch(quizmaster, specs)
 	if err != nil {
 		t.Fatalf("game not created")
 	}
-	games, err := service.FindActiveMatchesForPlayer(quizmaster.Id)
+	games, err := matchService.FindActiveMatchesForPlayer(quizmaster.Id)
 	if err != nil {
 		t.Fatalf("games not found")
 	}
 	for _, g := range games {
-		if g.Id == game.Id {
+		if g.Id == game.Id && g.CanJoin {
 			return
 		}
 	}
