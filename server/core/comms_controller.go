@@ -78,7 +78,7 @@ func (client *Client) requestToJoin(request Request, enter Enter) (res Websocket
 		return
 	}
 
-	res, targets = Controller.subscriberService.joinResponse(request.QuizId, response)
+	res, targets = Controller.subscriberService.joinResponse(request.Person.Id, response)
 	return
 }
 

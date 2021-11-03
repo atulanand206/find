@@ -17,13 +17,8 @@ func (service SubscriberService) selfResponse(quizId string, action Action, resp
 	return
 }
 
-func (service SubscriberService) joinResponse(quizId string, response GameResponse) (res WebsocketMessage, targets map[string]bool) {
-	subscribers, er := service.FindSubscribersForTag([]string{quizId})
-	if er != nil {
-		res = MessageCreator.InitWebSocketMessageFailure()
-		return
-	}
-	targets = service.target.TargetQuiz(quizId, subscribers)
+func (service SubscriberService) joinResponse(playerId string, response GameResponse) (res WebsocketMessage, targets map[string]bool) {
+	targets = service.target.TargetSelf(playerId)
 	res = MessageCreator.WebSocketsResponse(S_JOIN, response)
 	return
 }
