@@ -22,7 +22,7 @@ Decided to pick a different project. Binquiz. Movies and TV Series Quiz. All the
 - Whole lot of code has to be refactored and moved around, which is being guided by the unit & integration tests. 
 - The best part, it tests the code after each commit and ensures that nothing leaks.
 - The package server is shaping up nicely. The tests should really help become confident on its design. 
-- Web app currently resides in a different repository. That'll be moved in this one soon.
+- Web app currently resides in a different repository. Look for its details on `atulanand206/algos`
 - Web app design has room for improvement. Will get on this as soon as the server starts holding perfectly.
 - Will update all the relevant documents as soon.
 
