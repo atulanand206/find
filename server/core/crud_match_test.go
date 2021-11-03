@@ -64,27 +64,6 @@ func TestFindMatchFail(t *testing.T) {
 	}
 }
 
-func TestFindActiveMatches(t *testing.T) {
-	teardown := Setup(t)
-	defer teardown(t)
-
-	crud := core.MatchCrud{}
-
-	game := testGame()
-	crud.CreateMatch(game)
-
-	res, err := crud.FindActiveMatches()
-	if err != nil {
-		t.Fatalf("matches %s not found", game.Id)
-	}
-	for _, match := range res {
-		if match.Id == game.Id {
-			return
-		}
-	}
-	t.Fatalf("match id not present")
-}
-
 func TestUpdateMatchFail(t *testing.T) {
 	teardown := Setup(t)
 	defer teardown(t)

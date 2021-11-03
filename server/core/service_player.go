@@ -19,3 +19,7 @@ func (service PlayerService) FindPlayerByEmail(email string) (player Player, err
 
 	return
 }
+
+func (service PlayerService) FindPlayers(teamPlayers []Subscriber) (players []Player, err error) {
+	return service.crud.FindPlayers(teamPlayers)
+}

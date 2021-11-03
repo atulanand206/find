@@ -44,8 +44,12 @@ func InitNewMatch(quizmaster Player, specs Specs) (match Game) {
 	match.Tags = make([]string, 0)
 	match.QuizMaster = quizmaster
 	match.Specs = specs
-	match.Specs.Points = 16
-	match.Specs.Rounds = 2
+	if match.Specs.Points == 0 {
+		match.Specs.Points = 16
+	}
+	if match.Specs.Rounds == 0 {
+		match.Specs.Rounds = 2
+	}
 	match.Active = true
 	id, _ := gonanoid.New(8)
 	match.Id = id

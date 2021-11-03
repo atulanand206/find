@@ -2,7 +2,6 @@ package core
 
 import (
 	"errors"
-	"fmt"
 )
 
 type Service struct {
@@ -59,7 +58,6 @@ func (service Service) GenerateCreateGameResponse(quizmaster Player, specs Specs
 	if err != nil {
 		return
 	}
-	fmt.Println(snapshot)
 
 	return service.subscriberService.subscribeAndRespond(quiz, player, snapshot, QUIZMASTER)
 }
