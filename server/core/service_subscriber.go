@@ -11,20 +11,9 @@ type SubscriberService struct {
 	target Target
 }
 
-func (service SubscriberService) selfResponse(quizId string, action Action, response interface{}) (res WebsocketMessage, targets map[string]bool) {
+func (service SubscriberService) selfResponse(playerId string, action Action, response interface{}) (res WebsocketMessage, targets map[string]bool) {
 	res = MessageCreator.WebSocketsResponse(action, response)
-	targets = service.target.TargetSelf(quizId)
-	return
-}
-
-func (service SubscriberService) joinResponse(quizId string, response GameResponse) (res WebsocketMessage, targets map[string]bool) {
-	subscribers, er := service.FindSubscribersForTag([]string{quizId})
-	if er != nil {
-		res = MessageCreator.InitWebSocketMessageFailure()
-		return
-	}
-	targets = service.target.TargetQuiz(quizId, subscribers)
-	res = MessageCreator.WebSocketsResponse(S_JOIN, response)
+	targets = service.target.TargetSelf(playerId)
 	return
 }
 

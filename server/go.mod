@@ -5,6 +5,7 @@ go 1.17
 require (
 	github.com/atulanand206/go-mongo v0.1.1
 	github.com/atulanand206/go-network v0.1.5
+	github.com/dgrijalva/jwt-go/v4 v4.0.0-preview1
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/websocket v1.4.2
 	github.com/joho/godotenv v1.3.0

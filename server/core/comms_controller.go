@@ -78,7 +78,7 @@ func (client *Client) requestToJoin(request Request, enter Enter) (res Websocket
 		return
 	}
 
-	res, targets = Controller.subscriberService.joinResponse(request.QuizId, response)
+	res, targets = Controller.subscriberService.selfResponse(request.Person.Id, S_JOIN, response)
 	return
 }
 
@@ -101,7 +101,7 @@ func (client *Client) OnRefresh(request Request) (res WebsocketMessage, targets 
 		return
 	}
 
-	res, targets = Controller.subscriberService.selfResponse(request.Person.Id, S_GAME, response)
+	res, targets = Controller.subscriberService.quizResponse(request.Action, request.QuizId, response)
 	return
 }
 
@@ -167,6 +167,6 @@ func (client *Client) OnScore(request Request) (res WebsocketMessage, targets ma
 		return
 	}
 
-	res, targets = Controller.subscriberService.selfResponse(request.QuizId, S_SCORE, response)
+	res, targets = Controller.subscriberService.selfResponse(request.Person.Id, S_SCORE, response)
 	return
 }
