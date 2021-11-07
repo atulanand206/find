@@ -39,12 +39,12 @@ func (crud SnapshotCrud) FindLatestSnapshot(matchId string) (snapshot models.Sna
 	sort := bson.D{}
 	sort = append(sort, bson.E{Key: "timestamp", Value: -1})
 	findOptions.SetSort(sort)
-	dto := crud.Db.FindOne(SnapshotCollection,
+	dto, err := crud.Db.FindOne(SnapshotCollection,
 		bson.M{"quiz_id": matchId}, findOptions)
-	if err = dto.Err(); err != nil {
+	if err != nil {
 		return
 	}
-	snapshot, err = DecodeSnapshot(dto)
+	bson.Unmarshal(dto, &snapshot)
 	return
 }
 

@@ -8,34 +8,6 @@ import (
 	mg "go.mongodb.org/mongo-driver/mongo"
 )
 
-func DecodeIndex(document *mg.SingleResult) (index models.Index, err error) {
-	if err = document.Decode(&index); err != nil {
-		return
-	}
-	return
-}
-
-func DecodeMatch(document *mg.SingleResult) (game models.Game, err error) {
-	if err = document.Decode(&game); err != nil {
-		return
-	}
-	return
-}
-
-func DecodeQuestion(document *mg.SingleResult) (question models.Question, err error) {
-	if err = document.Decode(&question); err != nil {
-		return
-	}
-	return
-}
-
-func DecodePlayer(document *mg.SingleResult) (player models.Player, err error) {
-	if err = document.Decode(&player); err != nil {
-		return
-	}
-	return
-}
-
 func DecodePlayerJsonString(content string) (player models.Player, err error) {
 	if err = json.Unmarshal([]byte(content), &player); err != nil {
 		return
@@ -45,27 +17,6 @@ func DecodePlayerJsonString(content string) (player models.Player, err error) {
 
 func DecodeRequestJsonString(content string) (request models.Request, err error) {
 	if err = json.Unmarshal([]byte(content), &request); err != nil {
-		return
-	}
-	return
-}
-
-func DecodeAnswer(document *mg.SingleResult) (answer models.Answer, err error) {
-	if err = document.Decode(&answer); err != nil {
-		return
-	}
-	return
-}
-
-func DecodeSnapshot(document *mg.SingleResult) (snapshot models.Snapshot, err error) {
-	if err = document.Decode(&snapshot); err != nil {
-		return
-	}
-	return
-}
-
-func DecodeSubscriber(document *mg.SingleResult) (subscriber models.Subscriber, err error) {
-	if err = document.Decode(&subscriber); err != nil {
 		return
 	}
 	return

@@ -15,7 +15,7 @@ type DBConn interface {
 	DropCollections() (err error)
 	Create(request interface{}, collection string) (err error)
 	CreateMany(request []interface{}, collection string) (err error)
-	FindOne(collection string, filters bson.M, findOptions *options.FindOneOptions) (result *mg.SingleResult)
+	FindOne(collection string, filters bson.M, findOptions *options.FindOneOptions) (result bson.Raw, err error)
 	Find(collection string, filters bson.M, findOptions *options.FindOptions) (result *mg.Cursor, err error)
 	Delete(collection string, identifier bson.M) (result *mg.DeleteResult, err error)
 	Update(collection string, identifier bson.M, doc interface{}) (result *mg.UpdateResult, err error)
@@ -55,8 +55,8 @@ func (db DB) CreateMany(request []interface{}, collection string) (err error) {
 	return
 }
 
-func (db DB) FindOne(collection string, filters bson.M, findOptions *options.FindOneOptions) (result *mg.SingleResult) {
-	return mongo.FindOne(Database, collection, filters, findOptions)
+func (db DB) FindOne(collection string, filters bson.M, findOptions *options.FindOneOptions) (result bson.Raw, err error) {
+	return mongo.FindOne(Database, collection, filters, findOptions).DecodeBytes()
 }
 
 func (db DB) Find(collection string, filters bson.M, findOptions *options.FindOptions) (result *mg.Cursor, err error) {

@@ -15,11 +15,11 @@ func (crud MatchCrud) CreateMatch(match models.Game) error {
 }
 
 func (crud MatchCrud) FindMatch(matchId string) (match models.Game, err error) {
-	dto := crud.Db.FindOne(MatchCollection, bson.M{"_id": matchId}, &options.FindOneOptions{})
-	if err = dto.Err(); err != nil {
+	dto, err := crud.Db.FindOne(MatchCollection, bson.M{"_id": matchId}, &options.FindOneOptions{})
+	if err != nil {
 		return
 	}
-	match, err = DecodeMatch(dto)
+	err = bson.Unmarshal(dto, &match)
 	return
 }
 

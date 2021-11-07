@@ -13,6 +13,7 @@ type MockDB struct {
 func (db *MockDB) PlayersCollections() []string {
 	return []string{TeamCollection, SubscriberCollection}
 }
+
 func (db *MockDB) QuestionsCollections() []string {
 	return []string{TeamCollection, SubscriberCollection}
 }
@@ -36,28 +37,37 @@ func (db *MockDB) DropCollections() (err error) {
 }
 
 func (db *MockDB) Create(request interface{}, collection string) (err error) {
-	db.Data[collection][len(db.Data[collection])] = request
+	doc, _ := Document(request)
+	db.Data[collection][len(db.Data[collection])] = doc
 	return
 }
 
 func (db *MockDB) CreateMany(request []interface{}, collection string) (err error) {
 	for _, v := range request {
-		db.Data[collection][len(db.Data[collection])] = v
+		doc, _ := Document(v)
+		db.Data[collection][len(db.Data[collection])] = doc
 	}
 	return
 }
 
-func (db *MockDB) FindOne(collection string, filters bson.M, findOptions *options.FindOneOptions) (result *mg.SingleResult) {
-	for _, v := range db.Data[collection] {
+func Document(request interface{}) (doc bson.M, err error) {
+	data, err := bson.Marshal(request)
+	if err != nil {
+	}
+	err = bson.Unmarshal(data, &doc)
+	return
+}
+
+func (db *MockDB) FindOne(collection string, filters bson.M, findOptions *options.FindOneOptions) (result bson.Raw, err error) {
+	for _, entry := range db.Data[collection] {
 		var x = 0
-		for k := range filters {
-			if v.(bson.M)[k] == k {
+		for k, filter := range filters {
+			if entry.(bson.M)[k] == filter {
 				x++
 			}
 		}
 		if x == len(filters) {
-			result = &mg.SingleResult{}
-			result.Decode(v)
+			result, _ = bson.Marshal(entry)
 			return
 		}
 	}
@@ -69,9 +79,34 @@ func (db *MockDB) Find(collection string, filters bson.M, findOptions *options.F
 }
 
 func (db *MockDB) Delete(collection string, identifier bson.M) (result *mg.DeleteResult, err error) {
+	for key, entry := range db.Data[collection] {
+		var x = 0
+		for k, filter := range identifier {
+			if entry.(bson.M)[k] == filter {
+				x++
+			}
+		}
+		if x == len(identifier) {
+			delete(db.Data[collection], key)
+			return
+		}
+	}
 	return
 }
 
-func (db *MockDB) Update(collection string, identifier bson.M, doc interface{}) (result *mg.UpdateResult, err error) {
+func (db *MockDB) Update(collection string, identifier bson.M, v interface{}) (result *mg.UpdateResult, err error) {
+	for _, entry := range db.Data[collection] {
+		var x = 0
+		for k, filter := range identifier {
+			if entry.(bson.M)[k] == filter {
+				x++
+			}
+		}
+		if x == len(identifier) {
+			doc, _ := Document(v)
+			db.Data[collection][len(db.Data[collection])] = doc
+			return
+		}
+	}
 	return
 }
