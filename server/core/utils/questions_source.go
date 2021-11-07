@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	"github.com/atulanand206/find/core/models"
+	"github.com/atulanand206/find/server/core/models"
 )
 
 func fileName(name string) string {
-	return fmt.Sprintf("filePath", name)
+	return fmt.Sprintf("filePath %s", name)
 }
 
 func ReadIndexes() (index models.IndexStore, err error) {

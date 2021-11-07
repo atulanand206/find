@@ -4,7 +4,7 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/atulanand206/find/core/models"
+	"github.com/atulanand206/find/server/core/models"
 )
 
 func CreateDeckDtos() (indexs []models.Index, questions []models.Question, answers []models.Answer, err error) {

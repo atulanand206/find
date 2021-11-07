@@ -1,7 +1,8 @@
 package db
 
 import (
-	"github.com/atulanand206/find/core/models"
+	"github.com/atulanand206/find/server/core/actions"
+	"github.com/atulanand206/find/server/core/models"
 	"github.com/atulanand206/go-mongo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -54,7 +55,7 @@ func (crud SubscriberCrud) FindSubscriptionsForPlayerId(playerId string) (subscr
 	return
 }
 
-func (crud SubscriberCrud) FindSubscribers(tag string, role models.Role) (subscribers []models.Subscriber, err error) {
+func (crud SubscriberCrud) FindSubscribers(tag string, role actions.Role) (subscribers []models.Subscriber, err error) {
 	findOptions := &options.FindOptions{}
 	sort := bson.D{}
 	findOptions.SetSort(sort)

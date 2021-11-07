@@ -1,7 +1,7 @@
 package db
 
 import (
-	"github.com/atulanand206/find/core/models"
+	"github.com/atulanand206/find/server/core/models"
 	"github.com/atulanand206/go-mongo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
