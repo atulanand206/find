@@ -10,14 +10,14 @@ import (
 const PermissionCollection = "permissions"
 
 type PermissionCrud struct {
-	db DB
+	Db DB
 }
 
 func (crud PermissionCrud) CreatePermission(playerId string) (err error) {
 	if crud.HasPermission(playerId) {
 		return
 	}
-	return crud.db.Create(models.Permission{PlayerId: playerId}, PermissionCollection)
+	return crud.Db.Create(models.Permission{PlayerId: playerId}, PermissionCollection)
 }
 
 func (crud PermissionCrud) HasPermission(playerId string) bool {
