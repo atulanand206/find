@@ -2,6 +2,7 @@ package tests
 
 import (
 	"fmt"
+	"os"
 	"testing"
 	"time"
 
@@ -10,14 +11,16 @@ import (
 	"github.com/atulanand206/find/server/core/db"
 	"github.com/atulanand206/find/server/core/models"
 	"github.com/atulanand206/go-mongo"
-	"github.com/joho/godotenv"
 	gonanoid "github.com/matoous/go-nanoid/v2"
 	"github.com/stretchr/testify/assert"
 )
 
 func Setup(t *testing.T) func(t *testing.T) {
 	mongo.ConfigureMongoClient("mongodb://localhost:27017")
-	godotenv.Load("./../../.env")
+	os.Setenv("CLIENT_SECRET", "aedsaddsad05442b3fe8f2e72d1d497bf14ea9cb")
+	os.Setenv("REFRESH_CLIENT_SECRET", "ae05442b3fe8f2e72d1d497bf14ea9dsafdsadsacb")
+	os.Setenv("TOKEN_EXPIRE_MINUTES", "2")
+	os.Setenv("REFRESH_TOKEN_EXPIRE_MINUTES", "10")
 	db.Database = "binquiz-test"
 	db.MatchCollection = "matches"
 	db.QuestionCollection = "questions"
