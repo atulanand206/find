@@ -78,7 +78,7 @@ func TestHandleMessages(t *testing.T) {
 			Teams:     2,
 			Questions: 10,
 		}
-		Create(t, player, specs, client)
+		Create(t, client, player, specs)
 	})
 
 	t.Run("login with 3 players", func(t *testing.T) {
@@ -110,7 +110,50 @@ func TestHandleMessages(t *testing.T) {
 	})
 }
 
-func Login(t *testing.T, player models.Player, client *comms.Client) {
+func TestJoinGame(t *testing.T) {
+	teardown := tests.Setup(t)
+	defer teardown(t)
+
+	t.Run("create a quiz with 2 players", func(t *testing.T) {
+		hub := tests.RunningHub(t)
+		client1 := tests.NewClient(t, hub)
+		testPlayerId, _ := gonanoid.New(10)
+		quizmaster := models.Player{
+			Name:  "Tony Stark",
+			Email: "mark@stark.io",
+			Id:    testPlayerId,
+		}
+		Login(t, quizmaster, client1)
+		client2 := tests.NewClient(t, hub)
+		testPlayerId, _ = gonanoid.New(10)
+		player1 := models.Player{
+			Name:  "Zara Khan",
+			Email: "zareen@khan.io",
+			Id:    testPlayerId,
+		}
+		Login(t, player1, client2)
+		client3 := tests.NewClient(t, hub)
+		testPlayerId, _ = gonanoid.New(10)
+		player2 := models.Player{
+			Name:  "Mark Broody",
+			Email: "martin@broody.io",
+			Id:    testPlayerId,
+		}
+		Login(t, player2, client3)
+
+		specs := models.Specs{
+			Name:      "Binquiz #1",
+			Players:   1,
+			Teams:     2,
+			Questions: 10,
+		}
+		createRes := Create(t, client1, quizmaster, specs)
+		Join(t, client2, player1, createRes.Quiz.Id)
+		Join(t, client3, player2, createRes.Quiz.Id)
+	})
+}
+
+func Login(t *testing.T, player models.Player, client *comms.Client) models.LoginResponse {
 	request := models.Request{
 		Action: "BEGIN",
 		Person: player,
@@ -122,9 +165,10 @@ func Login(t *testing.T, player models.Player, client *comms.Client) {
 	assert.Nil(t, err, "error must be nil")
 	assert.Equal(t, player.Id, loginResponse.Player.Id)
 	assert.Equal(t, player.Name, loginResponse.Player.Name)
+	return loginResponse
 }
 
-func Create(t *testing.T, player models.Player, specs models.Specs, client *comms.Client) {
+func Create(t *testing.T, client *comms.Client, player models.Player, specs models.Specs) models.GameResponse {
 	request := models.Request{
 		Action: "SPECS",
 		Person: player,
@@ -138,10 +182,31 @@ func Create(t *testing.T, player models.Player, specs models.Specs, client *comm
 	assert.Nil(t, err, "error must be nil")
 	assert.Equal(t, player.Id, gameResponse.Quiz.QuizMaster.Id)
 	assert.Equal(t, player.Name, gameResponse.Quiz.QuizMaster.Name)
+	assert.Equal(t, "QUIZMASTER", gameResponse.Role)
 	assert.Equal(t, specs.Name, gameResponse.Quiz.Specs.Name)
 	assert.Equal(t, specs.Players, gameResponse.Quiz.Specs.Players)
 	assert.Equal(t, specs.Teams, gameResponse.Quiz.Specs.Teams)
 	assert.Equal(t, 2, gameResponse.Quiz.Specs.Rounds)
 	assert.Equal(t, specs.Questions, gameResponse.Quiz.Specs.Questions)
 	assert.Equal(t, 16, gameResponse.Quiz.Specs.Points)
+	return gameResponse
+}
+
+func Join(t *testing.T, client *comms.Client, player models.Player, quizId string) models.GameResponse {
+	request := models.Request{
+		Action: "JOIN",
+		Person: player,
+		QuizId: quizId,
+	}
+	msg := tests.TestMessage(actions.SPECS, string(comms.SerializeMessage(request)))
+	res, _, _ := client.Hub.Handle(msg, client)
+	assert.NotNil(t, res, "response must be present")
+	assert.Equal(t, "S_JOIN", res.Action)
+	gameResponse, err := models.DecodeGameResponseJsonString(res.Content)
+	assert.Nil(t, err, "error must be nil")
+	assert.Equal(t, player.Id, gameResponse.Quiz.QuizMaster.Id)
+	assert.Equal(t, player.Name, gameResponse.Quiz.QuizMaster.Name)
+	assert.Equal(t, "PLAYER", gameResponse.Role)
+	assert.Equal(t, quizId, gameResponse.Quiz.Id)
+	return gameResponse
 }
