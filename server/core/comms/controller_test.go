@@ -204,8 +204,6 @@ func Join(t *testing.T, client *comms.Client, player models.Player, quizId strin
 	assert.Equal(t, "S_JOIN", res.Action)
 	gameResponse, err := models.DecodeGameResponseJsonString(res.Content)
 	assert.Nil(t, err, "error must be nil")
-	assert.Equal(t, player.Id, gameResponse.Quiz.QuizMaster.Id)
-	assert.Equal(t, player.Name, gameResponse.Quiz.QuizMaster.Name)
 	assert.Equal(t, "PLAYER", gameResponse.Role)
 	assert.Equal(t, quizId, gameResponse.Quiz.Id)
 	return gameResponse
