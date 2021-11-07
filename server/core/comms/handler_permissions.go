@@ -24,7 +24,7 @@ func (handler PermissionHandler) HandlerCreatePermission(w http.ResponseWriter, 
 	}
 
 	if err := handler.crud.CreatePermission(request.PlayerId); err != nil {
-		er := Controller.ErrorCreator.PermissionNotCreated(request.PlayerId)
+		er := Controller.Creators.ErrorCreator.PermissionNotCreated(request.PlayerId)
 		http.Error(w, er.Msg, er.Code)
 		return
 	}
@@ -38,7 +38,7 @@ func DecodeJsonBody(r *http.Request, v interface{}) error {
 func (handler PermissionHandler) HandlerFindPermissions(w http.ResponseWriter, r *http.Request) {
 	permissions, err := handler.crud.FindPermissions()
 	if err != nil || len(permissions) == 0 {
-		er := Controller.ErrorCreator.PermissionsNotFound()
+		er := Controller.Creators.ErrorCreator.PermissionsNotFound()
 		http.Error(w, er.Msg, er.Code)
 		return
 	}

@@ -11,6 +11,12 @@ import (
 	"github.com/atulanand206/find/server/core/utils"
 )
 
+type Creators struct {
+	InstanceCreator models.Creator
+	MessageCreator  models.WebsocketMessageCreator
+	ErrorCreator    errors.ErrorMessageCreator
+}
+
 type Service struct {
 	AuthService       AuthService
 	PermissionService PermissionService
@@ -21,29 +27,29 @@ type Service struct {
 	QuestionService   QuestionService
 	SnapshotService   SnapshotService
 	Validator         Validator
-	InstanceCreator models.Creator
-	MessageCreator  models.WebsocketMessageCreator
-	ErrorCreator    errors.ErrorMessageCreator
-	TargetService      TargetService
+	TargetService     TargetService
+	Creators          Creators
 }
 
 func Init(Db db.DB) (service Service) {
-	service := Service{}
+	service = Service{}
 
-	service.InstanceCreator = models.Creator{}
-	service.MessageCreator = models.WebsocketMessageCreator{}
-	service.ErrorCreator = errors.ErrorMessageCreator{}
-	service.Validator := Validator{}
-	service.AuthService := AuthService{}
-	service.PermissionService := PermissionService{}
+	creators := Creators{}
+	creators.InstanceCreator = models.Creator{}
+	creators.MessageCreator = models.WebsocketMessageCreator{}
+	creators.ErrorCreator = errors.ErrorMessageCreator{}
+	service.Creators = creators
+	service.Validator = Validator{}
+	service.AuthService = AuthService{}
+	service.PermissionService = PermissionService{}
 
 	service.TargetService = TargetService{}
-	service.SubscriberService := SubscriberService{crud: db.SubscriberCrud{Db: Db}, targetService: Targe}
-	service.MatchService := MatchService{crud: db.MatchCrud{Db: Db}, subscriberService: service.SubscriberService}
-	service.TeamService := TeamService{crud: db.TeamCrud{}, subscriberService: service.SubscriberService}
-	service.PlayerService := PlayerService{crud: db.PlayerCrud{Db: Db}}
-	service.SnapshotService := SnapshotService{crud: db.SnapshotCrud{Db: Db}}
-	service.QuestionService := QuestionService{crud: db.QuestionCrud{Db: Db}}
+	service.SubscriberService = SubscriberService{Crud: db.SubscriberCrud{Db: Db}, targetService: service.TargetService, Creators: service.Creators}
+	service.MatchService = MatchService{Crud: db.MatchCrud{Db: Db}, subscriberService: service.SubscriberService}
+	service.TeamService = TeamService{crud: db.TeamCrud{}, subscriberService: service.SubscriberService}
+	service.PlayerService = PlayerService{Crud: db.PlayerCrud{Db: Db}}
+	service.SnapshotService = SnapshotService{Crud: db.SnapshotCrud{Db: Db}}
+	service.QuestionService = QuestionService{Crud: db.QuestionCrud{Db: Db}}
 
 	return service
 }
@@ -92,7 +98,7 @@ func (service Service) GenerateCreateGameResponse(quizmaster models.Player, spec
 	}
 	fmt.Println(snapshot)
 
-	return service.SubscriberService.subscribeAndRespond(quiz, player, snapshot, actions.QUIZMASTER)
+	return service.SubscriberService.SubscribeAndRespond(quiz, player, snapshot, actions.QUIZMASTER)
 }
 
 func (service Service) GenerateEnterGameResponse(request models.Request) (response models.GameResponse, err error) {
@@ -119,7 +125,7 @@ func (service Service) GenerateEnterGameResponse(request models.Request) (respon
 			return
 		}
 
-		return service.SubscriberService.subscribeAndRespond(match, player, snapshot, actions.QUIZMASTER)
+		return service.SubscriberService.SubscribeAndRespond(match, player, snapshot, actions.QUIZMASTER)
 	}
 
 	if utils.IsPlayerInTeams(teamPlayers, player) {
@@ -134,7 +140,7 @@ func (service Service) GenerateEnterGameResponse(request models.Request) (respon
 			err = er
 			return
 		}
-		return service.SubscriberService.subscribeAndRespond(match, player, snapshot, actions.PLAYER)
+		return service.SubscriberService.SubscribeAndRespond(match, player, snapshot, actions.PLAYER)
 	}
 
 	_, err = service.TeamService.FindAndFillTeamVacancy(match, teams, player)
@@ -152,7 +158,7 @@ func (service Service) GenerateEnterGameResponse(request models.Request) (respon
 		return
 	}
 
-	return service.SubscriberService.subscribeAndRespond(match, player, snapshot, actions.PLAYER)
+	return service.SubscriberService.SubscribeAndRespond(match, player, snapshot, actions.PLAYER)
 }
 
 func (service Service) GenerateFullMatchResponse(quizId string) (response models.Snapshot, err error) {
@@ -176,7 +182,7 @@ func (service Service) GenerateWatchGameResponse(request models.Request) (respon
 		return
 	}
 
-	return service.SubscriberService.subscribeAndRespond(match, audience, snapshot, actions.AUDIENCE)
+	return service.SubscriberService.SubscribeAndRespond(match, audience, snapshot, actions.AUDIENCE)
 }
 
 func (service Service) GenerateStartGameResponse(request models.Request) (response models.Snapshot, err error) {
@@ -355,7 +361,7 @@ func (service Service) DeletePlayerLiveSession(playerId string) (res models.Webs
 		}
 	}
 
-	res = MessageCreator.InitWebSocketMessage(actions.S_REFRESH, "Player dropped. Please refresh.")
+	res = service.Creators.MessageCreator.InitWebSocketMessage(actions.S_REFRESH, "Player dropped. Please refresh.")
 	err = service.SubscriberService.Crud.DeleteSubscriber(playerId)
 	return
 }
