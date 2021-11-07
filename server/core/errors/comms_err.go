@@ -14,6 +14,7 @@ type ErrorMessage struct {
 
 const (
 	Err_RequestNotDecoded = "request can't be decoded"
+	Err_RequestNotValid   = "request not valid"
 	Err_ScopeNotPresent   = "scope not present"
 
 	Err_CollectionsNotCreated  = "collections can't be created"
