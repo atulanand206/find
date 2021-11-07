@@ -1,12 +1,17 @@
 package tests
 
 import (
+	"fmt"
 	"testing"
+	"time"
 
+	"github.com/atulanand206/find/server/core/actions"
+	"github.com/atulanand206/find/server/core/comms"
 	"github.com/atulanand206/find/server/core/db"
 	"github.com/atulanand206/find/server/core/models"
 	"github.com/atulanand206/go-mongo"
 	gonanoid "github.com/matoous/go-nanoid/v2"
+	"github.com/stretchr/testify/assert"
 )
 
 func Setup(t *testing.T) func(t *testing.T) {
@@ -60,4 +65,41 @@ func TestGame() models.Game {
 	specs := TestSpecs()
 	game := models.InitNewMatch(quizmaster, specs)
 	return game
+}
+
+func RunningHubWithClients(t *testing.T, n int) *comms.Hub {
+	hub := RunningHub(t)
+	for i := 0; i < n; i++ {
+		NewClient(t, hub)
+	}
+	time.Sleep(10 * time.Millisecond)
+	assert.Equal(t, n, len(hub.Clients), fmt.Sprintf("Hub should have %d clients", n))
+	return hub
+}
+
+func RunningHub(t *testing.T) *comms.Hub {
+	hub := comms.NewHub()
+	assert.NotNil(t, hub, "Hub should not be nil")
+	go hub.Run()
+	return hub
+}
+
+func NewClient(t *testing.T, hub *comms.Hub) *comms.Client {
+	client := comms.NewClient(hub, nil)
+	testPlayerId, _ := gonanoid.New(10)
+	client.SetPlayerId(testPlayerId)
+	assert.NotNil(t, client, "Client should not be nil")
+	hub.Register <- client
+	return client
+}
+
+func TestMessage(action actions.Action, content string) models.WebsocketMessage {
+	return models.WebsocketMessageCreator{}.InitWebSocketMessage(action, content)
+}
+
+func ClientX(hub *comms.Hub) *comms.Client {
+	for client := range hub.Clients {
+		return client
+	}
+	return nil
 }
