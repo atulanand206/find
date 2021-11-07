@@ -7,7 +7,7 @@ import (
 )
 
 type MatchCrud struct {
-	Db DB
+	Db DBConn
 }
 
 func (crud MatchCrud) CreateMatch(match models.Game) error {

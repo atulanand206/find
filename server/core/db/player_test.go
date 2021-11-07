@@ -12,7 +12,7 @@ func TestPlayerCrud(t *testing.T) {
 	teardown := tests.Setup(t)
 	defer teardown(t)
 
-	crud := db.PlayerCrud{}
+	crud := db.PlayerCrud{Db: db.DB{}}
 
 	t.Run("find or create player", func(t *testing.T) {
 		player := tests.TestPlayer()

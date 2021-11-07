@@ -10,21 +10,21 @@ import (
 )
 
 type TeamService struct {
-	crud db.TeamCrud
+	Crud db.TeamCrud
 
-	subscriberService SubscriberService
+	SubscriberService SubscriberService
 }
 
 func (service TeamService) CreateTeams(quiz models.Game) (teams []models.Team, err error) {
 	teams = models.InitNewTeams(quiz)
-	if err = service.crud.CreateTeams(teams); err != nil {
+	if err = service.Crud.CreateTeams(teams); err != nil {
 		err = e.New(errors.Err_TeamNotCreated)
 	}
 	return
 }
 
 func (service TeamService) FindTeams(quiz models.Game) (teams []models.Team, err error) {
-	return service.crud.FindTeams(quiz)
+	return service.Crud.FindTeams(quiz)
 }
 
 func (service TeamService) FindAndFillTeamVacancy(match models.Game, teams []models.Team, player models.Player) (teamId string, err error) {
@@ -32,7 +32,7 @@ func (service TeamService) FindAndFillTeamVacancy(match models.Game, teams []mod
 	for _, team := range teams {
 		teamIds = append(teamIds, team.Id)
 	}
-	teamPlayers, err := service.subscriberService.FindSubscribersForTag(teamIds)
+	teamPlayers, err := service.SubscriberService.FindSubscribersForTag(teamIds)
 	if err != nil {
 		return
 	}
@@ -41,7 +41,7 @@ func (service TeamService) FindAndFillTeamVacancy(match models.Game, teams []mod
 		return
 	}
 	teamId = service.FindVacantTeamId(teams, teamPlayers, match.Specs.Players)
-	_, err = service.subscriberService.FindOrCreateSubscriber(teamId, player, actions.TEAM)
+	_, err = service.SubscriberService.FindOrCreateSubscriber(teamId, player, actions.TEAM)
 	if err != nil {
 		return
 	}

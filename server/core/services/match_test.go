@@ -3,6 +3,7 @@ package services_test
 import (
 	"testing"
 
+	"github.com/atulanand206/find/server/core/db"
 	"github.com/atulanand206/find/server/core/models"
 	"github.com/atulanand206/find/server/core/services"
 	"github.com/atulanand206/find/server/core/tests"
@@ -12,7 +13,9 @@ func TestMatchService(t *testing.T) {
 	teardown := tests.Setup(t)
 	defer teardown(t)
 
-	service := services.MatchService{}
+	Db := db.DB{}
+	subscriberService := services.SubscriberService{Crud: db.SubscriberCrud{Db: Db}, TargetService: services.TargetService{}, Creators: services.Creators{}}
+	service := services.MatchService{Crud: db.MatchCrud{Db: Db}, SubscriberService: subscriberService}
 
 	t.Run("create match", func(t *testing.T) {
 		quizmaster := tests.TestPlayer()

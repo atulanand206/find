@@ -11,7 +11,7 @@ import (
 func TestMatchCrud(t *testing.T) {
 	teardown := tests.Setup(t)
 	defer teardown(t)
-	crud := db.MatchCrud{}
+	crud := db.MatchCrud{Db: db.DB{}}
 
 	t.Run("create and find match", func(t *testing.T) {
 		game := tests.TestGame()

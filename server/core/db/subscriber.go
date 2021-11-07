@@ -8,7 +8,7 @@ import (
 )
 
 type SubscriberCrud struct {
-	Db DB
+	Db DBConn
 }
 
 func (crud SubscriberCrud) CreateSubscriber(subscriber models.Subscriber) error {

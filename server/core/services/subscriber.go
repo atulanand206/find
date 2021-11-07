@@ -12,14 +12,14 @@ import (
 type SubscriberService struct {
 	Crud db.SubscriberCrud
 
-	targetService TargetService
+	TargetService TargetService
 
 	Creators Creators
 }
 
 func (service SubscriberService) SelfResponse(playerId string, action actions.Action, response interface{}) (res models.WebsocketMessage, targets map[string]bool) {
 	res = service.Creators.MessageCreator.WebSocketsResponse(action, response)
-	targets = service.targetService.TargetSelf(playerId)
+	targets = service.TargetService.TargetSelf(playerId)
 	return
 }
 
@@ -29,7 +29,7 @@ func (service SubscriberService) QuizResponse(action string, quizId string, resp
 		res = service.Creators.MessageCreator.InitWebSocketMessageFailure()
 		return
 	}
-	targets = service.targetService.TargetQuiz(quizId, subscribers)
+	targets = service.TargetService.TargetQuiz(quizId, subscribers)
 	res = service.Creators.MessageCreator.WebSocketsResponse(actions.S_GAME, &models.SnapshotResponse{Action: action, Snapshot: response})
 	return
 }

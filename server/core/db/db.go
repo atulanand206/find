@@ -8,6 +8,19 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+type DBConn interface {
+	PlayersCollections() []string
+	QuestionsCollections() []string
+	CreateCollections() (err error)
+	DropCollections() (err error)
+	Create(request interface{}, collection string) (err error)
+	CreateMany(request []interface{}, collection string) (err error)
+	FindOne(collection string, filters bson.M, findOptions *options.FindOneOptions) (result *mg.SingleResult)
+	Find(collection string, filters bson.M, findOptions *options.FindOptions) (result *mg.Cursor, err error)
+	Delete(collection string, identifier bson.M) (result *mg.DeleteResult, err error)
+	Update(collection string, identifier bson.M, doc interface{}) (result *mg.UpdateResult, err error)
+}
+
 type DB struct{}
 
 func (db DB) PlayersCollections() []string {
@@ -15,7 +28,7 @@ func (db DB) PlayersCollections() []string {
 }
 
 func (db DB) QuestionsCollections() []string {
-	return []string{IndexCollection, QuestionCollection, AnswerCollection}
+	return []string{TeamCollection, SubscriberCollection}
 }
 
 func (db DB) CreateCollections() (err error) {
