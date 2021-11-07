@@ -2,7 +2,6 @@ package db
 
 import (
 	"github.com/atulanand206/find/server/core/models"
-	"github.com/atulanand206/go-mongo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -16,7 +15,7 @@ func (crud SnapshotCrud) CreateSnapshot(snapshot models.Snapshot) error {
 }
 
 func (crud SnapshotCrud) FindSnapshotsForMatch(matchId string) (snapshots []models.Snapshot, err error) {
-	cursor, err := mongo.Find(Database, SnapshotCollection,
+	cursor, err := crud.Db.Find(SnapshotCollection,
 		bson.M{"quiz_id": matchId}, &options.FindOptions{})
 	if err != nil {
 		return
@@ -26,7 +25,7 @@ func (crud SnapshotCrud) FindSnapshotsForMatch(matchId string) (snapshots []mode
 }
 
 func (crud SnapshotCrud) FindSnapshotsForQuestion(quizId string, questionId string, eventType string) (snapshots []models.Snapshot, err error) {
-	cursor, err := mongo.Find(Database, SnapshotCollection,
+	cursor, err := crud.Db.Find(SnapshotCollection,
 		bson.M{"quiz_id": quizId, "question_id": questionId, "event_type": eventType}, &options.FindOptions{})
 	if err != nil {
 		return
@@ -40,7 +39,7 @@ func (crud SnapshotCrud) FindLatestSnapshot(matchId string) (snapshot models.Sna
 	sort := bson.D{}
 	sort = append(sort, bson.E{Key: "timestamp", Value: -1})
 	findOptions.SetSort(sort)
-	dto := mongo.FindOne(Database, SnapshotCollection,
+	dto := crud.Db.FindOne(SnapshotCollection,
 		bson.M{"quiz_id": matchId}, findOptions)
 	if err = dto.Err(); err != nil {
 		return
@@ -54,7 +53,7 @@ func (crud SnapshotCrud) FindQuestionSnapshots(matchId string, questionId string
 	sort := bson.D{}
 	sort = append(sort, bson.E{Key: "timestamp", Value: -1})
 	findOptions.SetSort(sort)
-	cursor, err := mongo.Find(Database, SnapshotCollection,
+	cursor, err := crud.Db.Find(SnapshotCollection,
 		bson.M{"quiz_id": matchId, "question_id": questionId}, findOptions)
 	if err != nil {
 		return

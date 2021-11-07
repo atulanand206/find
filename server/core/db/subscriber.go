@@ -3,7 +3,6 @@ package db
 import (
 	"github.com/atulanand206/find/server/core/actions"
 	"github.com/atulanand206/find/server/core/models"
-	"github.com/atulanand206/go-mongo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -25,7 +24,7 @@ func (crud SubscriberCrud) FindTeamPlayers(teams []models.Team) (teamPlayers []m
 	sort := bson.D{}
 	sort = append(sort, bson.E{Key: "tag", Value: 1})
 	findOptions.SetSort(sort)
-	cursor, err := mongo.Find(Database, SubscriberCollection,
+	cursor, err := crud.Db.Find(SubscriberCollection,
 		bson.M{"tag": bson.M{"$in": teamIds}}, findOptions)
 	if err != nil {
 		return
@@ -46,7 +45,7 @@ func (crud SubscriberCrud) FindSubscriptionsForPlayerId(playerId string) (subscr
 	findOptions := &options.FindOptions{}
 	sort := bson.D{}
 	findOptions.SetSort(sort)
-	cursor, err := mongo.Find(Database, SubscriberCollection,
+	cursor, err := crud.Db.Find(SubscriberCollection,
 		bson.M{"player_id": playerId}, findOptions)
 	if err != nil {
 		return
@@ -59,7 +58,7 @@ func (crud SubscriberCrud) FindSubscribers(tag string, role actions.Role) (subsc
 	findOptions := &options.FindOptions{}
 	sort := bson.D{}
 	findOptions.SetSort(sort)
-	cursor, err := mongo.Find(Database, SubscriberCollection,
+	cursor, err := crud.Db.Find(SubscriberCollection,
 		bson.M{"tag": tag, "role": role.String()}, findOptions)
 	if err != nil {
 		return
@@ -72,7 +71,7 @@ func (crud SubscriberCrud) FindSubscribersForTag(tags []string) (subscribers []m
 	findOptions := &options.FindOptions{}
 	sort := bson.D{}
 	findOptions.SetSort(sort)
-	cursor, err := mongo.Find(Database, SubscriberCollection,
+	cursor, err := crud.Db.Find(SubscriberCollection,
 		bson.M{"tag": bson.M{"$in": tags}}, findOptions)
 	if err != nil {
 		return
@@ -82,7 +81,7 @@ func (crud SubscriberCrud) FindSubscribersForTag(tags []string) (subscribers []m
 }
 
 func (crud SubscriberCrud) FindSubscriberForTagAndPlayerId(tag string, playerId string) (subscriber models.Subscriber, err error) {
-	dto := mongo.FindOne(Database, SubscriberCollection,
+	dto := crud.Db.FindOne(SubscriberCollection,
 		bson.M{"tag": tag, "player_id": playerId}, &options.FindOneOptions{})
 	if err = dto.Err(); err != nil {
 		return
@@ -92,7 +91,7 @@ func (crud SubscriberCrud) FindSubscriberForTagAndPlayerId(tag string, playerId 
 }
 
 func (crud SubscriberCrud) DeleteSubscriber(playerId string) (err error) {
-	_, err = mongo.Delete(Database, SubscriberCollection, bson.M{
+	_, err = crud.Db.Delete(SubscriberCollection, bson.M{
 		"player_id": playerId,
 		"active":    true})
 	return

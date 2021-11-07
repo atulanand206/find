@@ -2,7 +2,6 @@ package db
 
 import (
 	"github.com/atulanand206/find/server/core/models"
-	"github.com/atulanand206/go-mongo"
 	"github.com/xorcare/pointer"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -17,17 +16,11 @@ func (crud QuestionCrud) SeedIndexes(indexes []models.Index) (err error) {
 	for _, t := range indexes {
 		indexesDto = append(indexesDto, t)
 	}
-	_, err = mongo.WriteMany(Database, IndexCollection, indexesDto)
-	return err
+	return crud.Db.CreateMany(indexesDto, IndexCollection)
 }
 
 func (crud QuestionCrud) CreateQuestion(question models.Question) (err error) {
-	requestDto, err := mongo.Document(question)
-	if err != nil {
-		return
-	}
-	_, err = mongo.Write(Database, QuestionCollection, *requestDto)
-	return
+	return crud.Db.Create(question, QuestionCollection)
 }
 
 func (crud QuestionCrud) SeedQuestions(questions []models.Question) (err error) {
@@ -35,17 +28,11 @@ func (crud QuestionCrud) SeedQuestions(questions []models.Question) (err error) 
 	for _, t := range questions {
 		questionsDto = append(questionsDto, t)
 	}
-	_, err = mongo.WriteMany(Database, QuestionCollection, questionsDto)
-	return err
+	return crud.Db.CreateMany(questionsDto, QuestionCollection)
 }
 
 func (crud QuestionCrud) CreateAnswer(answer models.Answer) (err error) {
-	requestDto, err := mongo.Document(answer)
-	if err != nil {
-		return
-	}
-	_, err = mongo.Write(Database, AnswerCollection, *requestDto)
-	return
+	return crud.Db.Create(answer, AnswerCollection)
 }
 
 func (crud QuestionCrud) SeedAnswers(answers []models.Answer) (err error) {
@@ -53,12 +40,11 @@ func (crud QuestionCrud) SeedAnswers(answers []models.Answer) (err error) {
 	for _, answer := range answers {
 		answersDto = append(answersDto, answer)
 	}
-	_, err = mongo.WriteMany(Database, AnswerCollection, answersDto)
-	return err
+	return crud.Db.CreateMany(answersDto, AnswerCollection)
 }
 
 func (crud QuestionCrud) FindQuestion(questionId string) (question models.Question, err error) {
-	dto := mongo.FindOne(Database, MatchCollection, bson.M{"_id": questionId}, &options.FindOneOptions{})
+	dto := crud.Db.FindOne(MatchCollection, bson.M{"_id": questionId}, &options.FindOneOptions{})
 	if err = dto.Err(); err != nil {
 		return
 	}
@@ -67,7 +53,7 @@ func (crud QuestionCrud) FindQuestion(questionId string) (question models.Questi
 }
 
 func (crud QuestionCrud) FindIndexForTag(tag string) (index models.Index, err error) {
-	dto := mongo.FindOne(Database, IndexCollection, bson.M{"tag": tag}, &options.FindOneOptions{})
+	dto := crud.Db.FindOne(IndexCollection, bson.M{"tag": tag}, &options.FindOneOptions{})
 	if err = dto.Err(); err != nil {
 		return
 	}
@@ -76,7 +62,7 @@ func (crud QuestionCrud) FindIndexForTag(tag string) (index models.Index, err er
 }
 
 func (crud QuestionCrud) FindAnswer(questionId string) (answer models.Answer, err error) {
-	dto := mongo.FindOne(Database, AnswerCollection, bson.M{"question_id": questionId}, &options.FindOneOptions{})
+	dto := crud.Db.FindOne(AnswerCollection, bson.M{"question_id": questionId}, &options.FindOneOptions{})
 	if err = dto.Err(); err != nil {
 		return
 	}
@@ -85,7 +71,7 @@ func (crud QuestionCrud) FindAnswer(questionId string) (answer models.Answer, er
 }
 
 func (crud QuestionCrud) FindIndex() (indexes []models.Index, err error) {
-	cursor, err := mongo.Find(Database, IndexCollection, bson.M{}, &options.FindOptions{})
+	cursor, err := crud.Db.Find(IndexCollection, bson.M{}, &options.FindOptions{})
 	if err != nil {
 		return
 	}
@@ -94,7 +80,7 @@ func (crud QuestionCrud) FindIndex() (indexes []models.Index, err error) {
 }
 
 func (crud QuestionCrud) FindQuestionsForIndex(index models.Index, limit int64) (questions []models.Question, err error) {
-	cursor, err := mongo.Find(Database, QuestionCollection,
+	cursor, err := crud.Db.Find(QuestionCollection,
 		bson.M{"tag": index.Id}, &options.FindOptions{Limit: pointer.Int64(limit)})
 	if err != nil {
 		return

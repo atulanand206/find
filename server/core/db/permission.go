@@ -2,7 +2,6 @@ package db
 
 import (
 	"github.com/atulanand206/find/server/core/models"
-	"github.com/atulanand206/go-mongo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -21,7 +20,7 @@ func (crud PermissionCrud) CreatePermission(playerId string) (err error) {
 }
 
 func (crud PermissionCrud) HasPermission(playerId string) bool {
-	cursor, err := mongo.Find(Database, PermissionCollection, bson.M{"player_id": playerId}, &options.FindOptions{})
+	cursor, err := crud.Db.Find(PermissionCollection, bson.M{"player_id": playerId}, &options.FindOptions{})
 	if err != nil {
 		return false
 	}
@@ -33,7 +32,7 @@ func (crud PermissionCrud) HasPermission(playerId string) bool {
 }
 
 func (crud PermissionCrud) FindPermissions() (permissions []models.Permission, err error) {
-	cursor, err := mongo.Find(Database, PermissionCollection, bson.M{}, &options.FindOptions{})
+	cursor, err := crud.Db.Find(PermissionCollection, bson.M{}, &options.FindOptions{})
 	if err != nil {
 		return
 	}

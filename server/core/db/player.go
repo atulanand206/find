@@ -5,9 +5,7 @@ import (
 
 	"github.com/atulanand206/find/server/core/errors"
 	"github.com/atulanand206/find/server/core/models"
-	"github.com/atulanand206/go-mongo"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -28,7 +26,7 @@ func (crud PlayerCrud) FindOrCreatePlayer(request models.Player) (player models.
 }
 
 func (crud PlayerCrud) FindPlayer(emailId string) (player models.Player, err error) {
-	dto := mongo.FindOne(Database, PlayerCollection, bson.M{"email": emailId}, &options.FindOneOptions{})
+	dto := crud.Db.FindOne(PlayerCollection, bson.M{"email": emailId}, &options.FindOneOptions{})
 	if err = dto.Err(); err != nil {
 		return
 	}
@@ -42,7 +40,7 @@ func (crud PlayerCrud) FindPlayers(teamPlayers []models.Subscriber) (players []m
 		playerIds = append(playerIds, v.PlayerId)
 	}
 	findOptions := &options.FindOptions{}
-	cursor, err := mongo.Find(Database, PlayerCollection,
+	cursor, err := crud.Db.Find(PlayerCollection,
 		bson.M{"_id": bson.M{"$in": playerIds}}, findOptions)
 	if err != nil {
 		return
@@ -52,11 +50,7 @@ func (crud PlayerCrud) FindPlayers(teamPlayers []models.Subscriber) (players []m
 }
 
 func (crud PlayerCrud) UpdatePlayer(player models.Player) (updated bool, err error) {
-	requestDto, err := mongo.Document(player)
-	if err != nil {
-		return
-	}
-	res, err := mongo.Update(Database, PlayerCollection, bson.M{"_id": player.Id}, bson.D{primitive.E{Key: "$set", Value: *requestDto}})
+	res, err := crud.Db.Update(PlayerCollection, bson.M{"_id": player.Id}, player)
 	updated = int(res.ModifiedCount) == 1
 	return
 }

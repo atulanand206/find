@@ -3,6 +3,8 @@ package db
 import (
 	"github.com/atulanand206/go-mongo"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	mg "go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -26,47 +28,6 @@ func (db DB) DropCollections() (err error) {
 	return
 }
 
-type Schemas struct{}
-
-func (schemas Schemas) Subscriber() (jsonSchema bson.M) {
-	return bson.M{
-		"bsonType": "object",
-		"required": []string{"tag, playerId, role"},
-		"properties": bson.M{
-			"tag": bson.M{
-				"bsonType":    "string",
-				"description": "subscriber must have a tag assigned.",
-			},
-			"player_id": bson.M{
-				"bsonType":  "string",
-				"describer": "subscriber must have a valid player id.",
-			},
-			"role": bson.M{
-				"bsonType":  "string",
-				"describer": "subscriber must have a role assigned.",
-			},
-		},
-	}
-}
-
-func (db DB) CreateSubscriberCollection() (err error) {
-	err = mongo.CreateCollection(Database, SubscriberCollection,
-		options.CreateCollection().SetValidator(bson.M{
-			"$jsonSchema": Schemas{}.Subscriber(),
-		}))
-	return
-}
-
-func (db DB) Init() (err error) {
-	if err = db.DropCollections(); err != nil {
-		return
-	}
-	if err = db.CreateSubscriberCollection(); err != nil {
-		return
-	}
-	return
-}
-
 func (db DB) Create(request interface{}, collection string) (err error) {
 	requestDto, err := mongo.Document(request)
 	if err != nil {
@@ -74,4 +35,29 @@ func (db DB) Create(request interface{}, collection string) (err error) {
 	}
 	_, err = mongo.Write(Database, collection, *requestDto)
 	return
+}
+
+func (db DB) CreateMany(request []interface{}, collection string) (err error) {
+	_, err = mongo.WriteMany(Database, collection, request)
+	return
+}
+
+func (db DB) FindOne(collection string, filters bson.M, findOptions *options.FindOneOptions) (result *mg.SingleResult) {
+	return mongo.FindOne(Database, collection, filters, findOptions)
+}
+
+func (db DB) Find(collection string, filters bson.M, findOptions *options.FindOptions) (result *mg.Cursor, err error) {
+	return mongo.Find(Database, collection, filters, findOptions)
+}
+
+func (db DB) Delete(collection string, identifier bson.M) (result *mg.DeleteResult, err error) {
+	return mongo.Delete(Database, collection, identifier)
+}
+
+func (db DB) Update(collection string, identifier bson.M, doc interface{}) (result *mg.UpdateResult, err error) {
+	requestDto, err := mongo.Document(doc)
+	if err != nil {
+		return
+	}
+	return mongo.Update(Database, collection, identifier, bson.D{primitive.E{Key: "$set", Value: *requestDto}})
 }
