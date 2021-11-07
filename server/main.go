@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/atulanand206/find/server/core"
+	"github.com/atulanand206/find/server/core/comms"
 	"github.com/joho/godotenv"
 )
 
@@ -16,7 +16,7 @@ func main() {
 	mongoClientId := os.Getenv("MONGO_CLIENT_ID")
 	Database := os.Getenv("GAME_DATABASE")
 	// Register the endpoints exposed from the service.
-	routes := core.Routes(mongoClientId, Database)
+	routes := comms.Routes(mongoClientId, Database)
 
 	// Serve the routes.
 	handler := http.HandlerFunc(routes.ServeHTTP)
