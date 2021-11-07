@@ -57,7 +57,7 @@ func (client *Client) OnBegin(request models.Request) (res models.WebsocketMessa
 		return
 	}
 
-	client.setPlayerId(response.Player.Id)
+	client.SetPlayerId(response.Player.Id)
 	res, targets = Controller.SubscriberService.SelfResponse(response.Player.Id, actions.S_PLAYER, response)
 	return
 }
