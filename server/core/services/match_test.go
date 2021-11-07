@@ -16,6 +16,7 @@ func TestMatchService(t *testing.T) {
 	Db := db.DB{}
 	subscriberService := services.SubscriberService{Crud: db.SubscriberCrud{Db: Db}, TargetService: services.TargetService{}, Creators: services.Creators{}}
 	service := services.MatchService{Crud: db.MatchCrud{Db: Db}, SubscriberService: subscriberService}
+	playerService := services.PlayerService{Crud: db.PlayerCrud{Db: Db}}
 
 	t.Run("create match", func(t *testing.T) {
 		quizmaster := tests.TestPlayer()
@@ -34,7 +35,6 @@ func TestMatchService(t *testing.T) {
 	t.Run("find active matches", func(t *testing.T) {
 		specs := tests.TestSpecs()
 
-		playerService := services.PlayerService{}
 		quizmaster, _ := playerService.FindOrCreatePlayer(tests.TestPlayer())
 
 		game, err := service.CreateMatch(quizmaster, specs)

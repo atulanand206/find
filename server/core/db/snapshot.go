@@ -7,7 +7,7 @@ import (
 )
 
 type SnapshotCrud struct {
-	Db DB
+	Db DBConn
 }
 
 func (crud SnapshotCrud) CreateSnapshot(snapshot models.Snapshot) error {

@@ -8,7 +8,7 @@ import (
 )
 
 type QuestionCrud struct {
-	Db DB
+	Db DBConn
 }
 
 func (crud QuestionCrud) SeedIndexes(indexes []models.Index) (err error) {

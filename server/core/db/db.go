@@ -16,7 +16,7 @@ type DBConn interface {
 	Create(request interface{}, collection string) (err error)
 	CreateMany(request []interface{}, collection string) (err error)
 	FindOne(collection string, filters bson.M, findOptions *options.FindOneOptions) (result bson.Raw, err error)
-	Find(collection string, filters bson.M, findOptions *options.FindOptions) (result *mg.Cursor, err error)
+	Find(collection string, filters bson.M, findOptions *options.FindOptions) (result []bson.Raw, err error)
 	Delete(collection string, identifier bson.M) (result *mg.DeleteResult, err error)
 	Update(collection string, identifier bson.M, doc interface{}) (result *mg.UpdateResult, err error)
 }
@@ -56,11 +56,20 @@ func (db DB) CreateMany(request []interface{}, collection string) (err error) {
 }
 
 func (db DB) FindOne(collection string, filters bson.M, findOptions *options.FindOneOptions) (result bson.Raw, err error) {
-	return mongo.FindOne(Database, collection, filters, findOptions).DecodeBytes()
+	res := mongo.FindOne(Database, collection, filters, findOptions)
+	if err = res.Err(); err != nil {
+		return res.DecodeBytes()
+	}
+	return
 }
 
-func (db DB) Find(collection string, filters bson.M, findOptions *options.FindOptions) (result *mg.Cursor, err error) {
-	return mongo.Find(Database, collection, filters, findOptions)
+func (db DB) Find(collection string, filters bson.M, findOptions *options.FindOptions) (result []bson.Raw, err error) {
+	cursor, err := mongo.Find(Database, collection, filters, findOptions)
+	if err != nil {
+		return
+	}
+	result, err = DecodeRaw(cursor)
+	return
 }
 
 func (db DB) Delete(collection string, identifier bson.M) (result *mg.DeleteResult, err error) {

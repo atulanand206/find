@@ -10,7 +10,7 @@ import (
 )
 
 type PlayerCrud struct {
-	Db DB
+	Db DBConn
 }
 
 func (crud PlayerCrud) FindOrCreatePlayer(request models.Player) (player models.Player, err error) {

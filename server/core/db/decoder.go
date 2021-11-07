@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 
 	"github.com/atulanand206/find/server/core/models"
+	"go.mongodb.org/mongo-driver/bson"
 	mg "go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -22,10 +23,10 @@ func DecodeRequestJsonString(content string) (request models.Request, err error)
 	return
 }
 
-func DecodePermissions(cursor *mg.Cursor) (scopes []models.Permission, err error) {
-	for cursor.Next(context.Background()) {
+func DecodePermissions(cursor []bson.Raw) (scopes []models.Permission, err error) {
+	for _, doc := range cursor {
 		var scope models.Permission
-		err = cursor.Decode(&scope)
+		err = bson.Unmarshal(doc, &scope)
 		if err != nil {
 			return
 		}
@@ -34,10 +35,10 @@ func DecodePermissions(cursor *mg.Cursor) (scopes []models.Permission, err error
 	return
 }
 
-func DecodeMatches(cursor *mg.Cursor) (games []models.Game, err error) {
-	for cursor.Next(context.Background()) {
+func DecodeMatches(cursor []bson.Raw) (games []models.Game, err error) {
+	for _, doc := range cursor {
 		var game models.Game
-		err = cursor.Decode(&game)
+		err = bson.Unmarshal(doc, &game)
 		if err != nil {
 			return
 		}
@@ -46,10 +47,10 @@ func DecodeMatches(cursor *mg.Cursor) (games []models.Game, err error) {
 	return
 }
 
-func DecodeIndexes(cursor *mg.Cursor) (indexes []models.Index, err error) {
-	for cursor.Next(context.Background()) {
+func DecodeIndexes(cursor []bson.Raw) (indexes []models.Index, err error) {
+	for _, doc := range cursor {
 		var index models.Index
-		err = cursor.Decode(&index)
+		err = bson.Unmarshal(doc, &index)
 		if err != nil {
 			return
 		}
@@ -58,10 +59,10 @@ func DecodeIndexes(cursor *mg.Cursor) (indexes []models.Index, err error) {
 	return
 }
 
-func DecodeQuestions(cursor *mg.Cursor) (questions []models.Question, err error) {
-	for cursor.Next(context.Background()) {
+func DecodeQuestions(cursor []bson.Raw) (questions []models.Question, err error) {
+	for _, doc := range cursor {
 		var question models.Question
-		err = cursor.Decode(&question)
+		err = bson.Unmarshal(doc, &question)
 		if err != nil {
 			return
 		}
@@ -70,10 +71,10 @@ func DecodeQuestions(cursor *mg.Cursor) (questions []models.Question, err error)
 	return
 }
 
-func DecodeSnapshots(cursor *mg.Cursor) (snapshots []models.Snapshot, err error) {
-	for cursor.Next(context.Background()) {
+func DecodeSnapshots(cursor []bson.Raw) (snapshots []models.Snapshot, err error) {
+	for _, doc := range cursor {
 		var snapshot models.Snapshot
-		err = cursor.Decode(&snapshot)
+		err = bson.Unmarshal(doc, &snapshot)
 		if err != nil {
 			return
 		}
@@ -82,10 +83,10 @@ func DecodeSnapshots(cursor *mg.Cursor) (snapshots []models.Snapshot, err error)
 	return
 }
 
-func DecodeSubscribers(cursor *mg.Cursor) (subscribers []models.Subscriber, err error) {
-	for cursor.Next(context.Background()) {
+func DecodeSubscribers(cursor []bson.Raw) (subscribers []models.Subscriber, err error) {
+	for _, doc := range cursor {
 		var subscriber models.Subscriber
-		err = cursor.Decode(&subscriber)
+		err = bson.Unmarshal(doc, &subscriber)
 		if err != nil {
 			return
 		}
@@ -94,10 +95,10 @@ func DecodeSubscribers(cursor *mg.Cursor) (subscribers []models.Subscriber, err 
 	return
 }
 
-func DecodeTeams(cursor *mg.Cursor) (teams []models.Team, err error) {
-	for cursor.Next(context.Background()) {
+func DecodeTeams(cursor []bson.Raw) (teams []models.Team, err error) {
+	for _, doc := range cursor {
 		var team models.Team
-		err = cursor.Decode(&team)
+		err = bson.Unmarshal(doc, &team)
 		if err != nil {
 			return
 		}
@@ -106,10 +107,10 @@ func DecodeTeams(cursor *mg.Cursor) (teams []models.Team, err error) {
 	return
 }
 
-func DecodePlayers(cursor *mg.Cursor) (players []models.Player, err error) {
-	for cursor.Next(context.Background()) {
+func DecodePlayers(cursor []bson.Raw) (players []models.Player, err error) {
+	for _, doc := range cursor {
 		var player models.Player
-		err = cursor.Decode(&player)
+		err = bson.Unmarshal(doc, &player)
 		if err != nil {
 			return
 		}
@@ -118,14 +119,21 @@ func DecodePlayers(cursor *mg.Cursor) (players []models.Player, err error) {
 	return
 }
 
-func DecodeTeamPlayers(cursor *mg.Cursor) (teamPlayers []models.Subscriber, err error) {
-	for cursor.Next(context.Background()) {
+func DecodeTeamPlayers(cursor []bson.Raw) (teamPlayers []models.Subscriber, err error) {
+	for _, doc := range cursor {
 		var teamPlayer models.Subscriber
-		err = cursor.Decode(&teamPlayer)
+		err = bson.Unmarshal(doc, &teamPlayer)
 		if err != nil {
 			return
 		}
 		teamPlayers = append(teamPlayers, teamPlayer)
+	}
+	return
+}
+
+func DecodeRaw(cursor *mg.Cursor) (documents []bson.Raw, err error) {
+	for cursor.Next(context.Background()) {
+		documents = append(documents, cursor.Current)
 	}
 	return
 }

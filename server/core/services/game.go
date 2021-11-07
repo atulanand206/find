@@ -30,7 +30,7 @@ type Service struct {
 	Creators          Creators
 }
 
-func Init(Db db.DB) (service Service) {
+func Init(Db db.DBConn) (service Service) {
 	service = Service{}
 
 	creators := Creators{}
