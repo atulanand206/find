@@ -28,10 +28,9 @@ func TestHub(t *testing.T) {
 
 	t.Run("New hub with 4 clients", func(t *testing.T) {
 		hub := tests.RunningHub(t)
-		tests.NewClient(t, hub)
-		tests.NewClient(t, hub)
-		tests.NewClient(t, hub)
-		tests.NewClient(t, hub)
+		for i := 0; i < 4; i++ {
+			tests.NewClient(t, hub)
+		}
 		time.Sleep(10 * time.Millisecond)
 		assert.Equal(t, 4, len(hub.Clients), "Hub should have 4 clients")
 	})

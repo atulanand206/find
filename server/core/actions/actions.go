@@ -35,6 +35,7 @@ const (
 	S_Answer
 	S_Over
 	Failure
+	EMPTY
 )
 
 func (action Action) String() string {
@@ -71,6 +72,7 @@ func (action Action) String() string {
 		"s_answer",
 		"s_over",
 		"failure",
+		"EMPTY",
 	}[action]
 }
 

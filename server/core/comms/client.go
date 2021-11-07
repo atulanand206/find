@@ -37,7 +37,7 @@ const (
 
 // Client is a middleman between the websocket connection and the hub.
 type Client struct {
-	hub *Hub
+	Hub *Hub
 
 	// The websocket connection.
 	conn *websocket.Conn
@@ -59,7 +59,7 @@ func (client *Client) SetPlayerId(playerId string) {
 // reads from this goroutine.
 func (c *Client) ReadPump() {
 	defer func() {
-		c.hub.Unregister <- c
+		c.Hub.Unregister <- c
 		c.conn.Close()
 	}()
 	c.conn.SetReadLimit(maxMessageSize)

@@ -12,6 +12,13 @@ func DecodeAddQuestionRequest(r *http.Request) (request AddQuestionRequest, err 
 	return
 }
 
+func DecodeLoginResponseJsonString(content string) (request LoginResponse, err error) {
+	if err = json.Unmarshal([]byte(content), &request); err != nil {
+		return
+	}
+	return
+}
+
 func DecodeEnterGameRequestJsonString(content string) (request EnterGameRequest, err error) {
 	if err = json.Unmarshal([]byte(content), &request); err != nil {
 		return
@@ -20,6 +27,13 @@ func DecodeEnterGameRequestJsonString(content string) (request EnterGameRequest,
 }
 
 func DecodeCreateGameRequestJsonString(content string) (request CreateGameRequest, err error) {
+	if err = json.Unmarshal([]byte(content), &request); err != nil {
+		return
+	}
+	return
+}
+
+func DecodeGameResponseJsonString(content string) (request GameResponse, err error) {
 	if err = json.Unmarshal([]byte(content), &request); err != nil {
 		return
 	}

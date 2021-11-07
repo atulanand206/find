@@ -19,11 +19,11 @@ func ServeWebsocket(hub *Hub, w http.ResponseWriter, r *http.Request) {
 }
 
 func NewClient(hub *Hub, conn *websocket.Conn) *Client {
-	return &Client{hub: hub, conn: conn, Send: make(chan []byte, 256)}
+	return &Client{Hub: hub, conn: conn, Send: make(chan []byte, 256)}
 }
 
 func ServeBinquiz(hub *Hub, client *Client) {
-	client.hub.Register <- client
+	client.Hub.Register <- client
 	go client.WritePump()
 	go client.ReadPump()
 }

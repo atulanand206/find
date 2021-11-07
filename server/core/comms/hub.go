@@ -83,7 +83,7 @@ func (hub *Hub) Broadcast(response models.WebsocketMessage, targets map[string]b
 	hub.broadcast <- Message{msg: message, targets: targets}
 }
 
-func SerializeMessage(response models.WebsocketMessage) []byte {
+func SerializeMessage(response interface{}) []byte {
 	output, err := json.Marshal(response)
 	if err != nil {
 		return nil

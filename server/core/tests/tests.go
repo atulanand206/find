@@ -10,12 +10,14 @@ import (
 	"github.com/atulanand206/find/server/core/db"
 	"github.com/atulanand206/find/server/core/models"
 	"github.com/atulanand206/go-mongo"
+	"github.com/joho/godotenv"
 	gonanoid "github.com/matoous/go-nanoid/v2"
 	"github.com/stretchr/testify/assert"
 )
 
 func Setup(t *testing.T) func(t *testing.T) {
 	mongo.ConfigureMongoClient("mongodb://localhost:27017")
+	godotenv.Load("./../../.env")
 	db.Database = "binquiz-test"
 	db.MatchCollection = "matches"
 	db.QuestionCollection = "questions"
@@ -25,6 +27,7 @@ func Setup(t *testing.T) func(t *testing.T) {
 	db.PlayerCollection = "players"
 	db.IndexCollection = "indexes"
 	db.SubscriberCollection = "subscribers"
+	mongo.DropCollections(db.Database, []string{db.MatchCollection, db.QuestionCollection, db.AnswerCollection, db.SnapshotCollection, db.TeamCollection, db.PlayerCollection, db.IndexCollection, db.SubscriberCollection})
 	return func(t *testing.T) {
 	}
 }
@@ -86,8 +89,6 @@ func RunningHub(t *testing.T) *comms.Hub {
 
 func NewClient(t *testing.T, hub *comms.Hub) *comms.Client {
 	client := comms.NewClient(hub, nil)
-	testPlayerId, _ := gonanoid.New(10)
-	client.SetPlayerId(testPlayerId)
 	assert.NotNil(t, client, "Client should not be nil")
 	hub.Register <- client
 	return client
@@ -95,6 +96,14 @@ func NewClient(t *testing.T, hub *comms.Hub) *comms.Client {
 
 func TestMessage(action actions.Action, content string) models.WebsocketMessage {
 	return models.WebsocketMessageCreator{}.InitWebSocketMessage(action, content)
+}
+
+func TestBeginMessage(player models.Player) models.WebsocketMessage {
+	request := models.Request{
+		Action: "BEGIN",
+		Person: player,
+	}
+	return TestMessage(actions.BEGIN, string(comms.SerializeMessage(request)))
 }
 
 func ClientX(hub *comms.Hub) *comms.Client {

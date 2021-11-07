@@ -1,15 +1,12 @@
 package comms
 
 import (
-	"fmt"
-
 	"github.com/atulanand206/find/server/core/actions"
 	"github.com/atulanand206/find/server/core/db"
 	"github.com/atulanand206/find/server/core/models"
 )
 
 func (hub *Hub) Handle(msg models.WebsocketMessage, client *Client) (res models.WebsocketMessage, targets map[string]bool, err error) {
-	fmt.Println(msg)
 	request, err := db.DecodeRequestJsonString(msg.Content)
 	if err != nil {
 		res = Controller.Creators.MessageCreator.InitWebSocketMessageFailure()
@@ -17,7 +14,7 @@ func (hub *Hub) Handle(msg models.WebsocketMessage, client *Client) (res models.
 	}
 	err = Controller.Validator.ValidateRequest(request)
 	if err != nil {
-		res = Controller.Creators.MessageCreator.InitWebSocketMessageFailure()
+		res = Controller.Creators.MessageCreator.InitWebSocketMessage(actions.Failure, err.Error())
 		return
 	}
 	switch request.Action {
@@ -44,9 +41,6 @@ func (hub *Hub) Handle(msg models.WebsocketMessage, client *Client) (res models.
 	case actions.SCORE.String():
 		res, targets, err = client.OnScore(request)
 	}
-	fmt.Println(targets)
-	fmt.Println(res)
-	fmt.Println()
 	return
 }
 
