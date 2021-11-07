@@ -2,7 +2,6 @@ package services
 
 import (
 	e "errors"
-	"fmt"
 
 	"github.com/atulanand206/find/server/core/actions"
 	"github.com/atulanand206/find/server/core/db"
@@ -71,7 +70,7 @@ func (service Service) GenerateBeginGameResponse(player models.Player) (res mode
 	}
 
 	quizmaster := service.PermissionService.HasPermissions(player.Id)
-	res = models.LoginResponse{response, tokens, quizmaster}
+	res = models.LoginResponse{Player: response, Tokens: tokens, Quizmaster: quizmaster}
 	return
 }
 
@@ -96,7 +95,6 @@ func (service Service) GenerateCreateGameResponse(quizmaster models.Player, spec
 	if err != nil {
 		return
 	}
-	fmt.Println(snapshot)
 
 	return service.SubscriberService.SubscribeAndRespond(quiz, player, snapshot, actions.QUIZMASTER)
 }
