@@ -10,6 +10,7 @@ import (
 	"github.com/atulanand206/find/server/core/comms"
 	"github.com/atulanand206/find/server/core/db"
 	"github.com/atulanand206/find/server/core/models"
+	"github.com/atulanand206/find/server/core/services"
 	"github.com/atulanand206/go-mongo"
 	gonanoid "github.com/matoous/go-nanoid/v2"
 	"github.com/stretchr/testify/assert"
@@ -84,7 +85,7 @@ func RunningHubWithClients(t *testing.T, n int) *comms.Hub {
 }
 
 func RunningHub(t *testing.T) *comms.Hub {
-	hub := comms.NewHub()
+	hub := comms.NewHub(services.Init(db.NewMockDb()))
 	assert.NotNil(t, hub, "Hub should not be nil")
 	go hub.Run()
 	return hub

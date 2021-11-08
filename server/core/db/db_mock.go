@@ -1,6 +1,8 @@
 package db
 
 import (
+	"fmt"
+
 	"go.mongodb.org/mongo-driver/bson"
 	mg "go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -71,6 +73,7 @@ func (db *MockDB) FindOne(collection string, filters bson.M, findOptions *option
 			return
 		}
 	}
+	err = fmt.Errorf("No document found")
 	return
 }
 
@@ -82,6 +85,9 @@ func (db *MockDB) Find(collection string, filters bson.M, findOptions *options.F
 			results = append(results, result)
 		}
 	}
+	if len(results) == 0 {
+		err = fmt.Errorf("No document found")
+	}
 	return
 }
 
@@ -92,6 +98,7 @@ func (db *MockDB) Delete(collection string, identifier bson.M) (result *mg.Delet
 			return
 		}
 	}
+	err = fmt.Errorf("No document found")
 	return
 }
 
@@ -103,6 +110,7 @@ func (db *MockDB) Update(collection string, identifier bson.M, v interface{}) (r
 			return
 		}
 	}
+	err = fmt.Errorf("No document found")
 	return
 }
 

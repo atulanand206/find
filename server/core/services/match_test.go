@@ -13,7 +13,7 @@ func TestMatchService(t *testing.T) {
 	teardown := tests.Setup(t)
 	defer teardown(t)
 
-	Db := db.DB{}
+	Db := db.NewMockDb()
 	subscriberService := services.SubscriberService{Crud: db.SubscriberCrud{Db: Db}, TargetService: services.TargetService{}, Creators: services.Creators{}}
 	service := services.MatchService{Crud: db.MatchCrud{Db: Db}, SubscriberService: subscriberService}
 	playerService := services.PlayerService{Crud: db.PlayerCrud{Db: Db}}

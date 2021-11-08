@@ -5,6 +5,7 @@ import (
 
 	"github.com/atulanand206/find/server/core/db"
 	"github.com/atulanand206/find/server/core/tests"
+	"github.com/atulanand206/find/server/vendor/github.com/stretchr/testify/assert"
 	gonanoid "github.com/matoous/go-nanoid/v2"
 )
 
@@ -15,8 +16,8 @@ func TestMatchCrud(t *testing.T) {
 
 	t.Run("create and find match", func(t *testing.T) {
 		game := tests.TestGame()
-		crud.CreateMatch(game)
-
+		err := crud.CreateMatch(game)
+		assert.NotNil(t, err)
 		res, err := crud.FindMatch(game.Id)
 		if err != nil {
 			t.Fatalf("match %s not found", game.Id)

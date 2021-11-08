@@ -13,7 +13,7 @@ func TestQuestionService(t *testing.T) {
 	teardown := tests.Setup(t)
 	defer teardown(t)
 
-	service := services.QuestionService{db.QuestionCrud{Db: db.DB{}}}
+	service := services.QuestionService{db.QuestionCrud{Db: db.NewMockDb()}}
 
 	t.Run("add question", func(t *testing.T) {
 		// Create a new question

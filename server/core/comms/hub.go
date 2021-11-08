@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 
 	"github.com/atulanand206/find/server/core/models"
+	"github.com/atulanand206/find/server/core/services"
 )
 
 // Hub maintains the set of active clients and broadcasts messages to the
@@ -21,6 +22,8 @@ type Hub struct {
 
 	// Unregister requests from clients.
 	Unregister chan *Client
+
+	Controller services.Service
 }
 
 type Message struct {
@@ -29,12 +32,13 @@ type Message struct {
 	msg []byte
 }
 
-func NewHub() *Hub {
+func NewHub(controller services.Service) *Hub {
 	return &Hub{
 		broadcast:  make(chan Message),
 		Register:   make(chan *Client),
 		Unregister: make(chan *Client),
 		Clients:    make(map[*Client]bool),
+		Controller: controller,
 	}
 }
 
@@ -45,7 +49,7 @@ func (h *Hub) Run() {
 			h.Clients[client] = true
 		case client := <-h.Unregister:
 			if _, ok := h.Clients[client]; ok {
-				msg, targets, _ := Controller.DeletePlayerLiveSession(client.PlayerId)
+				msg, targets, _ := h.Controller.DeletePlayerLiveSession(client.PlayerId)
 				delete(h.Clients, client)
 				close(client.Send)
 				go h.Broadcast(msg, targets)

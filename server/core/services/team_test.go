@@ -12,7 +12,7 @@ func TestCreateAndFindTeams(t *testing.T) {
 	teardown := tests.Setup(t)
 	defer teardown(t)
 
-	Db := db.DB{}
+	Db := db.NewMockDb()
 	subscriberService := services.SubscriberService{Crud: db.SubscriberCrud{Db: Db}, TargetService: services.TargetService{}, Creators: services.Creators{}}
 	service := services.TeamService{Crud: db.TeamCrud{Db: Db}, SubscriberService: subscriberService}
 
