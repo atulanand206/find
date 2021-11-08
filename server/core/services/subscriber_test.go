@@ -4,24 +4,28 @@ import (
 	"testing"
 
 	"github.com/atulanand206/find/server/core/actions"
+	"github.com/atulanand206/find/server/core/db"
 	"github.com/atulanand206/find/server/core/services"
 	"github.com/atulanand206/find/server/core/tests"
 	gonanoid "github.com/matoous/go-nanoid/v2"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestSubscriberService(t *testing.T) {
 	teardown := tests.Setup(t)
 	defer teardown(t)
 
-	service := services.SubscriberService{}
+	Db := db.NewMockDb(true)
+	playerService := services.PlayerService{Crud: db.PlayerCrud{Db: Db}}
+	service := services.SubscriberService{Crud: db.SubscriberCrud{Db: Db}, TargetService: services.TargetService{}, Creators: services.Creators{}}
+	matchService := services.MatchService{Crud: db.MatchCrud{Db: Db}, SubscriberService: service}
 
 	t.Run("find or create subscriber", func(t *testing.T) {
 		tag, _ := gonanoid.New(10)
-		player := tests.TestPlayer()
+		player, err := playerService.FindOrCreatePlayer(tests.TestPlayer())
+		assert.Nil(t, err)
 		subscriber, err := service.FindOrCreateSubscriber(tag, player, actions.QUIZMASTER)
-		if err != nil {
-			t.Fatalf("Error creating subscriber: %v", err)
-		}
+		assert.Nil(t, err)
 		if subscriber.Tag != tag || subscriber.PlayerId != player.Id {
 			t.Fatalf("player %s subscription for tag %s not found", subscriber.PlayerId, tag)
 		}
@@ -36,40 +40,29 @@ func TestSubscriberService(t *testing.T) {
 	})
 
 	t.Run("find subscribers for tag", func(t *testing.T) {
-		playerService := services.PlayerService{}
-		player, _ := playerService.FindOrCreatePlayer(tests.TestPlayer())
-		quizmaster, _ := playerService.FindOrCreatePlayer(tests.TestPlayer())
+		quizmaster, err := playerService.FindOrCreatePlayer(tests.TestPlayer())
+		assert.Nil(t, err)
 		specs := tests.TestSpecs()
-
-		matchService := services.MatchService{}
-		game, _ := matchService.CreateMatch(quizmaster, specs)
-
-		subscriberService := services.SubscriberService{}
-		subscriberService.FindOrCreateSubscriber(game.Id, quizmaster, actions.QUIZMASTER)
-		subscriberService.FindOrCreateSubscriber(game.Id, player, actions.PLAYER)
-
-		subscribers, _ := subscriberService.FindSubscribersForTag([]string{game.Id})
-		if len(subscribers) != 2 {
-			t.Fatalf("test failed")
-		}
+		game, err := matchService.CreateMatch(quizmaster, specs)
+		assert.Nil(t, err)
+		_, err = service.FindOrCreateSubscriber(game.Id, quizmaster, actions.QUIZMASTER)
+		assert.Nil(t, err)
+		subscribers, err := service.FindSubscribersForTag([]string{game.Id})
+		assert.Nil(t, err)
+		assert.Equal(t, 1, len(subscribers))
 	})
 
 	t.Run("find subscriptions for player id", func(t *testing.T) {
-		playerService := services.PlayerService{}
 		player, _ := playerService.FindOrCreatePlayer(tests.TestPlayer())
 		quizmaster, _ := playerService.FindOrCreatePlayer(tests.TestPlayer())
 		specs := tests.TestSpecs()
 
-		matchService := services.MatchService{}
 		game, _ := matchService.CreateMatch(quizmaster, specs)
 
-		subscriberService := services.SubscriberService{}
-		subscriberService.FindOrCreateSubscriber(game.Id, quizmaster, actions.QUIZMASTER)
-		subscriberService.FindOrCreateSubscriber(game.Id, player, actions.PLAYER)
+		service.FindOrCreateSubscriber(game.Id, quizmaster, actions.QUIZMASTER)
+		service.FindOrCreateSubscriber(game.Id, player, actions.PLAYER)
 
-		subscribers, _ := subscriberService.FindSubscriptionsForPlayerId(player.Id)
-		if len(subscribers) != 1 {
-			t.Fatalf("test failed")
-		}
+		subscribers, _ := service.FindSubscriptionsForPlayerId(player.Id)
+		assert.Equal(t, 1, len(subscribers))
 	})
 }

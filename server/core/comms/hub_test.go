@@ -6,13 +6,15 @@ import (
 
 	"github.com/atulanand206/find/server/core/actions"
 	"github.com/atulanand206/find/server/core/comms"
+	"github.com/atulanand206/find/server/core/db"
+	"github.com/atulanand206/find/server/core/services"
 	"github.com/atulanand206/find/server/core/tests"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestHub(t *testing.T) {
 	t.Run("New hub", func(t *testing.T) {
-		hub := comms.NewHub()
+		hub := comms.NewHub(services.Init(db.NewMockDb(false)))
 		assert.NotNil(t, hub, "Hub should not be nil")
 		assert.Equal(t, 0, len(hub.Clients), "Hub should have 0 clients")
 	})

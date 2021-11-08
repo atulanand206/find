@@ -2,13 +2,12 @@ package db
 
 import (
 	"github.com/atulanand206/find/server/core/models"
-	"github.com/atulanand206/go-mongo"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type TeamCrud struct {
+	Db DBConn
 }
 
 func (crud TeamCrud) CreateTeams(teams []models.Team) (err error) {
@@ -16,8 +15,7 @@ func (crud TeamCrud) CreateTeams(teams []models.Team) (err error) {
 	for _, t := range teams {
 		teamsDto = append(teamsDto, t)
 	}
-	_, err = mongo.WriteMany(Database, TeamCollection, teamsDto)
-	return
+	return crud.Db.CreateMany(teamsDto, TeamCollection)
 }
 
 func (crud TeamCrud) FindTeams(match models.Game) (teams []models.Team, err error) {
@@ -25,7 +23,7 @@ func (crud TeamCrud) FindTeams(match models.Game) (teams []models.Team, err erro
 	sort := bson.D{}
 	sort = append(sort, bson.E{Key: "name", Value: 1})
 	findOptions.SetSort(sort)
-	cursor, err := mongo.Find(Database, TeamCollection,
+	cursor, err := crud.Db.Find(TeamCollection,
 		bson.M{"quiz_id": match.Id}, findOptions)
 
 	if err != nil {
@@ -44,7 +42,7 @@ func (crud TeamCrud) FindTeamsMatches(match []models.Game) (teams []models.Team,
 	sort := bson.D{}
 	sort = append(sort, bson.E{Key: "name", Value: 1})
 	findOptions.SetSort(sort)
-	cursor, err := mongo.Find(Database, TeamCollection,
+	cursor, err := crud.Db.Find(TeamCollection,
 		bson.M{"quiz_id": bson.M{"$in": matchIds}}, findOptions)
 
 	if err != nil {
@@ -60,7 +58,7 @@ func (crud TeamCrud) FindTPs(teamPlayers []models.Subscriber) (teams []models.Te
 		teamIds = append(teamIds, v.Tag)
 	}
 	findOptions := &options.FindOptions{}
-	cursor, err := mongo.Find(Database, TeamCollection,
+	cursor, err := crud.Db.Find(TeamCollection,
 		bson.M{"_id": bson.M{"$in": teamIds}}, findOptions)
 	if err != nil {
 		return
@@ -70,10 +68,6 @@ func (crud TeamCrud) FindTPs(teamPlayers []models.Subscriber) (teams []models.Te
 }
 
 func (crud TeamCrud) UpdateTeam(team models.Team) (err error) {
-	requestDto, err := mongo.Document(team)
-	if err != nil {
-		return
-	}
-	_, err = mongo.Update(Database, TeamCollection, bson.M{"_id": team.Id}, bson.D{primitive.E{Key: "$set", Value: *requestDto}})
+	_, err = crud.Db.Update(TeamCollection, bson.M{"_id": team.Id}, team)
 	return
 }

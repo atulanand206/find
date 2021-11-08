@@ -158,7 +158,8 @@ func Login(t *testing.T, player models.Player, client *comms.Client) models.Logi
 		Action: "BEGIN",
 		Person: player,
 	}
-	res, _, _ := client.Hub.Handle(tests.TestMessage(actions.BEGIN, string(comms.SerializeMessage(request))), client)
+	res, _, err := client.Hub.Handle(tests.TestMessage(actions.BEGIN, string(comms.SerializeMessage(request))), client)
+	assert.Nil(t, err, "error must be nil")
 	assert.NotNil(t, res, "response must be present")
 	assert.Equal(t, "S_PLAYER", res.Action)
 	loginResponse, err := models.DecodeLoginResponseJsonString(res.Content)
@@ -175,7 +176,8 @@ func Create(t *testing.T, client *comms.Client, player models.Player, specs mode
 		Specs:  specs,
 	}
 	msg := tests.TestMessage(actions.SPECS, string(comms.SerializeMessage(request)))
-	res, _, _ := client.Hub.Handle(msg, client)
+	res, _, err := client.Hub.Handle(msg, client)
+	assert.Nil(t, err, "error must be nil")
 	assert.NotNil(t, res, "response must be present")
 	assert.Equal(t, "S_JOIN", res.Action)
 	gameResponse, err := models.DecodeGameResponseJsonString(res.Content)
@@ -198,8 +200,9 @@ func Join(t *testing.T, client *comms.Client, player models.Player, quizId strin
 		Person: player,
 		QuizId: quizId,
 	}
-	msg := tests.TestMessage(actions.SPECS, string(comms.SerializeMessage(request)))
-	res, _, _ := client.Hub.Handle(msg, client)
+	msg := tests.TestMessage(actions.JOIN, string(comms.SerializeMessage(request)))
+	res, _, err := client.Hub.Handle(msg, client)
+	assert.Nil(t, err, "error must be nil")
 	assert.NotNil(t, res, "response must be present")
 	assert.Equal(t, "S_JOIN", res.Action)
 	gameResponse, err := models.DecodeGameResponseJsonString(res.Content)

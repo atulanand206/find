@@ -10,7 +10,7 @@ import (
 )
 
 type PlayerCrud struct {
-	Db DB
+	Db DBConn
 }
 
 func (crud PlayerCrud) FindOrCreatePlayer(request models.Player) (player models.Player, err error) {
@@ -26,11 +26,11 @@ func (crud PlayerCrud) FindOrCreatePlayer(request models.Player) (player models.
 }
 
 func (crud PlayerCrud) FindPlayer(emailId string) (player models.Player, err error) {
-	dto := crud.Db.FindOne(PlayerCollection, bson.M{"email": emailId}, &options.FindOneOptions{})
-	if err = dto.Err(); err != nil {
+	dto, err := crud.Db.FindOne(PlayerCollection, bson.M{"email": emailId}, &options.FindOneOptions{})
+	if err != nil {
 		return
 	}
-	player, err = DecodePlayer(dto)
+	err = bson.Unmarshal(dto, &player)
 	return
 }
 

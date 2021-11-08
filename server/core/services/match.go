@@ -13,7 +13,7 @@ import (
 type MatchService struct {
 	Crud db.MatchCrud
 
-	subscriberService SubscriberService
+	SubscriberService SubscriberService
 }
 
 func (service Service) FindMatchFull(matchId string) (
@@ -27,7 +27,7 @@ func (service Service) FindMatchFull(matchId string) (
 		return
 	}
 
-	teams, err = service.TeamService.crud.FindTeams(match)
+	teams, err = service.TeamService.Crud.FindTeams(match)
 	if err != nil {
 		err = e.New(errors.Err_TeamsNotPresentInMatch)
 		return
@@ -35,7 +35,7 @@ func (service Service) FindMatchFull(matchId string) (
 
 	teamPlayers, err = service.SubscriberService.FindTeamPlayers(teams)
 	if err != nil {
-		err = e.New(errors.Err_TeamsNotPresentInMatch)
+		err = e.New(errors.Err_SubscribersNotPresentInMatch)
 		return
 	}
 
@@ -69,7 +69,7 @@ func (service MatchService) FindActiveMatchesForPlayer(playerId string) (matches
 			match.CanJoin = true
 			matches[ix] = match
 		}
-		subscribers, err := service.subscriberService.Crud.FindSubscribers(match.Id, actions.PLAYER)
+		subscribers, err := service.SubscriberService.Crud.FindSubscribers(match.Id, actions.PLAYER)
 		if err == nil {
 			match.PlayersJoined = len(subscribers)
 			if !match.CanJoin {

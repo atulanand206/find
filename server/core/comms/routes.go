@@ -32,7 +32,7 @@ func Routes(mongoClientId string, database string) *http.ServeMux {
 	// Interceptor chain with only POST method.
 	postChain := chain.Add(net.CorsInterceptor(http.MethodPost))
 
-	Db = db.DB{}
+	Db = db.NewDb()
 	Controller = services.Init(Db)
 
 	PermissionHandler := PermissionHandler{crud: db.PermissionCrud{}}
@@ -50,7 +50,7 @@ func Routes(mongoClientId string, database string) *http.ServeMux {
 	router.HandleFunc("/questions/seed", putChain.Handler(HandlerSeedQuestions))
 
 	// Register the websocket connection hub.
-	CommsHub = NewHub()
+	CommsHub = NewHub(Controller)
 	go CommsHub.Run()
 	router.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		ServeWebsocket(CommsHub, w, r)

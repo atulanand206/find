@@ -30,7 +30,7 @@ type Service struct {
 	Creators          Creators
 }
 
-func Init(Db db.DB) (service Service) {
+func Init(Db db.DBConn) (service Service) {
 	service = Service{}
 
 	creators := Creators{}
@@ -43,9 +43,9 @@ func Init(Db db.DB) (service Service) {
 	service.PermissionService = PermissionService{}
 
 	service.TargetService = TargetService{}
-	service.SubscriberService = SubscriberService{Crud: db.SubscriberCrud{Db: Db}, targetService: service.TargetService, Creators: service.Creators}
-	service.MatchService = MatchService{Crud: db.MatchCrud{Db: Db}, subscriberService: service.SubscriberService}
-	service.TeamService = TeamService{crud: db.TeamCrud{}, subscriberService: service.SubscriberService}
+	service.SubscriberService = SubscriberService{Crud: db.SubscriberCrud{Db: Db}, TargetService: service.TargetService, Creators: service.Creators}
+	service.MatchService = MatchService{Crud: db.MatchCrud{Db: Db}, SubscriberService: service.SubscriberService}
+	service.TeamService = TeamService{Crud: db.TeamCrud{Db: Db}, SubscriberService: service.SubscriberService}
 	service.PlayerService = PlayerService{Crud: db.PlayerCrud{Db: Db}}
 	service.SnapshotService = SnapshotService{Crud: db.SnapshotCrud{Db: Db}}
 	service.QuestionService = QuestionService{Crud: db.QuestionCrud{Db: Db}}
@@ -251,7 +251,7 @@ func (service Service) GenerateQuestionAnswerResponse(request models.Request) (r
 	points := match.Specs.Points
 	team.Score += models.ScoreAnswer(points, snapshot.RoundNo)
 
-	err = service.TeamService.crud.UpdateTeam(team)
+	err = service.TeamService.Crud.UpdateTeam(team)
 	if err != nil {
 		err = e.New(errors.Err_TeamNotUpdated)
 		return

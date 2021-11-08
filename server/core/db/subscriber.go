@@ -8,7 +8,7 @@ import (
 )
 
 type SubscriberCrud struct {
-	Db DB
+	Db DBConn
 }
 
 func (crud SubscriberCrud) CreateSubscriber(subscriber models.Subscriber) error {
@@ -81,12 +81,12 @@ func (crud SubscriberCrud) FindSubscribersForTag(tags []string) (subscribers []m
 }
 
 func (crud SubscriberCrud) FindSubscriberForTagAndPlayerId(tag string, playerId string) (subscriber models.Subscriber, err error) {
-	dto := crud.Db.FindOne(SubscriberCollection,
+	dto, err := crud.Db.FindOne(SubscriberCollection,
 		bson.M{"tag": tag, "player_id": playerId}, &options.FindOneOptions{})
-	if err = dto.Err(); err != nil {
+	if err != nil {
 		return
 	}
-	subscriber, err = DecodeSubscriber(dto)
+	bson.Unmarshal(dto, &subscriber)
 	return
 }
 

@@ -3,6 +3,7 @@ package services_test
 import (
 	"testing"
 
+	"github.com/atulanand206/find/server/core/db"
 	"github.com/atulanand206/find/server/core/services"
 	"github.com/atulanand206/find/server/core/tests"
 )
@@ -11,7 +12,7 @@ func TestPlayerService(t *testing.T) {
 	teardown := tests.Setup(t)
 	defer teardown(t)
 
-	service := services.PlayerService{}
+	service := services.PlayerService{db.PlayerCrud{Db: db.NewMockDb(true)}}
 
 	t.Run("create and find player", func(t *testing.T) {
 		player, err := service.FindOrCreatePlayer(tests.TestPlayer())

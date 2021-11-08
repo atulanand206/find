@@ -6,13 +6,14 @@ import (
 	"github.com/atulanand206/find/server/core/db"
 	"github.com/atulanand206/find/server/core/tests"
 	gonanoid "github.com/matoous/go-nanoid/v2"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestPlayerCrud(t *testing.T) {
 	teardown := tests.Setup(t)
 	defer teardown(t)
 
-	crud := db.PlayerCrud{}
+	crud := db.PlayerCrud{Db: db.NewDb()}
 
 	t.Run("find or create player", func(t *testing.T) {
 		player := tests.TestPlayer()
@@ -44,7 +45,8 @@ func TestPlayerCrud(t *testing.T) {
 
 		name, _ := gonanoid.New(8)
 		res.Name = name
-		crud.UpdatePlayer(res)
+		_, err = crud.UpdatePlayer(res)
+		assert.Nil(t, err)
 
 		res, err = crud.FindPlayer(player.Email)
 		if err != nil {

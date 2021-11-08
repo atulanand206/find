@@ -10,6 +10,7 @@ import (
 	"github.com/atulanand206/find/server/core/comms"
 	"github.com/atulanand206/find/server/core/db"
 	"github.com/atulanand206/find/server/core/models"
+	"github.com/atulanand206/find/server/core/services"
 	"github.com/atulanand206/go-mongo"
 	gonanoid "github.com/matoous/go-nanoid/v2"
 	"github.com/stretchr/testify/assert"
@@ -17,28 +18,19 @@ import (
 
 func Setup(t *testing.T) func(t *testing.T) {
 	mongo.ConfigureMongoClient("mongodb://localhost:27017")
-	os.Setenv("CLIENT_SECRET", "aedsaddsad05442b3fe8f2e72d1d497bf14ea9cb")
-	os.Setenv("REFRESH_CLIENT_SECRET", "ae05442b3fe8f2e72d1d497bf14ea9dsafdsadsacb")
+	db.Database = "binquiz-test"
+	os.Setenv("CLIENT_SECRET", "aedsaddsad05442b3fe16f2e72d1d497bf14ea9cb")
+	os.Setenv("REFRESH_CLIENT_SECRET", "ae05442b3fe16f2e72d1d497bf14ea9dsafdsadsacb")
 	os.Setenv("TOKEN_EXPIRE_MINUTES", "2")
 	os.Setenv("REFRESH_TOKEN_EXPIRE_MINUTES", "10")
-	db.Database = "binquiz-test"
-	db.MatchCollection = "matches"
-	db.QuestionCollection = "questions"
-	db.AnswerCollection = "answers"
-	db.SnapshotCollection = "snapshots"
-	db.TeamCollection = "teams"
-	db.PlayerCollection = "players"
-	db.IndexCollection = "indexes"
-	db.SubscriberCollection = "subscribers"
-	mongo.DropCollections(db.Database, []string{db.MatchCollection, db.QuestionCollection, db.AnswerCollection, db.SnapshotCollection, db.TeamCollection, db.PlayerCollection, db.IndexCollection, db.SubscriberCollection})
 	return func(t *testing.T) {
 	}
 }
 
 func TestPlayer() models.Player {
-	playerId, _ := gonanoid.New(8)
-	playerName, _ := gonanoid.New(8)
-	email, _ := gonanoid.New(8)
+	playerId, _ := gonanoid.New(16)
+	playerName, _ := gonanoid.New(16)
+	email, _ := gonanoid.New(16)
 	player := models.Player{
 		Id:    playerId,
 		Name:  playerName,
@@ -48,7 +40,7 @@ func TestPlayer() models.Player {
 }
 
 func TestSpecs() models.Specs {
-	gameName, _ := gonanoid.New(8)
+	gameName, _ := gonanoid.New(16)
 	return models.Specs{
 		Name:      gameName,
 		Teams:     2,
@@ -60,9 +52,9 @@ func TestSpecs() models.Specs {
 }
 
 func TestGame() models.Game {
-	playerId, _ := gonanoid.New(8)
-	playerName, _ := gonanoid.New(8)
-	email, _ := gonanoid.New(8)
+	playerId, _ := gonanoid.New(16)
+	playerName, _ := gonanoid.New(16)
+	email, _ := gonanoid.New(16)
 	quizmaster := models.Player{
 		Id:    playerId,
 		Name:  playerName,
@@ -84,7 +76,7 @@ func RunningHubWithClients(t *testing.T, n int) *comms.Hub {
 }
 
 func RunningHub(t *testing.T) *comms.Hub {
-	hub := comms.NewHub()
+	hub := comms.NewHub(services.Init(db.NewMockDb(true)))
 	assert.NotNil(t, hub, "Hub should not be nil")
 	go hub.Run()
 	return hub

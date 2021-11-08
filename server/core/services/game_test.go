@@ -12,7 +12,7 @@ func TestService(t *testing.T) {
 	teardown := tests.Setup(t)
 	defer teardown(t)
 
-	service := services.Init(db.DB{})
+	service := services.Init(db.NewMockDb(true))
 
 	t.Run("create quiz", func(t *testing.T) {
 		quizmaster := tests.TestPlayer()

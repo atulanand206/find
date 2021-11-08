@@ -8,7 +8,7 @@ import (
 )
 
 type QuestionCrud struct {
-	Db DB
+	Db DBConn
 }
 
 func (crud QuestionCrud) SeedIndexes(indexes []models.Index) (err error) {
@@ -44,29 +44,29 @@ func (crud QuestionCrud) SeedAnswers(answers []models.Answer) (err error) {
 }
 
 func (crud QuestionCrud) FindQuestion(questionId string) (question models.Question, err error) {
-	dto := crud.Db.FindOne(MatchCollection, bson.M{"_id": questionId}, &options.FindOneOptions{})
-	if err = dto.Err(); err != nil {
+	dto, err := crud.Db.FindOne(QuestionCollection, bson.M{"_id": questionId}, &options.FindOneOptions{})
+	if err != nil {
 		return
 	}
-	question, err = DecodeQuestion(dto)
+	err = bson.Unmarshal(dto, &question)
 	return
 }
 
 func (crud QuestionCrud) FindIndexForTag(tag string) (index models.Index, err error) {
-	dto := crud.Db.FindOne(IndexCollection, bson.M{"tag": tag}, &options.FindOneOptions{})
-	if err = dto.Err(); err != nil {
+	dto, err := crud.Db.FindOne(IndexCollection, bson.M{"tag": tag}, &options.FindOneOptions{})
+	if err != nil {
 		return
 	}
-	index, err = DecodeIndex(dto)
+	err = bson.Unmarshal(dto, &index)
 	return
 }
 
 func (crud QuestionCrud) FindAnswer(questionId string) (answer models.Answer, err error) {
-	dto := crud.Db.FindOne(AnswerCollection, bson.M{"question_id": questionId}, &options.FindOneOptions{})
-	if err = dto.Err(); err != nil {
+	dto, err := crud.Db.FindOne(AnswerCollection, bson.M{"question_id": questionId}, &options.FindOneOptions{})
+	if err != nil {
 		return
 	}
-	answer, err = DecodeAnswer(dto)
+	err = bson.Unmarshal(dto, &answer)
 	return
 }
 

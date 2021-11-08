@@ -8,24 +8,42 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type DB struct{}
-
-func (db DB) PlayersCollections() []string {
-	return []string{TeamCollection, SubscriberCollection}
+type DBConn interface {
+	AllCollections() []string
+	CreateCollections() (err error)
+	DropCollections() (err error)
+	CreateCollection(collection string) error
+	Create(request interface{}, collection string) (err error)
+	CreateMany(request []interface{}, collection string) (err error)
+	FindOne(collection string, filters bson.M, findOptions *options.FindOneOptions) (result bson.Raw, err error)
+	Find(collection string, filters bson.M, findOptions *options.FindOptions) (result []bson.Raw, err error)
+	Delete(collection string, identifier bson.M) (result *mg.DeleteResult, err error)
+	Update(collection string, identifier bson.M, doc interface{}) (result *mg.UpdateResult, err error)
 }
 
-func (db DB) QuestionsCollections() []string {
-	return []string{IndexCollection, QuestionCollection, AnswerCollection}
+type DB struct{}
+
+func NewDb() DB {
+	mockDb := DB{}
+	return mockDb
+}
+
+func (db DB) AllCollections() []string {
+	return []string{MatchCollection, QuestionCollection, AnswerCollection, SnapshotCollection, TeamCollection, PlayerCollection, IndexCollection, SubscriberCollection}
 }
 
 func (db DB) CreateCollections() (err error) {
-	err = mongo.CreateCollections(Database, db.QuestionsCollections())
+	err = mongo.CreateCollections(Database, db.AllCollections())
 	return
 }
 
 func (db DB) DropCollections() (err error) {
-	err = mongo.DropCollections(Database, db.QuestionsCollections())
+	err = mongo.DropCollections(Database, db.AllCollections())
 	return
+}
+
+func (db DB) CreateCollection(collection string) error {
+	return mongo.CreateCollection(Database, collection, &options.CreateCollectionOptions{})
 }
 
 func (db DB) Create(request interface{}, collection string) (err error) {
@@ -42,12 +60,21 @@ func (db DB) CreateMany(request []interface{}, collection string) (err error) {
 	return
 }
 
-func (db DB) FindOne(collection string, filters bson.M, findOptions *options.FindOneOptions) (result *mg.SingleResult) {
-	return mongo.FindOne(Database, collection, filters, findOptions)
+func (db DB) FindOne(collection string, filters bson.M, findOptions *options.FindOneOptions) (result bson.Raw, err error) {
+	res := mongo.FindOne(Database, collection, filters, findOptions)
+	if err = res.Err(); err != nil {
+		return
+	}
+	return res.DecodeBytes()
 }
 
-func (db DB) Find(collection string, filters bson.M, findOptions *options.FindOptions) (result *mg.Cursor, err error) {
-	return mongo.Find(Database, collection, filters, findOptions)
+func (db DB) Find(collection string, filters bson.M, findOptions *options.FindOptions) (result []bson.Raw, err error) {
+	cursor, err := mongo.Find(Database, collection, filters, findOptions)
+	if err != nil {
+		return
+	}
+	result, err = DecodeRaw(cursor)
+	return
 }
 
 func (db DB) Delete(collection string, identifier bson.M) (result *mg.DeleteResult, err error) {
