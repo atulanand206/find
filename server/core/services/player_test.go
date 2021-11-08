@@ -12,7 +12,7 @@ func TestPlayerService(t *testing.T) {
 	teardown := tests.Setup(t)
 	defer teardown(t)
 
-	service := services.PlayerService{db.PlayerCrud{Db: db.NewMockDb()}}
+	service := services.PlayerService{db.PlayerCrud{Db: db.NewMockDb(true)}}
 
 	t.Run("create and find player", func(t *testing.T) {
 		player, err := service.FindOrCreatePlayer(tests.TestPlayer())

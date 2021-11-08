@@ -5,19 +5,19 @@ import (
 
 	"github.com/atulanand206/find/server/core/db"
 	"github.com/atulanand206/find/server/core/tests"
-	"github.com/atulanand206/find/server/vendor/github.com/stretchr/testify/assert"
 	gonanoid "github.com/matoous/go-nanoid/v2"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestMatchCrud(t *testing.T) {
 	teardown := tests.Setup(t)
 	defer teardown(t)
-	crud := db.MatchCrud{Db: db.DB{}}
+	crud := db.MatchCrud{Db: db.NewDb()}
 
 	t.Run("create and find match", func(t *testing.T) {
 		game := tests.TestGame()
 		err := crud.CreateMatch(game)
-		assert.NotNil(t, err)
+		assert.Nil(t, err)
 		res, err := crud.FindMatch(game.Id)
 		if err != nil {
 			t.Fatalf("match %s not found", game.Id)

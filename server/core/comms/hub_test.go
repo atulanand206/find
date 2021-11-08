@@ -14,7 +14,7 @@ import (
 
 func TestHub(t *testing.T) {
 	t.Run("New hub", func(t *testing.T) {
-		hub := comms.NewHub(services.Init(db.NewMockDb()))
+		hub := comms.NewHub(services.Init(db.NewMockDb(false)))
 		assert.NotNil(t, hub, "Hub should not be nil")
 		assert.Equal(t, 0, len(hub.Clients), "Hub should have 0 clients")
 	})

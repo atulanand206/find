@@ -9,8 +9,7 @@ import (
 )
 
 type DBConn interface {
-	PlayersCollections() []string
-	QuestionsCollections() []string
+	AllCollections() []string
 	CreateCollections() (err error)
 	DropCollections() (err error)
 	Create(request interface{}, collection string) (err error)
@@ -23,21 +22,22 @@ type DBConn interface {
 
 type DB struct{}
 
-func (db DB) PlayersCollections() []string {
-	return []string{TeamCollection, SubscriberCollection}
+func NewDb() DB {
+	mockDb := DB{}
+	return mockDb
 }
 
-func (db DB) QuestionsCollections() []string {
-	return []string{TeamCollection, SubscriberCollection}
+func (db DB) AllCollections() []string {
+	return []string{MatchCollection, QuestionCollection, AnswerCollection, SnapshotCollection, TeamCollection, PlayerCollection, IndexCollection, SubscriberCollection}
 }
 
 func (db DB) CreateCollections() (err error) {
-	err = mongo.CreateCollections(Database, db.QuestionsCollections())
+	err = mongo.CreateCollections(Database, db.AllCollections())
 	return
 }
 
 func (db DB) DropCollections() (err error) {
-	err = mongo.DropCollections(Database, db.QuestionsCollections())
+	err = mongo.DropCollections(Database, db.AllCollections())
 	return
 }
 

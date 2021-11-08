@@ -15,7 +15,7 @@ func TestSubscriberService(t *testing.T) {
 	teardown := tests.Setup(t)
 	defer teardown(t)
 
-	Db := db.NewMockDb()
+	Db := db.NewMockDb(true)
 	playerService := services.PlayerService{Crud: db.PlayerCrud{Db: Db}}
 	service := services.SubscriberService{Crud: db.SubscriberCrud{Db: Db}, TargetService: services.TargetService{}, Creators: services.Creators{}}
 	matchService := services.MatchService{Crud: db.MatchCrud{Db: Db}, SubscriberService: service}

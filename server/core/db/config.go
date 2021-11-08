@@ -1,7 +1,7 @@
 package db
 
 var (
-	Database             = "database"
+	Database             = "binquiz"
 	MatchCollection      = "matches"
 	QuestionCollection   = "questions"
 	AnswerCollection     = "answers"

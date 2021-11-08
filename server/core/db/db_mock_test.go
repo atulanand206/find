@@ -12,7 +12,7 @@ import (
 )
 
 func TestMockDB(t *testing.T) {
-	mockDb := db.NewMockDb()
+	mockDb := db.NewMockDb(false)
 
 	t.Run("create match collection", func(t *testing.T) {
 		mockDb.CreateCollection("matches")
@@ -47,7 +47,7 @@ func TestMockDB(t *testing.T) {
 		res, _ = mockDb.FindOne("matches", bson.M{"_id": newGame.Id}, &options.FindOneOptions{})
 		bson.Unmarshal(res, &foundGame)
 		assert.Equal(t, newGame.Id, foundGame.Id)
-		assert.Equal(t, game.Specs.Name, foundGame.Specs.Name)
+		assert.Equal(t, newGame.Specs.Name, foundGame.Specs.Name)
 	})
 
 	t.Run("create and delete match", func(t *testing.T) {
@@ -72,6 +72,19 @@ func TestMockDB(t *testing.T) {
 		game := tests.TestGame()
 		mockDb.Create(game, "matches")
 		res, _ := mockDb.Find("matches", bson.M{"_id": game.Id}, &options.FindOptions{})
+		assert.Equal(t, 1, len(res))
+		var foundGame models.Game
+		bson.Unmarshal(res[0], &foundGame)
+		assert.Equal(t, game.Id, foundGame.Id)
+		assert.Equal(t, game.Specs.Name, foundGame.Specs.Name)
+	})
+
+	t.Run("create and find match using in filter", func(t *testing.T) {
+		mockDb.CreateCollection("matches")
+		assert.Equal(t, 1, len(mockDb.Data))
+		game := tests.TestGame()
+		mockDb.Create(game, "matches")
+		res, _ := mockDb.Find("matches", bson.M{"_id": bson.M{"$in": []string{game.Id}}}, &options.FindOptions{})
 		assert.Equal(t, 1, len(res))
 		var foundGame models.Game
 		bson.Unmarshal(res[0], &foundGame)

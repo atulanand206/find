@@ -32,7 +32,7 @@ func Routes(mongoClientId string, database string) *http.ServeMux {
 	// Interceptor chain with only POST method.
 	postChain := chain.Add(net.CorsInterceptor(http.MethodPost))
 
-	Db = db.DB{}
+	Db = db.NewDb()
 	Controller = services.Init(Db)
 
 	PermissionHandler := PermissionHandler{crud: db.PermissionCrud{}}
