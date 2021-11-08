@@ -12,6 +12,7 @@ type DBConn interface {
 	AllCollections() []string
 	CreateCollections() (err error)
 	DropCollections() (err error)
+	CreateCollection(collection string) error
 	Create(request interface{}, collection string) (err error)
 	CreateMany(request []interface{}, collection string) (err error)
 	FindOne(collection string, filters bson.M, findOptions *options.FindOneOptions) (result bson.Raw, err error)
@@ -41,6 +42,10 @@ func (db DB) DropCollections() (err error) {
 	return
 }
 
+func (db DB) CreateCollection(collection string) error {
+	return mongo.CreateCollection(Database, collection, &options.CreateCollectionOptions{})
+}
+
 func (db DB) Create(request interface{}, collection string) (err error) {
 	requestDto, err := mongo.Document(request)
 	if err != nil {
@@ -58,9 +63,9 @@ func (db DB) CreateMany(request []interface{}, collection string) (err error) {
 func (db DB) FindOne(collection string, filters bson.M, findOptions *options.FindOneOptions) (result bson.Raw, err error) {
 	res := mongo.FindOne(Database, collection, filters, findOptions)
 	if err = res.Err(); err != nil {
-		return res.DecodeBytes()
+		return
 	}
-	return
+	return res.DecodeBytes()
 }
 
 func (db DB) Find(collection string, filters bson.M, findOptions *options.FindOptions) (result []bson.Raw, err error) {

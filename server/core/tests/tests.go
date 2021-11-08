@@ -18,6 +18,7 @@ import (
 
 func Setup(t *testing.T) func(t *testing.T) {
 	mongo.ConfigureMongoClient("mongodb://localhost:27017")
+	db.Database = "binquiz-test"
 	os.Setenv("CLIENT_SECRET", "aedsaddsad05442b3fe16f2e72d1d497bf14ea9cb")
 	os.Setenv("REFRESH_CLIENT_SECRET", "ae05442b3fe16f2e72d1d497bf14ea9dsafdsadsacb")
 	os.Setenv("TOKEN_EXPIRE_MINUTES", "2")

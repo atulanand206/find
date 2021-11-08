@@ -26,10 +26,11 @@ func NewMockDb(collectionsAdded bool) *MockDB {
 	return mockDb
 }
 
-func (db *MockDB) CreateCollection(collection string) {
+func (db *MockDB) CreateCollection(collection string) error {
 	if _, ok := db.Data[collection]; !ok {
 		db.Data[collection] = make(map[interface{}]interface{})
 	}
+	return nil
 }
 
 func (db *MockDB) CreateCollections() (err error) {
@@ -64,6 +65,7 @@ func (db *MockDB) CreateMany(request []interface{}, collection string) (err erro
 func Document(request interface{}) (doc bson.M, err error) {
 	data, err := bson.Marshal(request)
 	if err != nil {
+		return
 	}
 	err = bson.Unmarshal(data, &doc)
 	return
@@ -76,7 +78,7 @@ func (db *MockDB) FindOne(collection string, filters bson.M, findOptions *option
 			return
 		}
 	}
-	err = fmt.Errorf("No document found")
+	err = fmt.Errorf("no document found")
 	return
 }
 
@@ -89,7 +91,7 @@ func (db *MockDB) Find(collection string, filters bson.M, findOptions *options.F
 		}
 	}
 	if len(results) == 0 {
-		err = fmt.Errorf("No document found")
+		err = fmt.Errorf("no document found")
 	}
 	return
 }
@@ -101,7 +103,7 @@ func (db *MockDB) Delete(collection string, identifier bson.M) (result *mg.Delet
 			return
 		}
 	}
-	err = fmt.Errorf("No document found")
+	err = fmt.Errorf("no document found")
 	return
 }
 
@@ -112,7 +114,7 @@ func (db *MockDB) Update(collection string, identifier bson.M, v interface{}) (r
 			return
 		}
 	}
-	err = fmt.Errorf("No document found")
+	err = fmt.Errorf("no document found")
 	return
 }
 
@@ -123,6 +125,7 @@ func (db *MockDB) isFilterMatch(entry interface{}, filters bson.M) (bool bool) {
 		if val.Kind() == reflect.Map {
 			for kind, values := range val.MapKeys() {
 				strct := val.MapIndex(values)
+				fmt.Println("kind", kind)
 				if kind == 0 {
 					for _, v := range strct.Interface().([]string) {
 						if entry.(bson.M)[k] == v {

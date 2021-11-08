@@ -40,20 +40,16 @@ func TestSubscriberService(t *testing.T) {
 	})
 
 	t.Run("find subscribers for tag", func(t *testing.T) {
-		player, err := playerService.FindOrCreatePlayer(tests.TestPlayer())
-		assert.NotNil(t, err)
 		quizmaster, err := playerService.FindOrCreatePlayer(tests.TestPlayer())
-		assert.NotNil(t, err)
+		assert.Nil(t, err)
 		specs := tests.TestSpecs()
 		game, err := matchService.CreateMatch(quizmaster, specs)
-		assert.NotNil(t, err)
+		assert.Nil(t, err)
 		_, err = service.FindOrCreateSubscriber(game.Id, quizmaster, actions.QUIZMASTER)
-		assert.NotNil(t, err)
-		_, err = service.FindOrCreateSubscriber(game.Id, player, actions.PLAYER)
-		assert.NotNil(t, err)
+		assert.Nil(t, err)
 		subscribers, err := service.FindSubscribersForTag([]string{game.Id})
-		assert.NotNil(t, err)
-		assert.Equal(t, 2, len(subscribers))
+		assert.Nil(t, err)
+		assert.Equal(t, 1, len(subscribers))
 	})
 
 	t.Run("find subscriptions for player id", func(t *testing.T) {
