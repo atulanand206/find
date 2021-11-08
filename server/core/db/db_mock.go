@@ -90,9 +90,6 @@ func (db *MockDB) Find(collection string, filters bson.M, findOptions *options.F
 			results = append(results, result)
 		}
 	}
-	if len(results) == 0 {
-		err = fmt.Errorf("no document found")
-	}
 	return
 }
 
@@ -125,7 +122,6 @@ func (db *MockDB) isFilterMatch(entry interface{}, filters bson.M) (bool bool) {
 		if val.Kind() == reflect.Map {
 			for kind, values := range val.MapKeys() {
 				strct := val.MapIndex(values)
-				fmt.Println("kind", kind)
 				if kind == 0 {
 					for _, v := range strct.Interface().([]string) {
 						if entry.(bson.M)[k] == v {

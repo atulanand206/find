@@ -35,7 +35,7 @@ func (service Service) FindMatchFull(matchId string) (
 
 	teamPlayers, err = service.SubscriberService.FindTeamPlayers(teams)
 	if err != nil {
-		err = e.New(errors.Err_TeamsNotPresentInMatch)
+		err = e.New(errors.Err_SubscribersNotPresentInMatch)
 		return
 	}
 

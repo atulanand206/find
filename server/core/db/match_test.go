@@ -1,6 +1,7 @@
 package db_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/atulanand206/find/server/core/db"
@@ -13,6 +14,7 @@ func TestMatchCrud(t *testing.T) {
 	teardown := tests.Setup(t)
 	defer teardown(t)
 	crud := db.MatchCrud{Db: db.NewDb()}
+	crud.Db.DropCollections()
 
 	t.Run("create and find match", func(t *testing.T) {
 		game := tests.TestGame()
@@ -40,6 +42,7 @@ func TestMatchCrud(t *testing.T) {
 		crud.CreateMatch(game)
 
 		res, err := crud.FindActiveMatches()
+		fmt.Println(res)
 		if err != nil {
 			t.Fatalf("matches %s not found", game.Id)
 		}
