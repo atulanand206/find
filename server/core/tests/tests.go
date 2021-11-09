@@ -39,7 +39,7 @@ func TestPlayer() models.Player {
 	return player
 }
 
-func TestId() string {
+func TestRandomString() string {
 	id, _ := gonanoid.New(16)
 	return id
 }
@@ -87,6 +87,57 @@ func TestGame() models.Game {
 	specs := TestSpecs()
 	game := models.InitNewMatch(quizmaster, specs)
 	return game
+}
+
+func TestIndex() models.Index {
+	return models.Index{
+		Id:  TestRandomString(),
+		Tag: TestRandomString(),
+	}
+}
+
+func TestIndexes(count int) []models.Index {
+	indexes := make([]models.Index, count)
+	for i := 0; i < count; i++ {
+		indexes[i] = TestIndex()
+	}
+	return indexes
+}
+
+func TestNewQuestion() models.NewQuestion {
+	return models.NewQuestion{
+		Statements: []string{
+			TestRandomString(),
+			TestRandomString(),
+			TestRandomString(),
+		},
+		Answer: []string{
+			TestRandomString(),
+			TestRandomString(),
+			TestRandomString(),
+		},
+	}
+}
+
+func TestQuestion(tag string, question models.NewQuestion) models.Question {
+	return models.Question{
+		Id:         TestRandomString(),
+		Tag:        tag,
+		Statements: question.Statements,
+	}
+}
+
+func TestAnswer(questionId string, answer []string) models.Answer {
+	return models.Answer{
+		Id:         TestRandomString(),
+		QuestionId: questionId,
+		Answer:     answer,
+		Hint: []string{
+			TestRandomString(),
+			TestRandomString(),
+			TestRandomString(),
+		},
+	}
 }
 
 func RunningHubWithClients(t *testing.T, n int) *comms.Hub {

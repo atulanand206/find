@@ -15,14 +15,14 @@ func TestTeamCrud(t *testing.T) {
 	crud := db.TeamCrud{Db: db.NewDb()}
 
 	t.Run("create teams", func(t *testing.T) {
-		quizId := tests.TestId()
+		quizId := tests.TestRandomString()
 		teams := tests.TestTeams(quizId, 2)
 		err := crud.CreateTeams(teams)
 		assert.Nil(t, err, "error must be nil")
 	})
 
 	t.Run("create and find teams", func(t *testing.T) {
-		quizId := tests.TestId()
+		quizId := tests.TestRandomString()
 		teams := tests.TestTeams(quizId, 2)
 		err := crud.CreateTeams(teams)
 		assert.Nil(t, err, "error must be nil")
@@ -32,7 +32,7 @@ func TestTeamCrud(t *testing.T) {
 	})
 
 	t.Run("create and update teams", func(t *testing.T) {
-		quizId := tests.TestId()
+		quizId := tests.TestRandomString()
 		teams := tests.TestTeams(quizId, 2)
 		err := crud.CreateTeams(teams)
 		assert.Nil(t, err, "error must be nil")

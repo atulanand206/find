@@ -15,13 +15,13 @@ func TestPermissionCrud(t *testing.T) {
 	crud := db.PermissionCrud{Db: db.NewDb()}
 
 	t.Run("create permission", func(t *testing.T) {
-		playerId := tests.TestId()
+		playerId := tests.TestRandomString()
 		err := crud.CreatePermission(playerId)
 		assert.Nil(t, err, "error must be nil")
 	})
 
 	t.Run("has permission", func(t *testing.T) {
-		playerId := tests.TestId()
+		playerId := tests.TestRandomString()
 		err := crud.CreatePermission(playerId)
 		assert.Nil(t, err, "error must be nil")
 		present := crud.HasPermission(playerId)
@@ -30,11 +30,11 @@ func TestPermissionCrud(t *testing.T) {
 
 	t.Run("find permissions", func(t *testing.T) {
 		crud.Db.DropCollections()
-		playerId1 := tests.TestId()
+		playerId1 := tests.TestRandomString()
 		err := crud.CreatePermission(playerId1)
 		assert.Nil(t, err, "error must be nil")
 
-		playerId2 := tests.TestId()
+		playerId2 := tests.TestRandomString()
 		err = crud.CreatePermission(playerId2)
 		assert.Nil(t, err, "error must be nil")
 
