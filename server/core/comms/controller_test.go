@@ -7,7 +7,6 @@ import (
 	"github.com/atulanand206/find/server/core/comms"
 	"github.com/atulanand206/find/server/core/models"
 	"github.com/atulanand206/find/server/core/tests"
-	gonanoid "github.com/matoous/go-nanoid/v2"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -48,65 +47,31 @@ func TestHandleMessages(t *testing.T) {
 		res, _, _ := hub.Handle(msg, client)
 		assert.Equal(t, "failure", res.Action)
 	})
+}
 
+func TestLogin(t *testing.T) {
 	t.Run("Handle login", func(t *testing.T) {
 		hub := tests.RunningHub(t)
-		client := tests.NewClient(t, hub)
 
-		testPlayerId, _ := gonanoid.New(10)
-		player := models.Player{
-			Name:  "Atul Khan",
-			Email: "atul@zoom.in",
-			Id:    testPlayerId,
-		}
-		Login(t, player, client)
+		client := tests.NewClient(t, hub)
+		player := tests.TestPlayer()
+		LoginAndAssert(t, player, client)
 	})
 
 	t.Run("Handle login and create quiz", func(t *testing.T) {
 		hub := tests.RunningHub(t)
-		testPlayerId, _ := gonanoid.New(10)
-		client := tests.NewClient(t, hub)
-		player := models.Player{
-			Name:  "Atul Khan",
-			Email: "atul@zoom.io",
-			Id:    testPlayerId,
-		}
-		Login(t, player, client)
-		specs := models.Specs{
-			Name:      "Binquiz #1",
-			Players:   1,
-			Teams:     2,
-			Questions: 10,
-		}
-		Create(t, client, player, specs)
+
+		player, client := loggedInPlayer(t, hub)
+
+		specs := tests.TestSpecs()
+		CreateAndAssert(t, client, player, specs)
 	})
 
-	t.Run("login with 3 players", func(t *testing.T) {
+	t.Run("Handle Login with 3 players", func(t *testing.T) {
 		hub := tests.RunningHub(t)
-		client1 := tests.NewClient(t, hub)
-		testPlayerId, _ := gonanoid.New(10)
-		quizmaster := models.Player{
-			Name:  "Tony Stark",
-			Email: "tony@stark.io",
-			Id:    testPlayerId,
-		}
-		Login(t, quizmaster, client1)
-		client2 := tests.NewClient(t, hub)
-		testPlayerId, _ = gonanoid.New(10)
-		player1 := models.Player{
-			Name:  "Zara Khan",
-			Email: "zara@khan.io",
-			Id:    testPlayerId,
-		}
-		Login(t, player1, client2)
-		client3 := tests.NewClient(t, hub)
-		testPlayerId, _ = gonanoid.New(10)
-		player2 := models.Player{
-			Name:  "Mark Broody",
-			Email: "mark@broody.io",
-			Id:    testPlayerId,
-		}
-		Login(t, player2, client3)
+		loggedInPlayer(t, hub)
+		loggedInPlayer(t, hub)
+		loggedInPlayer(t, hub)
 	})
 }
 
@@ -116,44 +81,75 @@ func TestJoinGame(t *testing.T) {
 
 	t.Run("create a quiz with 2 players", func(t *testing.T) {
 		hub := tests.RunningHub(t)
-		client1 := tests.NewClient(t, hub)
-		testPlayerId, _ := gonanoid.New(10)
-		quizmaster := models.Player{
-			Name:  "Tony Stark",
-			Email: "mark@stark.io",
-			Id:    testPlayerId,
-		}
-		Login(t, quizmaster, client1)
-		client2 := tests.NewClient(t, hub)
-		testPlayerId, _ = gonanoid.New(10)
-		player1 := models.Player{
-			Name:  "Zara Khan",
-			Email: "zareen@khan.io",
-			Id:    testPlayerId,
-		}
-		Login(t, player1, client2)
-		client3 := tests.NewClient(t, hub)
-		testPlayerId, _ = gonanoid.New(10)
-		player2 := models.Player{
-			Name:  "Mark Broody",
-			Email: "martin@broody.io",
-			Id:    testPlayerId,
-		}
-		Login(t, player2, client3)
 
-		specs := models.Specs{
-			Name:      "Binquiz #1",
-			Players:   1,
-			Teams:     2,
-			Questions: 10,
-		}
-		createRes := Create(t, client1, quizmaster, specs)
-		Join(t, client2, player1, createRes.Quiz.Id)
-		Join(t, client3, player2, createRes.Quiz.Id)
+		quizmaster, client1 := loggedInPlayer(t, hub)
+		player1, client2 := loggedInPlayer(t, hub)
+		player2, client3 := loggedInPlayer(t, hub)
+
+		specs := tests.TestSpecs()
+		createRes := CreateAndAssert(t, client1, quizmaster, specs)
+		JoinAndAssert(t, client2, player1, createRes.Quiz.Id)
+		JoinAndAssert(t, client3, player2, createRes.Quiz.Id)
 	})
 }
 
-func Login(t *testing.T, player models.Player, client *comms.Client) models.LoginResponse {
+func TestStartGame(t *testing.T) {
+	teardown := tests.Setup(t)
+	defer teardown(t)
+
+	t.Run("fail when starting a quiz with less players", func(t *testing.T) {
+		hub := tests.RunningHub(t)
+
+		quizmaster, client1 := loggedInPlayer(t, hub)
+		player1, client2 := loggedInPlayer(t, hub)
+		player2, client3 := loggedInPlayer(t, hub)
+
+		specs := tests.TestSpecs()
+		createRes := CreateAndAssert(t, client1, quizmaster, specs)
+		JoinAndAssert(t, client2, player1, createRes.Quiz.Id)
+		JoinAndAssert(t, client3, player2, createRes.Quiz.Id)
+		StartAndAssertError(t, client1, quizmaster, createRes.Quiz.Id, "waiting for more players to join")
+	})
+
+	t.Run("fail when player starting the quiz", func(t *testing.T) {
+		hub := tests.RunningHub(t)
+
+		quizmaster, client1 := loggedInPlayer(t, hub)
+		player1, client2 := loggedInPlayer(t, hub)
+		player2, client3 := loggedInPlayer(t, hub)
+
+		specs := tests.TestSpecs()
+		specs.Players = 1
+		createRes := CreateAndAssert(t, client1, quizmaster, specs)
+		JoinAndAssert(t, client2, player1, createRes.Quiz.Id)
+		JoinAndAssert(t, client3, player2, createRes.Quiz.Id)
+		StartAndAssertError(t, client2, player1, createRes.Quiz.Id, "only quizmaster can start the match")
+	})
+
+	t.Run("start the quiz as quizmaster ", func(t *testing.T) {
+		hub := tests.RunningHub(t)
+
+		quizmaster, client1 := loggedInPlayer(t, hub)
+		player1, client2 := loggedInPlayer(t, hub)
+		player2, client3 := loggedInPlayer(t, hub)
+
+		specs := tests.TestSpecs()
+		specs.Players = 1
+		createRes := CreateAndAssert(t, client1, quizmaster, specs)
+		JoinAndAssert(t, client2, player1, createRes.Quiz.Id)
+		JoinAndAssert(t, client3, player2, createRes.Quiz.Id)
+		// StartAndAssert(t, client1, quizmaster, createRes.Quiz.Id)
+	})
+}
+
+func loggedInPlayer(t *testing.T, hub *comms.Hub) (models.Player, *comms.Client) {
+	client := tests.NewClient(t, hub)
+	player := tests.TestPlayer()
+	LoginAndAssert(t, player, client)
+	return player, client
+}
+
+func LoginAndAssert(t *testing.T, player models.Player, client *comms.Client) models.LoginResponse {
 	request := models.Request{
 		Action: "BEGIN",
 		Person: player,
@@ -169,7 +165,7 @@ func Login(t *testing.T, player models.Player, client *comms.Client) models.Logi
 	return loginResponse
 }
 
-func Create(t *testing.T, client *comms.Client, player models.Player, specs models.Specs) models.GameResponse {
+func CreateAndAssert(t *testing.T, client *comms.Client, player models.Player, specs models.Specs) models.GameResponse {
 	request := models.Request{
 		Action: "SPECS",
 		Person: player,
@@ -194,7 +190,7 @@ func Create(t *testing.T, client *comms.Client, player models.Player, specs mode
 	return gameResponse
 }
 
-func Join(t *testing.T, client *comms.Client, player models.Player, quizId string) models.GameResponse {
+func JoinAndAssert(t *testing.T, client *comms.Client, player models.Player, quizId string) models.GameResponse {
 	request := models.Request{
 		Action: "JOIN",
 		Person: player,
@@ -210,4 +206,33 @@ func Join(t *testing.T, client *comms.Client, player models.Player, quizId strin
 	assert.Equal(t, "PLAYER", gameResponse.Role)
 	assert.Equal(t, quizId, gameResponse.Quiz.Id)
 	return gameResponse
+}
+
+func StartAndAssert(t *testing.T, client *comms.Client, player models.Player, quizId string) models.Snapshot {
+	request := models.Request{
+		Action: "START",
+		Person: player,
+		QuizId: quizId,
+	}
+	msg := tests.TestMessage(actions.START, string(comms.SerializeMessage(request)))
+	res, _, err := client.Hub.Handle(msg, client)
+	assert.Nil(t, err, "error must be nil")
+	assert.NotNil(t, res, "response must be present")
+	assert.Equal(t, "S_GAME", res.Action)
+	gameResponse, err := models.DecodeSnapshotJsonString(res.Content)
+	assert.Nil(t, err, "error must be nil")
+	assert.Equal(t, quizId, gameResponse.QuizId)
+	return gameResponse
+}
+
+func StartAndAssertError(t *testing.T, client *comms.Client, player models.Player, quizId string, errr string) {
+	request := models.Request{
+		Action: "START",
+		Person: player,
+		QuizId: quizId,
+	}
+	msg := tests.TestMessage(actions.START, string(comms.SerializeMessage(request)))
+	_, _, err := client.Hub.Handle(msg, client)
+	assert.NotNil(t, err, "error must be present")
+	assert.Equal(t, errr, err.Error())
 }
