@@ -2,6 +2,7 @@ package services
 
 import (
 	e "errors"
+	"fmt"
 
 	"github.com/atulanand206/find/server/core/actions"
 	"github.com/atulanand206/find/server/core/db"
@@ -189,6 +190,12 @@ func (service Service) GenerateStartGameResponse(request models.Request) (respon
 		return
 	}
 
+	if request.Person.Id != match.QuizMaster.Id {
+		err = e.New(errors.Err_PlayerCantStart)
+		return
+	}
+
+	fmt.Println("mmmmmmmmm\n", match, "mmmmmmmmm\n", teams, "mmmmmmmmm\n", teamPlayers, "mmmmmmmmm\n", roster)
 	if result := utils.MatchFull(match, teamPlayers); !result {
 		err = e.New(errors.Err_WaitingForPlayers)
 		return

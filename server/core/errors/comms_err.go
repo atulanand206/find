@@ -46,6 +46,7 @@ const (
 	Err_CollectionsNotDropped = "collections can't be dropped"
 
 	Err_QuizmasterCantPlay           = "quizmaster can't join the match as a player"
+	Err_PlayerCantStart              = "only quizmaster can start the match"
 	Err_WaitingForPlayers            = "waiting for more players to join"
 	Err_RoundNotLeft                 = "no round remain in the question"
 	Err_QuestionsNotLeft             = "no question remain in the quiz"

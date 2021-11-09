@@ -47,6 +47,13 @@ func DecodeStartGameRequestJsonString(content string) (request StartGameRequest,
 	return
 }
 
+func DecodeSnapshotJsonString(content string) (request Snapshot, err error) {
+	if err = json.Unmarshal([]byte(content), &request); err != nil {
+		return
+	}
+	return
+}
+
 func DecodeGameSnapRequestJsonString(content string) (request GameSnapRequest, err error) {
 	if err = json.Unmarshal([]byte(content), &request); err != nil {
 		return
