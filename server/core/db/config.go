@@ -10,4 +10,5 @@ var (
 	PlayerCollection     = "players"
 	IndexCollection      = "indexes"
 	SubscriberCollection = "subscribers"
+	PermissionCollection = "permissions"
 )

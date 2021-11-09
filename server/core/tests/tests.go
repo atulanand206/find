@@ -39,6 +39,30 @@ func TestPlayer() models.Player {
 	return player
 }
 
+func TestId() string {
+	id, _ := gonanoid.New(16)
+	return id
+}
+
+func TestTeams(quizId string, count int) []models.Team {
+	teams := make([]models.Team, count)
+	for i := 0; i < count; i++ {
+		teams[i] = TestTeam(quizId)
+	}
+	return teams
+}
+
+func TestTeam(quizId string) models.Team {
+	teamId, _ := gonanoid.New(16)
+	teamName, _ := gonanoid.New(16)
+	return models.Team{
+		Id:     teamId,
+		QuizId: quizId,
+		Name:   teamName,
+		Score:  0,
+	}
+}
+
 func TestSpecs() models.Specs {
 	gameName, _ := gonanoid.New(16)
 	return models.Specs{

@@ -18,13 +18,13 @@ func (crud TeamCrud) CreateTeams(teams []models.Team) (err error) {
 	return crud.Db.CreateMany(teamsDto, TeamCollection)
 }
 
-func (crud TeamCrud) FindTeams(match models.Game) (teams []models.Team, err error) {
+func (crud TeamCrud) FindTeams(matchId string) (teams []models.Team, err error) {
 	findOptions := &options.FindOptions{}
 	sort := bson.D{}
 	sort = append(sort, bson.E{Key: "name", Value: 1})
 	findOptions.SetSort(sort)
 	cursor, err := crud.Db.Find(TeamCollection,
-		bson.M{"quiz_id": match.Id}, findOptions)
+		bson.M{"quiz_id": matchId}, findOptions)
 
 	if err != nil {
 		return

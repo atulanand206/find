@@ -29,7 +29,7 @@ func NewDb() DB {
 }
 
 func (db DB) AllCollections() []string {
-	return []string{MatchCollection, QuestionCollection, AnswerCollection, SnapshotCollection, TeamCollection, PlayerCollection, IndexCollection, SubscriberCollection}
+	return []string{MatchCollection, QuestionCollection, AnswerCollection, SnapshotCollection, TeamCollection, PlayerCollection, IndexCollection, SubscriberCollection, PermissionCollection}
 }
 
 func (db DB) CreateCollections() (err error) {
