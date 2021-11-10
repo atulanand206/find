@@ -6,8 +6,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-const PermissionCollection = "permissions"
-
 type PermissionCrud struct {
 	Db DB
 }

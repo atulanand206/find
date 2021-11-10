@@ -24,7 +24,7 @@ func (service TeamService) CreateTeams(quiz models.Game) (teams []models.Team, e
 }
 
 func (service TeamService) FindTeams(quiz models.Game) (teams []models.Team, err error) {
-	return service.Crud.FindTeams(quiz)
+	return service.Crud.FindTeams(quiz.Id)
 }
 
 func (service TeamService) FindAndFillTeamVacancy(match models.Game, teams []models.Team, player models.Player) (teamId string, err error) {

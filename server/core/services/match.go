@@ -27,7 +27,7 @@ func (service Service) FindMatchFull(matchId string) (
 		return
 	}
 
-	teams, err = service.TeamService.Crud.FindTeams(match)
+	teams, err = service.TeamService.Crud.FindTeams(match.Id)
 	if err != nil {
 		err = e.New(errors.Err_TeamsNotPresentInMatch)
 		return

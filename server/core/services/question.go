@@ -43,7 +43,7 @@ func (service QuestionService) AddQuestion(tag string, newQuestions []models.New
 }
 
 func (service QuestionService) FindQuestionForMatch(match models.Game) (question models.Question, err error) {
-	index, err := service.Crud.FindIndex()
+	index, err := service.Crud.FindIndexes()
 	if err != nil {
 		err = e.New(errors.Err_IndexNotPresent)
 		return

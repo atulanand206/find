@@ -52,7 +52,7 @@ func (crud QuestionCrud) FindQuestion(questionId string) (question models.Questi
 	return
 }
 
-func (crud QuestionCrud) FindIndexForTag(tag string) (index models.Index, err error) {
+func (crud QuestionCrud) FindIndexByTag(tag string) (index models.Index, err error) {
 	dto, err := crud.Db.FindOne(IndexCollection, bson.M{"tag": tag}, &options.FindOneOptions{})
 	if err != nil {
 		return
@@ -70,7 +70,7 @@ func (crud QuestionCrud) FindAnswer(questionId string) (answer models.Answer, er
 	return
 }
 
-func (crud QuestionCrud) FindIndex() (indexes []models.Index, err error) {
+func (crud QuestionCrud) FindIndexes() (indexes []models.Index, err error) {
 	cursor, err := crud.Db.Find(IndexCollection, bson.M{}, &options.FindOptions{})
 	if err != nil {
 		return
@@ -79,7 +79,7 @@ func (crud QuestionCrud) FindIndex() (indexes []models.Index, err error) {
 	return
 }
 
-func (crud QuestionCrud) FindQuestionsForIndex(index models.Index, limit int64) (questions []models.Question, err error) {
+func (crud QuestionCrud) FindQuestionsFromIndex(index models.Index, limit int64) (questions []models.Question, err error) {
 	cursor, err := crud.Db.Find(QuestionCollection,
 		bson.M{"tag": index.Id}, &options.FindOptions{Limit: pointer.Int64(limit)})
 	if err != nil {
@@ -92,7 +92,7 @@ func (crud QuestionCrud) FindQuestionsForIndex(index models.Index, limit int64) 
 func (crud QuestionCrud) FindQuestionsFromIndexes(indexes []models.Index, limit int64) (questions []models.Question, err error) {
 	questions = make([]models.Question, 0)
 	for _, indx := range indexes {
-		indxQues, er := crud.FindQuestionsForIndex(indx, limit)
+		indxQues, er := crud.FindQuestionsFromIndex(indx, limit)
 		if er != nil {
 			return
 		}
