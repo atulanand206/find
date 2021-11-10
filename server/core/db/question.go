@@ -19,20 +19,12 @@ func (crud QuestionCrud) SeedIndexes(indexes []models.Index) (err error) {
 	return crud.Db.CreateMany(indexesDto, IndexCollection)
 }
 
-func (crud QuestionCrud) CreateQuestion(question models.Question) (err error) {
-	return crud.Db.Create(question, QuestionCollection)
-}
-
 func (crud QuestionCrud) SeedQuestions(questions []models.Question) (err error) {
 	var questionsDto []interface{}
 	for _, t := range questions {
 		questionsDto = append(questionsDto, t)
 	}
 	return crud.Db.CreateMany(questionsDto, QuestionCollection)
-}
-
-func (crud QuestionCrud) CreateAnswer(answer models.Answer) (err error) {
-	return crud.Db.Create(answer, AnswerCollection)
 }
 
 func (crud QuestionCrud) SeedAnswers(answers []models.Answer) (err error) {
@@ -81,7 +73,7 @@ func (crud QuestionCrud) FindIndexes() (indexes []models.Index, err error) {
 
 func (crud QuestionCrud) FindQuestionsFromIndex(index models.Index, limit int64) (questions []models.Question, err error) {
 	cursor, err := crud.Db.Find(QuestionCollection,
-		bson.M{"tag": index.Id}, &options.FindOptions{Limit: pointer.Int64(limit)})
+		bson.M{"tag": index.Tag}, &options.FindOptions{Limit: pointer.Int64(limit)})
 	if err != nil {
 		return
 	}
