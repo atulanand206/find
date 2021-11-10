@@ -7,6 +7,7 @@ import (
 	"github.com/atulanand206/find/server/core/models"
 	"github.com/atulanand206/find/server/core/services"
 	"github.com/atulanand206/find/server/core/tests"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestQuestionService(t *testing.T) {
@@ -23,17 +24,13 @@ func TestQuestionService(t *testing.T) {
 		}
 
 		err := service.AddQuestion("question.Tag", []models.NewQuestion{question})
-		if err != nil {
-			t.Fatalf("Error adding question: %s", err)
-		}
+		assert.Nil(t, err, "error must be nil")
 	})
 
 	t.Run("find question for match", func(t *testing.T) {
 		game := tests.TestGame()
 
 		_, err := service.FindQuestionForMatch(game)
-		if err != nil {
-			t.Fatalf("Error finding question: %s", err)
-		}
+		assert.NotNil(t, err, "error must not be nil")
 	})
 }
