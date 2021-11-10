@@ -4,6 +4,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/atulanand206/find/server/core/actions"
 	"github.com/atulanand206/find/server/core/db"
 	"github.com/atulanand206/find/server/core/tests"
 	"github.com/atulanand206/go-mongo"
@@ -91,5 +92,107 @@ func TestGame(t *testing.T) {
 		assert.Equal(t, 16, quiz.Specs.Points, "quiz points should be equal to 10")
 		assert.True(t, quiz.Active, "quiz must be active")
 		assert.Empty(t, quiz.Tags, "quiz tags must be empty")
+	})
+}
+
+func TestQuestions(t *testing.T) {
+	t.Run("should create an index", func(t *testing.T) {
+		index := tests.TestIndex()
+		assert.NotEmpty(t, index.Id, "index id should not be empty")
+		assert.NotEmpty(t, index.Tag, "index tag should not be empty")
+	})
+
+	t.Run("should create 8 indexes", func(t *testing.T) {
+		indexes := tests.TestIndexes(8)
+		for _, index := range indexes {
+			assert.NotEmpty(t, index.Id, "index id should not be empty")
+			assert.NotEmpty(t, index.Tag, "index tag should not be empty")
+		}
+	})
+
+	t.Run("should create a new question", func(t *testing.T) {
+		question := tests.TestNewQuestion()
+		assert.NotEmpty(t, question.Statements, "question statements should not be empty")
+		assert.NotEmpty(t, question.Answer, "question answer should not be empty")
+	})
+
+	t.Run("should create a new question", func(t *testing.T) {
+		newQuestion := tests.TestNewQuestion()
+		assert.NotEmpty(t, newQuestion.Statements, "question statements should not be empty")
+		assert.NotEmpty(t, newQuestion.Answer, "question answer should not be empty")
+		index := tests.TestIndex()
+		assert.NotEmpty(t, index.Id, "index id should not be empty")
+		assert.NotEmpty(t, index.Tag, "index tag should not be empty")
+		question := tests.TestQuestion(index.Tag, newQuestion)
+		assert.NotEmpty(t, question.Id, "question id should not be empty")
+		assert.Equal(t, index.Tag, question.Tag, "question tag should be equal to the index tag")
+		assert.Equal(t, newQuestion.Statements, question.Statements, "question statements should be equal to the new question statements")
+	})
+
+	t.Run("should create a new answer", func(t *testing.T) {
+		newQuestion := tests.TestNewQuestion()
+		assert.NotEmpty(t, newQuestion.Statements, "question statements should not be empty")
+		assert.NotEmpty(t, newQuestion.Answer, "question answer should not be empty")
+		index := tests.TestIndex()
+		assert.NotEmpty(t, index.Id, "index id should not be empty")
+		assert.NotEmpty(t, index.Tag, "index tag should not be empty")
+		question := tests.TestQuestion(index.Tag, newQuestion)
+		assert.NotEmpty(t, question.Id, "question id should not be empty")
+		assert.Equal(t, index.Tag, question.Tag, "question tag should be equal to the index tag")
+		assert.Equal(t, newQuestion.Statements, question.Statements, "question statements should be equal to the new question statements")
+		answer := tests.TestAnswer(question.Id, newQuestion.Answer)
+		assert.NotEmpty(t, answer.Id, "answer id should not be empty")
+		assert.Equal(t, question.Id, answer.QuestionId, "answer question id should be equal to the question id")
+		assert.Equal(t, newQuestion.Answer, answer.Answer, "answer answer should be equal to the new question answer")
+		assert.NotEmpty(t, answer.Hint, "answer hint should not be empty")
+	})
+}
+
+func TestHub(t *testing.T) {
+	t.Run("should create a new hub", func(t *testing.T) {
+		hub := tests.RunningHub(t)
+		assert.NotEmpty(t, hub.Controller, "hub id should not be empty")
+		assert.Empty(t, hub.Clients, "hub clients should be empty")
+	})
+
+	t.Run("should create a new hub with 4 clients", func(t *testing.T) {
+		hub := tests.RunningHubWithClients(t, 4)
+		assert.NotEmpty(t, hub.Controller, "hub id should not be empty")
+		assert.Equal(t, 4, len(hub.Clients), "hub clients should be equal to 4")
+	})
+
+	t.Run("should create a new client", func(t *testing.T) {
+		hub := tests.RunningHubWithClients(t, 4)
+		client := tests.NewClient(t, hub)
+		assert.Empty(t, client.PlayerId, "client id should not be empty")
+		assert.Equal(t, hub, client.Hub, "client hub should be equal to the hub")
+	})
+
+	t.Run("should find client x from hub", func(t *testing.T) {
+		hub := tests.RunningHubWithClients(t, 4)
+		client := tests.ClientX(hub)
+		assert.Empty(t, client.PlayerId, "client id should not be empty")
+		assert.Equal(t, hub, client.Hub, "client hub should be equal to the hub")
+	})
+
+	t.Run("should find client y from hub", func(t *testing.T) {
+		hub := tests.RunningHub(t)
+		client := tests.ClientX(hub)
+		assert.Nil(t, client, "client should not be nil")
+	})
+}
+
+func TestMessage(t *testing.T) {
+	t.Run("should create a new message", func(t *testing.T) {
+		message := tests.TestMessage(actions.ACTIVE, "this is a test message")
+		assert.Equal(t, "ACTIVE", message.Action, "message action should be equal to ACTIVE")
+		assert.Equal(t, "this is a test message", message.Content, "message content should be equal to 'this is a test message'")
+	})
+
+	t.Run("should create a new begin message", func(t *testing.T) {
+		player := tests.TestPlayer()
+		message := tests.TestBeginMessage(player)
+		assert.Equal(t, "BEGIN", message.Action, "message action should be equal to BEGIN")
+		assert.NotEmpty(t, message.Content, "message content should not be empty")
 	})
 }
