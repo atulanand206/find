@@ -206,3 +206,13 @@ func TestSubscriber(t *testing.T) {
 		assert.True(t, subscriber.Active, "subscriber should be active after initialization")
 	})
 }
+
+func TestSnapshot(t *testing.T) {
+	t.Run("should create a new begin message", func(t *testing.T) {
+		quiz := tests.TestGame()
+		snapshot := tests.TestSnapshot(quiz.Id)
+		assert.Equal(t, quiz.Id, snapshot.QuizId, "snapshot quiz id must match")
+		assert.Empty(t, snapshot.Roster, "snapshot roster must be empty")
+		assert.Equal(t, "CREATE", snapshot.EventType, "snapshot event type must be CREATE")
+	})
+}
