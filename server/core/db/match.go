@@ -38,11 +38,6 @@ func (crud MatchCrud) FindActiveMatches() (matches []models.Game, err error) {
 	return
 }
 
-func (crud MatchCrud) UpdateMatchQuestions(match models.Game, question models.Question) (bool, error) {
-	match.Tags = append(match.Tags, question.Tag)
-	return crud.UpdateMatch(match)
-}
-
 func (crud MatchCrud) UpdateMatch(match models.Game) (updated bool, err error) {
 	res, err := crud.Db.Update(MatchCollection, bson.M{"_id": match.Id}, match)
 	updated = int(res.ModifiedCount) == 1

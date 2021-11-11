@@ -14,23 +14,16 @@ func (crud SnapshotCrud) CreateSnapshot(snapshot models.Snapshot) error {
 	return crud.Db.Create(snapshot, SnapshotCollection)
 }
 
-func (crud SnapshotCrud) FindSnapshotsForMatch(matchId string) (snapshots []models.Snapshot, err error) {
-	cursor, err := crud.Db.Find(SnapshotCollection,
-		bson.M{"quiz_id": matchId}, &options.FindOptions{})
+func (crud SnapshotCrud) FindSnapshots(filters bson.M) (subscribers []models.Snapshot, err error) {
+	findOptions := &options.FindOptions{}
+	sort := bson.D{}
+	sort = append(sort, bson.E{Key: "timestamp", Value: -1})
+	findOptions.SetSort(sort)
+	cursor, err := crud.Db.Find(SnapshotCollection, filters, findOptions)
 	if err != nil {
 		return
 	}
-	snapshots, err = DecodeSnapshots(cursor)
-	return
-}
-
-func (crud SnapshotCrud) FindSnapshotsForQuestion(quizId string, questionId string, eventType string) (snapshots []models.Snapshot, err error) {
-	cursor, err := crud.Db.Find(SnapshotCollection,
-		bson.M{"quiz_id": quizId, "question_id": questionId, "event_type": eventType}, &options.FindOptions{})
-	if err != nil {
-		return
-	}
-	snapshots, err = DecodeSnapshots(cursor)
+	subscribers, err = DecodeSnapshots(cursor)
 	return
 }
 
@@ -45,19 +38,5 @@ func (crud SnapshotCrud) FindLatestSnapshot(matchId string) (snapshot models.Sna
 		return
 	}
 	bson.Unmarshal(dto, &snapshot)
-	return
-}
-
-func (crud SnapshotCrud) FindQuestionSnapshots(matchId string, questionId string) (snapshot []models.Snapshot, err error) {
-	findOptions := &options.FindOptions{}
-	sort := bson.D{}
-	sort = append(sort, bson.E{Key: "timestamp", Value: -1})
-	findOptions.SetSort(sort)
-	cursor, err := crud.Db.Find(SnapshotCollection,
-		bson.M{"quiz_id": matchId, "question_id": questionId}, findOptions)
-	if err != nil {
-		return
-	}
-	snapshot, err = DecodeSnapshots(cursor)
 	return
 }

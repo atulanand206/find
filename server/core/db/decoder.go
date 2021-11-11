@@ -16,13 +16,6 @@ func DecodePlayerJsonString(content string) (player models.Player, err error) {
 	return
 }
 
-func DecodeRequestJsonString(content string) (request models.Request, err error) {
-	if err = json.Unmarshal([]byte(content), &request); err != nil {
-		return
-	}
-	return
-}
-
 func DecodePermissions(cursor []bson.Raw) (scopes []models.Permission, err error) {
 	for _, doc := range cursor {
 		var scope models.Permission
@@ -115,18 +108,6 @@ func DecodePlayers(cursor []bson.Raw) (players []models.Player, err error) {
 			return
 		}
 		players = append(players, player)
-	}
-	return
-}
-
-func DecodeTeamPlayers(cursor []bson.Raw) (teamPlayers []models.Subscriber, err error) {
-	for _, doc := range cursor {
-		var teamPlayer models.Subscriber
-		err = bson.Unmarshal(doc, &teamPlayer)
-		if err != nil {
-			return
-		}
-		teamPlayers = append(teamPlayers, teamPlayer)
 	}
 	return
 }

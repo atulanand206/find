@@ -18,7 +18,7 @@ type MatchService struct {
 
 func (service Service) FindMatchFull(matchId string) (
 	match models.Game, teams []models.Team,
-	teamPlayers []models.Subscriber, players []models.Player,
+	subscribers []models.Subscriber, players []models.Player,
 	roster []models.TeamRoster,
 	snapshot models.Snapshot, err error) {
 	match, err = service.MatchService.Crud.FindMatch(matchId)
@@ -27,25 +27,27 @@ func (service Service) FindMatchFull(matchId string) (
 		return
 	}
 
-	teams, err = service.TeamService.Crud.FindTeams(match.Id)
+	teams, err = service.TeamService.FindTeams(match.Id)
 	if err != nil {
 		err = e.New(errors.Err_TeamsNotPresentInMatch)
 		return
 	}
 
-	teamPlayers, err = service.SubscriberService.FindTeamPlayers(teams)
+	teamIds := service.TeamService.FindTeamIdsFromTeams(teams)
+	subscribers, err = service.SubscriberService.FindSubscribersForTags(teamIds)
 	if err != nil {
 		err = e.New(errors.Err_SubscribersNotPresentInMatch)
 		return
 	}
 
-	players, err = service.PlayerService.Crud.FindPlayers(teamPlayers)
+	playerIds := service.SubscriberService.FindPlayerIdsFromSubscribers(subscribers)
+	players, err = service.PlayerService.FindPlayers(playerIds)
 	if err != nil {
 		err = e.New(errors.Err_PlayerNotPresent)
 		return
 	}
 
-	roster = utils.TableRoster(teams, teamPlayers, players)
+	roster = utils.TableRoster(teams, subscribers, players)
 	snapshot, err = service.SnapshotService.Crud.FindLatestSnapshot(match.Id)
 	if err != nil {
 		err = e.New(errors.Err_SnapshotNotPresent)
@@ -69,7 +71,7 @@ func (service MatchService) FindActiveMatchesForPlayer(playerId string) (matches
 			match.CanJoin = true
 			matches[ix] = match
 		}
-		subscribers, err := service.SubscriberService.Crud.FindSubscribers(match.Id, actions.PLAYER)
+		subscribers, err := service.SubscriberService.FindSubscribers(match.Id, actions.PLAYER)
 		if err == nil {
 			match.PlayersJoined = len(subscribers)
 			if !match.CanJoin {
@@ -90,4 +92,9 @@ func (service MatchService) FindActiveMatchesForPlayer(playerId string) (matches
 		}
 	}
 	return
+}
+
+func (service MatchService) UpdateMatchTags(match models.Game, tag string) (bool, error) {
+	match.Tags = append(match.Tags, tag)
+	return service.Crud.UpdateMatch(match)
 }

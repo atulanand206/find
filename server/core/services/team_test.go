@@ -19,7 +19,7 @@ func TestCreateAndFindTeams(t *testing.T) {
 	game := tests.TestGame()
 	service.CreateTeams(game)
 
-	res, err := service.FindTeams(game)
+	res, err := service.FindTeams(game.Id)
 	if err != nil {
 		t.Fatalf("teams for quiz %s not found", game.Id)
 	}

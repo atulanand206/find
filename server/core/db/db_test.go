@@ -17,6 +17,11 @@ func TestDB(t *testing.T) {
 	dbConns := []db.DBConn{db.NewMockDb(false), db.NewDb()}
 
 	for _, dbConn := range dbConns {
+		t.Run("create collections", func(t *testing.T) {
+			dbConn.DropCollections()
+			dbConn.CreateCollections()
+		})
+
 		t.Run("create match", func(t *testing.T) {
 			dbConn.CreateCollection("matches")
 			game := tests.TestGame()
@@ -27,6 +32,23 @@ func TestDB(t *testing.T) {
 			var foundGame models.Game
 			bson.Unmarshal(res, &foundGame)
 			assert.Equal(t, game.Id, foundGame.Id)
+		})
+
+		t.Run("create matches", func(t *testing.T) {
+			dbConn.DropCollections()
+			dbConn.CreateCollection("matches")
+			game1 := tests.TestGame()
+			game2 := tests.TestGame()
+			var gamesDto []interface{}
+			gamesDto = append(gamesDto, game1)
+			gamesDto = append(gamesDto, game2)
+			err := dbConn.CreateMany(gamesDto, "matches")
+			assert.Nil(t, err)
+			res, err := dbConn.FindOne("matches", bson.M{"_id": game1.Id}, &options.FindOneOptions{})
+			assert.Nil(t, err)
+			var foundGame models.Game
+			bson.Unmarshal(res, &foundGame)
+			assert.Equal(t, game1.Id, foundGame.Id)
 		})
 
 		t.Run("create and update match", func(t *testing.T) {

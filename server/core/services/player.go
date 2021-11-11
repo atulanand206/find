@@ -24,3 +24,7 @@ func (service PlayerService) FindPlayerByEmail(email string) (player models.Play
 
 	return
 }
+
+func (service PlayerService) FindPlayers(playerIds []string) (players []models.Player, err error) {
+	return service.Crud.FindPlayers(playerIds)
+}

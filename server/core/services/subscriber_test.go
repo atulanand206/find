@@ -33,7 +33,7 @@ func TestSubscriberService(t *testing.T) {
 
 	t.Run("find subscribers for tag fail", func(t *testing.T) {
 		tag, _ := gonanoid.New(10)
-		subscribers, _ := service.FindSubscribersForTag([]string{tag})
+		subscribers, _ := service.FindSubscribersForTags([]string{tag})
 		if len(subscribers) != 0 {
 			t.Fatalf("test failed")
 		}
@@ -47,7 +47,7 @@ func TestSubscriberService(t *testing.T) {
 		assert.Nil(t, err)
 		_, err = service.FindOrCreateSubscriber(game.Id, quizmaster, actions.QUIZMASTER)
 		assert.Nil(t, err)
-		subscribers, err := service.FindSubscribersForTag([]string{game.Id})
+		subscribers, err := service.FindSubscribersForTags([]string{game.Id})
 		assert.Nil(t, err)
 		assert.Equal(t, 1, len(subscribers))
 	})

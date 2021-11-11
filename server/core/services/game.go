@@ -2,7 +2,6 @@ package services
 
 import (
 	e "errors"
-	"fmt"
 
 	"github.com/atulanand206/find/server/core/actions"
 	"github.com/atulanand206/find/server/core/db"
@@ -106,7 +105,7 @@ func (service Service) GenerateEnterGameResponse(request models.Request) (respon
 		return
 	}
 
-	match, teams, teamPlayers, _, _, snapshot, err := service.FindMatchFull(request.QuizId)
+	match, teams, subscribers, _, _, snapshot, err := service.FindMatchFull(request.QuizId)
 	if err != nil {
 		return
 	}
@@ -127,7 +126,7 @@ func (service Service) GenerateEnterGameResponse(request models.Request) (respon
 		return service.SubscriberService.SubscribeAndRespond(match, player, snapshot, actions.QUIZMASTER)
 	}
 
-	if utils.IsPlayerInTeams(teamPlayers, player) {
+	if utils.IsPlayerInTeams(subscribers, player) {
 		match, _, _, _, roster, snapshot, er := service.FindMatchFull(request.QuizId)
 		if er != nil {
 			err = er
@@ -185,7 +184,7 @@ func (service Service) GenerateWatchGameResponse(request models.Request) (respon
 }
 
 func (service Service) GenerateStartGameResponse(request models.Request) (response models.Snapshot, err error) {
-	match, teams, teamPlayers, _, roster, snapshot, err := service.FindMatchFull(request.QuizId)
+	match, teams, subscribers, _, roster, snapshot, err := service.FindMatchFull(request.QuizId)
 	if err != nil {
 		return
 	}
@@ -195,8 +194,7 @@ func (service Service) GenerateStartGameResponse(request models.Request) (respon
 		return
 	}
 
-	fmt.Println("mmmmmmmmm\n", match, "mmmmmmmmm\n", teams, "mmmmmmmmm\n", teamPlayers, "mmmmmmmmm\n", roster)
-	if result := utils.MatchFull(match, teamPlayers); !result {
+	if result := utils.MatchFull(match, subscribers); !result {
 		err = e.New(errors.Err_WaitingForPlayers)
 		return
 	}
@@ -207,7 +205,7 @@ func (service Service) GenerateStartGameResponse(request models.Request) (respon
 	}
 
 	match.Started = true
-	if _, err = service.MatchService.Crud.UpdateMatchQuestions(match, question); err != nil {
+	if _, err = service.MatchService.UpdateMatchTags(match, question.Tag); err != nil {
 		err = e.New(errors.Err_MatchNotUpdated)
 		return
 	}
@@ -301,7 +299,7 @@ func (service Service) GenerateNextQuestionResponse(request models.Request) (res
 		return
 	}
 
-	if _, err = service.MatchService.Crud.UpdateMatchQuestions(match, question); err != nil {
+	if _, err = service.MatchService.UpdateMatchTags(match, question.Tag); err != nil {
 		err = e.New(errors.Err_MatchNotUpdated)
 		return
 	}
@@ -331,7 +329,7 @@ func (service Service) GeneratePassQuestionResponse(request models.Request) (res
 }
 
 func (service Service) GenerateScoreResponse(request models.Request) (response models.ScoreResponse, err error) {
-	snapshots, err := service.SnapshotService.Crud.FindSnapshotsForMatch(request.QuizId)
+	snapshots, err := service.SnapshotService.FindSnapshotsForMatch(request.QuizId)
 	if err != nil {
 		err = e.New(errors.Err_SnapshotNotPresent)
 		return
@@ -342,7 +340,7 @@ func (service Service) GenerateScoreResponse(request models.Request) (response m
 }
 
 func (service Service) DeletePlayerLiveSession(playerId string) (res models.WebsocketMessage, targets map[string]bool, err error) {
-	subscribers, err := service.SubscriberService.Crud.FindSubscriptionsForPlayerId(playerId)
+	subscribers, err := service.SubscriberService.FindSubscriptionsForPlayerId(playerId)
 	if err != nil {
 		err = e.New(err.Error())
 		return
@@ -353,7 +351,7 @@ func (service Service) DeletePlayerLiveSession(playerId string) (res models.Webs
 		tags = append(tags, subscriber.Tag)
 	}
 
-	subscribers, err = service.SubscriberService.FindSubscribersForTag(tags)
+	subscribers, err = service.SubscriberService.FindSubscribersForTags(tags)
 	if err != nil {
 		err = e.New(err.Error())
 		return

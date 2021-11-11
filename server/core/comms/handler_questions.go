@@ -1,8 +1,6 @@
 package comms
 
 import (
-	"encoding/json"
-	e "errors"
 	"net/http"
 	"os"
 
@@ -12,8 +10,8 @@ import (
 )
 
 var (
-	filePath  = "G:\\binge\\binge-questions\\%s.json"
-	indexFile = "index"
+	FilePath  = "G:\\binge\\binge-questions\\%s.json"
+	IndexFile = "index"
 )
 
 func HandlerAddQuestion(w http.ResponseWriter, r *http.Request) {
@@ -30,7 +28,7 @@ func HandlerAddQuestion(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandlerSeedQuestions(w http.ResponseWriter, r *http.Request) {
-	filePath = os.Getenv("SEED_FILES_PATH")
+	FilePath = os.Getenv("SEED_FILES_PATH")
 
 	var err error
 	if err = Db.DropCollections(); err != nil {
@@ -63,14 +61,4 @@ func HandlerSeedQuestions(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, errors.Err_AnswersNotSeeded, http.StatusInternalServerError)
 		return
 	}
-}
-
-func HandlerTestAPI(w http.ResponseWriter, r *http.Request) {
-	matches, err := Controller.MatchService.Crud.FindActiveMatches()
-	if err != nil {
-		err = e.New(errors.Err_MatchNotPresent)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	json.NewEncoder(w).Encode(matches)
 }
