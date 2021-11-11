@@ -52,11 +52,15 @@ func (crud TeamCrud) FindTeamsMatches(match []models.Game) (teams []models.Team,
 	return
 }
 
-func (crud TeamCrud) FindTPs(teamPlayers []models.Subscriber) (teams []models.Team, err error) {
-	teamIds := make([]string, 0)
-	for _, v := range teamPlayers {
-		teamIds = append(teamIds, v.Tag)
+func (crud TeamCrud) FindTeamIdsFromTeams(teams []models.Team) (teamIds []string) {
+	teamIds = make([]string, 0)
+	for _, team := range teams {
+		teamIds = append(teamIds, team.Id)
 	}
+	return teamIds
+}
+
+func (crud TeamCrud) FindTeamsFromIds(teamIds []string) (teams []models.Team, err error) {
 	findOptions := &options.FindOptions{}
 	cursor, err := crud.Db.Find(TeamCollection,
 		bson.M{"_id": bson.M{"$in": teamIds}}, findOptions)

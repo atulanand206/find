@@ -106,7 +106,7 @@ func (service Service) GenerateEnterGameResponse(request models.Request) (respon
 		return
 	}
 
-	match, teams, teamPlayers, _, _, snapshot, err := service.FindMatchFull(request.QuizId)
+	match, teams, subscribers, _, _, snapshot, err := service.FindMatchFull(request.QuizId)
 	if err != nil {
 		return
 	}
@@ -127,7 +127,7 @@ func (service Service) GenerateEnterGameResponse(request models.Request) (respon
 		return service.SubscriberService.SubscribeAndRespond(match, player, snapshot, actions.QUIZMASTER)
 	}
 
-	if utils.IsPlayerInTeams(teamPlayers, player) {
+	if utils.IsPlayerInTeams(subscribers, player) {
 		match, _, _, _, roster, snapshot, er := service.FindMatchFull(request.QuizId)
 		if er != nil {
 			err = er
@@ -185,7 +185,7 @@ func (service Service) GenerateWatchGameResponse(request models.Request) (respon
 }
 
 func (service Service) GenerateStartGameResponse(request models.Request) (response models.Snapshot, err error) {
-	match, teams, teamPlayers, _, roster, snapshot, err := service.FindMatchFull(request.QuizId)
+	match, teams, subscribers, _, roster, snapshot, err := service.FindMatchFull(request.QuizId)
 	if err != nil {
 		return
 	}
@@ -195,8 +195,8 @@ func (service Service) GenerateStartGameResponse(request models.Request) (respon
 		return
 	}
 
-	fmt.Println("mmmmmmmmm\n", match, "mmmmmmmmm\n", teams, "mmmmmmmmm\n", teamPlayers, "mmmmmmmmm\n", roster)
-	if result := utils.MatchFull(match, teamPlayers); !result {
+	fmt.Println("mmmmmmmmm\n", match, "mmmmmmmmm\n", teams, "mmmmmmmmm\n", subscribers, "mmmmmmmmm\n", roster)
+	if result := utils.MatchFull(match, subscribers); !result {
 		err = e.New(errors.Err_WaitingForPlayers)
 		return
 	}
@@ -342,7 +342,7 @@ func (service Service) GenerateScoreResponse(request models.Request) (response m
 }
 
 func (service Service) DeletePlayerLiveSession(playerId string) (res models.WebsocketMessage, targets map[string]bool, err error) {
-	subscribers, err := service.SubscriberService.Crud.FindSubscriptionsForPlayerId(playerId)
+	subscribers, err := service.SubscriberService.FindSubscriptionsForPlayerId(playerId)
 	if err != nil {
 		err = e.New(err.Error())
 		return
@@ -353,7 +353,7 @@ func (service Service) DeletePlayerLiveSession(playerId string) (res models.Webs
 		tags = append(tags, subscriber.Tag)
 	}
 
-	subscribers, err = service.SubscriberService.FindSubscribersForTag(tags)
+	subscribers, err = service.SubscriberService.FindSubscribersForTags(tags)
 	if err != nil {
 		err = e.New(err.Error())
 		return

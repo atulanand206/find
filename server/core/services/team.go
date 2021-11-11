@@ -28,19 +28,16 @@ func (service TeamService) FindTeams(quiz models.Game) (teams []models.Team, err
 }
 
 func (service TeamService) FindAndFillTeamVacancy(match models.Game, teams []models.Team, player models.Player) (teamId string, err error) {
-	teamIds := []string{}
-	for _, team := range teams {
-		teamIds = append(teamIds, team.Id)
-	}
-	teamPlayers, err := service.SubscriberService.FindSubscribersForTag(teamIds)
+	teamIds := service.Crud.FindTeamIdsFromTeams(teams)
+	subscribers, err := service.SubscriberService.FindSubscribersForTags(teamIds)
 	if err != nil {
 		return
 	}
-	if len(teamPlayers) >= match.Specs.Players*match.Specs.Teams {
+	if len(subscribers) >= match.Specs.Players*match.Specs.Teams {
 		err = e.New(errors.Err_PlayersFullInTeam)
 		return
 	}
-	teamId = service.FindVacantTeamId(teams, teamPlayers, match.Specs.Players)
+	teamId = service.FindVacantTeamId(teams, subscribers, match.Specs.Players)
 	_, err = service.SubscriberService.FindOrCreateSubscriber(teamId, player, actions.TEAM)
 	if err != nil {
 		return
@@ -48,12 +45,12 @@ func (service TeamService) FindAndFillTeamVacancy(match models.Game, teams []mod
 	return
 }
 
-func (service TeamService) FindVacantTeamId(teams []models.Team, teamPlayers []models.Subscriber, playersCount int) (teamId string) {
+func (service TeamService) FindVacantTeamId(teams []models.Team, subscribers []models.Subscriber, playersCount int) (teamId string) {
 	mp := make(map[string]int)
 	for _, v := range teams {
 		mp[v.Id] = 0
 	}
-	for _, v := range teamPlayers {
+	for _, v := range subscribers {
 		mp[v.Tag] = mp[v.Tag] + 1
 	}
 	var x = playersCount

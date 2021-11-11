@@ -196,3 +196,13 @@ func TestMessage(t *testing.T) {
 		assert.NotEmpty(t, message.Content, "message content should not be empty")
 	})
 }
+
+func TestSubscriber(t *testing.T) {
+	t.Run("should create a new subscriber", func(t *testing.T) {
+		subscriber := tests.TestSubscriber()
+		assert.NotEmpty(t, subscriber.Tag, "subscriber tag should not be empty")
+		assert.NotEmpty(t, subscriber.PlayerId, "subscriber player id should not be empty")
+		assert.Equal(t, "PLAYER", subscriber.Role, "subscriber role should be equal to PLAYER")
+		assert.True(t, subscriber.Active, "subscriber should be active after initialization")
+	})
+}

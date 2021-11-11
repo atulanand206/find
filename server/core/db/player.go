@@ -34,9 +34,9 @@ func (crud PlayerCrud) FindPlayer(emailId string) (player models.Player, err err
 	return
 }
 
-func (crud PlayerCrud) FindPlayers(teamPlayers []models.Subscriber) (players []models.Player, err error) {
+func (crud PlayerCrud) FindPlayers(subscribers []models.Subscriber) (players []models.Player, err error) {
 	playerIds := make([]string, 0)
-	for _, v := range teamPlayers {
+	for _, v := range subscribers {
 		playerIds = append(playerIds, v.PlayerId)
 	}
 	findOptions := &options.FindOptions{}

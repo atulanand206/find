@@ -140,6 +140,15 @@ func TestAnswer(questionId string, answer []string) models.Answer {
 	}
 }
 
+func TestSubscriber() models.Subscriber {
+	return models.Subscriber{
+		Tag:      TestRandomString(),
+		PlayerId: TestRandomString(),
+		Role:     actions.PLAYER.String(),
+		Active:   true,
+	}
+}
+
 func RunningHubWithClients(t *testing.T, n int) *comms.Hub {
 	hub := RunningHub(t)
 	for i := 0; i < n; i++ {

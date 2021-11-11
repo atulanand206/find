@@ -119,18 +119,6 @@ func DecodePlayers(cursor []bson.Raw) (players []models.Player, err error) {
 	return
 }
 
-func DecodeTeamPlayers(cursor []bson.Raw) (teamPlayers []models.Subscriber, err error) {
-	for _, doc := range cursor {
-		var teamPlayer models.Subscriber
-		err = bson.Unmarshal(doc, &teamPlayer)
-		if err != nil {
-			return
-		}
-		teamPlayers = append(teamPlayers, teamPlayer)
-	}
-	return
-}
-
 func DecodeRaw(cursor *mg.Cursor) (documents []bson.Raw, err error) {
 	for cursor.Next(context.Background()) {
 		documents = append(documents, cursor.Current)

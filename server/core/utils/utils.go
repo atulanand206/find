@@ -84,8 +84,8 @@ func IsQuizMasterInMatch(match models.Game, person models.Player) (result bool) 
 	return match.QuizMaster.Id == person.Id
 }
 
-func IsPlayerInTeams(teamPlayers []models.Subscriber, person models.Player) (result bool) {
-	for _, player := range teamPlayers {
+func IsPlayerInTeams(subscribers []models.Subscriber, person models.Player) (result bool) {
+	for _, player := range subscribers {
 		if player.PlayerId == person.Id {
 			result = true
 			return
@@ -114,15 +114,15 @@ func NextTeam(teams []models.TeamRoster, teamsTurn string) (teamId string) {
 	return
 }
 
-func MatchFull(match models.Game, teamPlayers []models.Subscriber) (result bool) {
-	return len(teamPlayers) == match.Specs.Players*match.Specs.Teams
+func MatchFull(match models.Game, subscribers []models.Subscriber) (result bool) {
+	return len(subscribers) == match.Specs.Players*match.Specs.Teams
 }
 
 func QuestionCanBeAdded(match models.Game) (result bool) {
 	return len(match.Tags) < match.Specs.Questions
 }
 
-func TableRoster(teams []models.Team, teamPlayers []models.Subscriber, players []models.Player) (roster []models.TeamRoster) {
+func TableRoster(teams []models.Team, subscribers []models.Subscriber, players []models.Player) (roster []models.TeamRoster) {
 	roster = make([]models.TeamRoster, 0)
 	for _, v := range teams {
 		var entry models.TeamRoster
@@ -130,7 +130,7 @@ func TableRoster(teams []models.Team, teamPlayers []models.Subscriber, players [
 		entry.Name = v.Name
 		entry.Score = v.Score
 		playrs := make([]models.Player, 0)
-		for _, w := range teamPlayers {
+		for _, w := range subscribers {
 			if w.Tag == v.Id {
 				for _, x := range players {
 					if x.Id == w.PlayerId {

@@ -18,7 +18,7 @@ type MatchService struct {
 
 func (service Service) FindMatchFull(matchId string) (
 	match models.Game, teams []models.Team,
-	teamPlayers []models.Subscriber, players []models.Player,
+	subscribers []models.Subscriber, players []models.Player,
 	roster []models.TeamRoster,
 	snapshot models.Snapshot, err error) {
 	match, err = service.MatchService.Crud.FindMatch(matchId)
@@ -33,19 +33,21 @@ func (service Service) FindMatchFull(matchId string) (
 		return
 	}
 
-	teamPlayers, err = service.SubscriberService.FindTeamPlayers(teams)
+	teamIds := service.TeamService.Crud.FindTeamIdsFromTeams(teams)
+
+	subscribers, err = service.SubscriberService.FindSubscribersForTags(teamIds)
 	if err != nil {
 		err = e.New(errors.Err_SubscribersNotPresentInMatch)
 		return
 	}
 
-	players, err = service.PlayerService.Crud.FindPlayers(teamPlayers)
+	players, err = service.PlayerService.Crud.FindPlayers(subscribers)
 	if err != nil {
 		err = e.New(errors.Err_PlayerNotPresent)
 		return
 	}
 
-	roster = utils.TableRoster(teams, teamPlayers, players)
+	roster = utils.TableRoster(teams, subscribers, players)
 	snapshot, err = service.SnapshotService.Crud.FindLatestSnapshot(match.Id)
 	if err != nil {
 		err = e.New(errors.Err_SnapshotNotPresent)
@@ -69,7 +71,7 @@ func (service MatchService) FindActiveMatchesForPlayer(playerId string) (matches
 			match.CanJoin = true
 			matches[ix] = match
 		}
-		subscribers, err := service.SubscriberService.Crud.FindSubscribers(match.Id, actions.PLAYER)
+		subscribers, err := service.SubscriberService.FindSubscribers(match.Id, actions.PLAYER)
 		if err == nil {
 			match.PlayersJoined = len(subscribers)
 			if !match.CanJoin {

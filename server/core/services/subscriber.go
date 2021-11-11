@@ -7,6 +7,7 @@ import (
 	"github.com/atulanand206/find/server/core/actions"
 	"github.com/atulanand206/find/server/core/db"
 	"github.com/atulanand206/find/server/core/models"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type SubscriberService struct {
@@ -24,7 +25,7 @@ func (service SubscriberService) SelfResponse(playerId string, action actions.Ac
 }
 
 func (service SubscriberService) QuizResponse(action string, quizId string, response models.Snapshot) (res models.WebsocketMessage, targets map[string]bool) {
-	subscribers, er := service.FindSubscribersForTag([]string{quizId})
+	subscribers, er := service.FindSubscribersForTags([]string{quizId})
 	if er != nil {
 		res = service.Creators.MessageCreator.InitWebSocketMessageFailure()
 		return
@@ -35,7 +36,7 @@ func (service SubscriberService) QuizResponse(action string, quizId string, resp
 }
 
 func (service SubscriberService) FindOrCreateSubscriber(tag string, audience models.Player, role actions.Role) (subscriber models.Subscriber, err error) {
-	subscriber, err = service.Crud.FindSubscriberForTagAndPlayerId(tag, audience.Id)
+	subscriber, err = service.Crud.FindSubscriber(tag, audience.Id)
 	if err != nil {
 		subscriber = service.Creators.InstanceCreator.InitSubscriber(tag, audience, role.String())
 		err = service.Crud.CreateSubscriber(subscriber)
@@ -56,14 +57,14 @@ func (service SubscriberService) SubscribeAndRespond(match models.Game, player m
 	return
 }
 
-func (service SubscriberService) FindSubscribersForTag(tags []string) (subscribers []models.Subscriber, err error) {
-	return service.Crud.FindSubscribersForTag(tags)
-}
-
-func (service SubscriberService) FindTeamPlayers(teams []models.Team) (teamPlayers []models.Subscriber, err error) {
-	return service.Crud.FindTeamPlayers(teams)
+func (service SubscriberService) FindSubscribersForTags(tags []string) (subscribers []models.Subscriber, err error) {
+	return service.Crud.FindSubscribers(bson.M{"tag": bson.M{"$in": tags}})
 }
 
 func (service SubscriberService) FindSubscriptionsForPlayerId(playerId string) (subscribers []models.Subscriber, err error) {
-	return service.Crud.FindSubscriptionsForPlayerId(playerId)
+	return service.Crud.FindSubscribers(bson.M{"player_id": playerId})
+}
+
+func (service SubscriberService) FindSubscribers(tag string, role actions.Role) (subscribers []models.Subscriber, err error) {
+	return service.Crud.FindSubscribers(bson.M{"tag": tag, "role": role.String()})
 }
