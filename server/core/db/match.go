@@ -38,8 +38,8 @@ func (crud MatchCrud) FindActiveMatches() (matches []models.Game, err error) {
 	return
 }
 
-func (crud MatchCrud) UpdateMatchQuestions(match models.Game, question models.Question) (bool, error) {
-	match.Tags = append(match.Tags, question.Tag)
+func (crud MatchCrud) UpdateMatchTags(match models.Game, tag string) (bool, error) {
+	match.Tags = append(match.Tags, tag)
 	return crud.UpdateMatch(match)
 }
 

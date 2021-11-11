@@ -8,10 +8,27 @@ import (
 	"github.com/atulanand206/find/server/core/errors"
 	"github.com/atulanand206/find/server/core/models"
 	"github.com/atulanand206/find/server/core/utils"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type SnapshotService struct {
 	Crud db.SnapshotCrud
+}
+
+func (service SnapshotService) CreateSnapshot(snapshot models.Snapshot) (err error) {
+	if err = service.Crud.CreateSnapshot(snapshot); err != nil {
+		err = e.New(errors.Err_SnapshotNotCreated)
+		return
+	}
+	return
+}
+
+func (service SnapshotService) FindSnapshotsForMatch(matchId string) (snapshots []models.Snapshot, err error) {
+	return service.Crud.FindSnapshots(bson.M{"quiz_id": matchId})
+}
+
+func (service SnapshotService) FindSnapshotsForQuestion(quizId string, questionId string, eventType string) (snapshots []models.Snapshot, err error) {
+	return service.Crud.FindSnapshots(bson.M{"quiz_id": quizId, "question_id": questionId, "event_type": eventType})
 }
 
 func (service SnapshotService) InitialSnapshot(quizId string, teams []models.Team) (response models.Snapshot, err error) {
@@ -87,7 +104,7 @@ func (service SnapshotService) SnapshotNext(snapshot models.Snapshot, roster []m
 }
 
 func (service SnapshotService) SnapshotPass(snapshot models.Snapshot, roster []models.TeamRoster, teamsTurn string, roundNo int, specs models.Specs) (response models.Snapshot, err error) {
-	snapshots, err := service.Crud.FindSnapshotsForQuestion(snapshot.QuizId, snapshot.QuestionId, actions.PASS.String())
+	snapshots, err := service.FindSnapshotsForQuestion(snapshot.QuizId, snapshot.QuestionId, actions.PASS.String())
 	if err != nil {
 		return
 	}
@@ -109,13 +126,5 @@ func (service SnapshotService) SnapshotPass(snapshot models.Snapshot, roster []m
 		return
 	}
 	response = snapshot
-	return
-}
-
-func (service SnapshotService) CreateSnapshot(snapshot models.Snapshot) (err error) {
-	if err = service.Crud.CreateSnapshot(snapshot); err != nil {
-		err = e.New(errors.Err_SnapshotNotCreated)
-		return
-	}
 	return
 }

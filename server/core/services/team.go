@@ -23,12 +23,12 @@ func (service TeamService) CreateTeams(quiz models.Game) (teams []models.Team, e
 	return
 }
 
-func (service TeamService) FindTeams(quiz models.Game) (teams []models.Team, err error) {
-	return service.Crud.FindTeams(quiz.Id)
+func (service TeamService) FindTeams(quizId string) (teams []models.Team, err error) {
+	return service.Crud.FindTeams(quizId)
 }
 
 func (service TeamService) FindAndFillTeamVacancy(match models.Game, teams []models.Team, player models.Player) (teamId string, err error) {
-	teamIds := service.Crud.FindTeamIdsFromTeams(teams)
+	teamIds := service.FindTeamIdsFromTeams(teams)
 	subscribers, err := service.SubscriberService.FindSubscribersForTags(teamIds)
 	if err != nil {
 		return
@@ -43,6 +43,14 @@ func (service TeamService) FindAndFillTeamVacancy(match models.Game, teams []mod
 		return
 	}
 	return
+}
+
+func (service TeamService) FindTeamIdsFromTeams(teams []models.Team) (teamIds []string) {
+	teamIds = make([]string, 0)
+	for _, team := range teams {
+		teamIds = append(teamIds, team.Id)
+	}
+	return teamIds
 }
 
 func (service TeamService) FindVacantTeamId(teams []models.Team, subscribers []models.Subscriber, playersCount int) (teamId string) {

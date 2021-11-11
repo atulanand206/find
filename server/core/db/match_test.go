@@ -41,9 +41,7 @@ func TestMatchCrud(t *testing.T) {
 		crud.CreateMatch(game)
 
 		res, err := crud.FindActiveMatches()
-		if err != nil {
-			t.Fatalf("matches %s not found", game.Id)
-		}
+		assert.Nil(t, err, "error must be nil")
 		for _, match := range res {
 			if match.Id == game.Id {
 				return
@@ -54,10 +52,8 @@ func TestMatchCrud(t *testing.T) {
 
 	t.Run("update match fail", func(t *testing.T) {
 		game := tests.TestGame()
-		count, _ := crud.UpdateMatch(game)
-		if count {
-			t.Fatalf("test failed")
-		}
+		updated, _ := crud.UpdateMatch(game)
+		assert.False(t, updated, "match must not be updated")
 	})
 
 	t.Run("update match", func(t *testing.T) {
@@ -65,22 +61,14 @@ func TestMatchCrud(t *testing.T) {
 		crud.CreateMatch(game)
 
 		res, err := crud.FindMatch(game.Id)
-		if err != nil {
-			t.Fatalf("match %s not found", game.Id)
-		}
-		if res.Specs.Name != game.Specs.Name {
-			t.Fatalf("specs not correct")
-		}
+		assert.Nil(t, err, "error must be nil")
+		assert.Equal(t, game.Specs.Name, res.Specs.Name, "quiz name must be equal")
 
 		game.Specs.Name, _ = gonanoid.New(8)
 		crud.UpdateMatch(game)
 
 		res, err = crud.FindMatch(game.Id)
-		if err != nil {
-			t.Fatalf("match %s not found", game.Id)
-		}
-		if res.Specs.Name != game.Specs.Name {
-			t.Fatalf("specs not updated")
-		}
+		assert.Nil(t, err, "error must be nil")
+		assert.Equal(t, game.Specs.Name, res.Specs.Name, "quiz name must be equal")
 	})
 }

@@ -2,7 +2,6 @@ package services
 
 import (
 	e "errors"
-	"fmt"
 
 	"github.com/atulanand206/find/server/core/actions"
 	"github.com/atulanand206/find/server/core/db"
@@ -195,7 +194,6 @@ func (service Service) GenerateStartGameResponse(request models.Request) (respon
 		return
 	}
 
-	fmt.Println("mmmmmmmmm\n", match, "mmmmmmmmm\n", teams, "mmmmmmmmm\n", subscribers, "mmmmmmmmm\n", roster)
 	if result := utils.MatchFull(match, subscribers); !result {
 		err = e.New(errors.Err_WaitingForPlayers)
 		return
@@ -207,7 +205,7 @@ func (service Service) GenerateStartGameResponse(request models.Request) (respon
 	}
 
 	match.Started = true
-	if _, err = service.MatchService.Crud.UpdateMatchQuestions(match, question); err != nil {
+	if _, err = service.MatchService.Crud.UpdateMatchTags(match, question.Tag); err != nil {
 		err = e.New(errors.Err_MatchNotUpdated)
 		return
 	}
@@ -301,7 +299,7 @@ func (service Service) GenerateNextQuestionResponse(request models.Request) (res
 		return
 	}
 
-	if _, err = service.MatchService.Crud.UpdateMatchQuestions(match, question); err != nil {
+	if _, err = service.MatchService.Crud.UpdateMatchTags(match, question.Tag); err != nil {
 		err = e.New(errors.Err_MatchNotUpdated)
 		return
 	}
@@ -331,7 +329,7 @@ func (service Service) GeneratePassQuestionResponse(request models.Request) (res
 }
 
 func (service Service) GenerateScoreResponse(request models.Request) (response models.ScoreResponse, err error) {
-	snapshots, err := service.SnapshotService.Crud.FindSnapshotsForMatch(request.QuizId)
+	snapshots, err := service.SnapshotService.FindSnapshotsForMatch(request.QuizId)
 	if err != nil {
 		err = e.New(errors.Err_SnapshotNotPresent)
 		return

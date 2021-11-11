@@ -34,11 +34,7 @@ func (crud PlayerCrud) FindPlayer(emailId string) (player models.Player, err err
 	return
 }
 
-func (crud PlayerCrud) FindPlayers(subscribers []models.Subscriber) (players []models.Player, err error) {
-	playerIds := make([]string, 0)
-	for _, v := range subscribers {
-		playerIds = append(playerIds, v.PlayerId)
-	}
+func (crud PlayerCrud) FindPlayers(playerIds []string) (players []models.Player, err error) {
 	findOptions := &options.FindOptions{}
 	cursor, err := crud.Db.Find(PlayerCollection,
 		bson.M{"_id": bson.M{"$in": playerIds}}, findOptions)

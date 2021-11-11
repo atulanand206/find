@@ -68,3 +68,11 @@ func (service SubscriberService) FindSubscriptionsForPlayerId(playerId string) (
 func (service SubscriberService) FindSubscribers(tag string, role actions.Role) (subscribers []models.Subscriber, err error) {
 	return service.Crud.FindSubscribers(bson.M{"tag": tag, "role": role.String()})
 }
+
+func (service SubscriberService) FindPlayerIdsFromSubscribers(subscribers []models.Subscriber) (playerIds []string) {
+	playerIds = make([]string, 0)
+	for _, subscriber := range subscribers {
+		playerIds = append(playerIds, subscriber.PlayerId)
+	}
+	return playerIds
+}

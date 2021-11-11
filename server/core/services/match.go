@@ -27,21 +27,21 @@ func (service Service) FindMatchFull(matchId string) (
 		return
 	}
 
-	teams, err = service.TeamService.Crud.FindTeams(match.Id)
+	teams, err = service.TeamService.FindTeams(match.Id)
 	if err != nil {
 		err = e.New(errors.Err_TeamsNotPresentInMatch)
 		return
 	}
 
-	teamIds := service.TeamService.Crud.FindTeamIdsFromTeams(teams)
-
+	teamIds := service.TeamService.FindTeamIdsFromTeams(teams)
 	subscribers, err = service.SubscriberService.FindSubscribersForTags(teamIds)
 	if err != nil {
 		err = e.New(errors.Err_SubscribersNotPresentInMatch)
 		return
 	}
 
-	players, err = service.PlayerService.Crud.FindPlayers(subscribers)
+	playerIds := service.SubscriberService.FindPlayerIdsFromSubscribers(subscribers)
+	players, err = service.PlayerService.FindPlayers(playerIds)
 	if err != nil {
 		err = e.New(errors.Err_PlayerNotPresent)
 		return

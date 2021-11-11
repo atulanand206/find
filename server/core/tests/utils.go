@@ -149,6 +149,10 @@ func TestSubscriber() models.Subscriber {
 	}
 }
 
+func TestSnapshot(quizId string) models.Snapshot {
+	return models.InitialSnapshot(quizId, []models.TeamRoster{})
+}
+
 func RunningHubWithClients(t *testing.T, n int) *comms.Hub {
 	hub := RunningHub(t)
 	for i := 0; i < n; i++ {
