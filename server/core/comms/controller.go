@@ -1,13 +1,21 @@
 package comms
 
 import (
+	"encoding/json"
+
 	"github.com/atulanand206/find/server/core/actions"
-	"github.com/atulanand206/find/server/core/db"
 	"github.com/atulanand206/find/server/core/models"
 )
 
+func DecodeRequestJsonString(content string) (request models.Request, err error) {
+	if err = json.Unmarshal([]byte(content), &request); err != nil {
+		return
+	}
+	return
+}
+
 func (hub *Hub) Handle(msg models.WebsocketMessage, client *Client) (res models.WebsocketMessage, targets map[string]bool, err error) {
-	request, err := db.DecodeRequestJsonString(msg.Content)
+	request, err := DecodeRequestJsonString(msg.Content)
 	if err != nil {
 		res = hub.Controller.Creators.MessageCreator.InitWebSocketMessageFailure()
 		return

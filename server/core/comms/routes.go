@@ -45,7 +45,6 @@ func Routes(mongoClientId string, database string) *http.ServeMux {
 	router.HandleFunc("/permission/create", postChain.Handler(PermissionHandler.HandlerCreatePermission))
 	router.HandleFunc("/permissions", getChain.Handler(PermissionHandler.HandlerFindPermissions))
 
-	router.HandleFunc("/test", postChain.Handler(HandlerTestAPI))
 	router.HandleFunc("/question/add", postChain.Handler(HandlerAddQuestion))
 	router.HandleFunc("/questions/seed", putChain.Handler(HandlerSeedQuestions))
 

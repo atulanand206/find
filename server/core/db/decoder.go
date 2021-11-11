@@ -16,13 +16,6 @@ func DecodePlayerJsonString(content string) (player models.Player, err error) {
 	return
 }
 
-func DecodeRequestJsonString(content string) (request models.Request, err error) {
-	if err = json.Unmarshal([]byte(content), &request); err != nil {
-		return
-	}
-	return
-}
-
 func DecodePermissions(cursor []bson.Raw) (scopes []models.Permission, err error) {
 	for _, doc := range cursor {
 		var scope models.Permission

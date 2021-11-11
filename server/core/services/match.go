@@ -93,3 +93,8 @@ func (service MatchService) FindActiveMatchesForPlayer(playerId string) (matches
 	}
 	return
 }
+
+func (service MatchService) UpdateMatchTags(match models.Game, tag string) (bool, error) {
+	match.Tags = append(match.Tags, tag)
+	return service.Crud.UpdateMatch(match)
+}

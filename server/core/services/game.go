@@ -205,7 +205,7 @@ func (service Service) GenerateStartGameResponse(request models.Request) (respon
 	}
 
 	match.Started = true
-	if _, err = service.MatchService.Crud.UpdateMatchTags(match, question.Tag); err != nil {
+	if _, err = service.MatchService.UpdateMatchTags(match, question.Tag); err != nil {
 		err = e.New(errors.Err_MatchNotUpdated)
 		return
 	}
@@ -299,7 +299,7 @@ func (service Service) GenerateNextQuestionResponse(request models.Request) (res
 		return
 	}
 
-	if _, err = service.MatchService.Crud.UpdateMatchTags(match, question.Tag); err != nil {
+	if _, err = service.MatchService.UpdateMatchTags(match, question.Tag); err != nil {
 		err = e.New(errors.Err_MatchNotUpdated)
 		return
 	}
