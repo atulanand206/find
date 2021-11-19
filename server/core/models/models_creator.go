@@ -193,6 +193,11 @@ func SnapshotWithNext(snapshot Snapshot, teams []TeamRoster, team_s_turn string,
 func SnapshotWithFinish(snapshot Snapshot, teams []TeamRoster) (response Snapshot) {
 	snapshot.EventType = actions.FINISH.String()
 	snapshot.Roster = teams
+	snapshot.Score = 0
+	snapshot.RoundNo = 0
+	snapshot.Question = []string{}
+	snapshot.QuestionNo = 0
+	snapshot.QuestionId = ""
 	snapshot.Timestamp = time.Now().String()
 	snapshot.CanPass = false
 	response = snapshot

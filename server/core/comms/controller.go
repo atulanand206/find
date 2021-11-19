@@ -2,6 +2,7 @@ package comms
 
 import (
 	"encoding/json"
+	"log"
 
 	"github.com/atulanand206/find/server/core/actions"
 	"github.com/atulanand206/find/server/core/models"
@@ -25,6 +26,7 @@ func (hub *Hub) Handle(msg models.WebsocketMessage, client *Client) (res models.
 		res = hub.Controller.Creators.MessageCreator.InitWebSocketMessage(actions.Failure, err.Error())
 		return
 	}
+	log.Println(request)
 	switch request.Action {
 	case actions.BEGIN.String():
 		res, targets, err = hub.OnBegin(request, client)
@@ -51,6 +53,8 @@ func (hub *Hub) Handle(msg models.WebsocketMessage, client *Client) (res models.
 	case actions.SCORE.String():
 		res, targets, err = hub.OnScore(request)
 	}
+	log.Println(res)
+	log.Println(targets)
 	return
 }
 

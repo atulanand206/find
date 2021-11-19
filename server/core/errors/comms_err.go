@@ -31,6 +31,7 @@ const (
 	Err_QuestionsNotSeeded = "questions can't be seeded"
 	Err_AnswersNotSeeded   = "answers can't be seeded"
 
+	Err_IndexesNotPresent  = "indexes does not exist"
 	Err_IndexNotPresent    = "index does not exist"
 	Err_MatchNotPresent    = "match with the given info does not exist"
 	Err_SnapshotNotPresent = "snapshot with the given info does not exist"

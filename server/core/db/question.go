@@ -73,7 +73,7 @@ func (crud QuestionCrud) FindIndexes() (indexes []models.Index, err error) {
 
 func (crud QuestionCrud) FindQuestionsFromIndex(index models.Index, limit int64) (questions []models.Question, err error) {
 	cursor, err := crud.Db.Find(QuestionCollection,
-		bson.M{"tag": index.Tag}, &options.FindOptions{Limit: pointer.Int64(limit)})
+		bson.M{"tag": index.Id}, &options.FindOptions{Limit: pointer.Int64(limit)})
 	if err != nil {
 		return
 	}

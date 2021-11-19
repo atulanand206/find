@@ -45,13 +45,13 @@ func (service QuestionService) AddQuestion(tag string, newQuestions []models.New
 func (service QuestionService) FindQuestionForMatch(match models.Game) (question models.Question, err error) {
 	index, err := service.Crud.FindIndexes()
 	if err != nil {
-		err = e.New(errors.Err_IndexNotPresent)
+		err = e.New(errors.Err_IndexesNotPresent)
 		return
 	}
 
 	indexes := utils.FilterIndex(index, utils.MapSansTags(match.Tags), 1)
 	if len(indexes) == 0 {
-		err = e.New(errors.Err_QuestionNotPresent)
+		err = e.New(errors.Err_IndexNotPresent)
 		return
 	}
 
