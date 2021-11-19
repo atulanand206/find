@@ -18,7 +18,7 @@ const (
 	SCORE
 	REFRESH
 	S_REFRESH
-	Over
+	FINISH
 	Extend
 	ACTIVE
 	S_ACTIVE
@@ -33,7 +33,7 @@ const (
 	S_SCORE
 	S_Question
 	S_Answer
-	S_Over
+	S_OVER
 	Failure
 	EMPTY
 )
@@ -55,7 +55,7 @@ func (action Action) String() string {
 		"SCORE",
 		"REFRESH",
 		"S_REFRESH",
-		"over",
+		"FINISH",
 		"extend",
 		"ACTIVE",
 		"S_ACTIVE",
@@ -70,7 +70,7 @@ func (action Action) String() string {
 		"S_SCORE",
 		"s_question",
 		"s_answer",
-		"s_over",
+		"S_OVER",
 		"failure",
 		"EMPTY",
 	}[action]

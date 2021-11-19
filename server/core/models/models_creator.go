@@ -190,6 +190,15 @@ func SnapshotWithNext(snapshot Snapshot, teams []TeamRoster, team_s_turn string,
 	return
 }
 
+func SnapshotWithFinish(snapshot Snapshot, teams []TeamRoster) (response Snapshot) {
+	snapshot.EventType = actions.FINISH.String()
+	snapshot.Roster = teams
+	snapshot.Timestamp = time.Now().String()
+	snapshot.CanPass = false
+	response = snapshot
+	return
+}
+
 type WebsocketMessageCreator struct{}
 
 func (creator WebsocketMessageCreator) InitWebSocketMessageFailure() (response WebsocketMessage) {
