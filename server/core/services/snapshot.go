@@ -128,3 +128,13 @@ func (service SnapshotService) SnapshotPass(snapshot models.Snapshot, roster []m
 	response = snapshot
 	return
 }
+
+func (service SnapshotService) SnapshotFinish(snapshot models.Snapshot, roster []models.TeamRoster) (response models.Snapshot, err error) {
+	snapshot = models.SnapshotWithFinish(snapshot, roster)
+	err = service.CreateSnapshot(snapshot)
+	if err != nil {
+		return
+	}
+	response = snapshot
+	return
+}

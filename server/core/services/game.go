@@ -328,6 +328,21 @@ func (service Service) GeneratePassQuestionResponse(request models.Request) (res
 	return
 }
 
+func (service Service) GenerateFinishGameResponse(request models.Request) (response models.Snapshot, err error) {
+	_, _, _, _, roster, snapshot, err := service.FindMatchFull(request.QuizId)
+	if err != nil {
+		return
+	}
+
+	snapshot, err = service.SnapshotService.SnapshotFinish(snapshot, roster)
+	if err != nil {
+		return
+	}
+
+	response = snapshot
+	return
+}
+
 func (service Service) GenerateScoreResponse(request models.Request) (response models.ScoreResponse, err error) {
 	snapshots, err := service.SnapshotService.FindSnapshotsForMatch(request.QuizId)
 	if err != nil {

@@ -46,6 +46,8 @@ func (hub *Hub) Handle(msg models.WebsocketMessage, client *Client) (res models.
 		res, targets, err = hub.OnNext(request)
 	case actions.PASS.String():
 		res, targets, err = hub.OnPass(request)
+	case actions.FINISH.String():
+		res, targets, err = hub.OnFinish(request)
 	case actions.SCORE.String():
 		res, targets, err = hub.OnScore(request)
 	}
@@ -157,6 +159,17 @@ func (hub *Hub) OnNext(request models.Request) (res models.WebsocketMessage, tar
 
 func (hub *Hub) OnPass(request models.Request) (res models.WebsocketMessage, targets map[string]bool, err error) {
 	response, err := hub.Controller.GeneratePassQuestionResponse(request)
+	if err != nil {
+		res = hub.Controller.Creators.MessageCreator.InitWebSocketMessage(actions.Failure, err.Error())
+		return
+	}
+
+	res, targets = hub.Controller.SubscriberService.QuizResponse(request.Action, request.QuizId, response)
+	return
+}
+
+func (hub *Hub) OnFinish(request models.Request) (res models.WebsocketMessage, targets map[string]bool, err error) {
+	response, err := hub.Controller.GenerateFinishGameResponse(request)
 	if err != nil {
 		res = hub.Controller.Creators.MessageCreator.InitWebSocketMessage(actions.Failure, err.Error())
 		return
